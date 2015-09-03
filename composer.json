@@ -1,0 +1,24 @@
+{
+    "name": "firehed/api",
+    "require": {
+        "firehed/common": "^1.0",
+        "firehed/input": "^0.0.1",
+        "firehed/inputobjects": "^0.0.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8",
+        "firehed/arctools": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Firehed\\API\\": ["src/", "tests/"]
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eric Stern",
+            "email": "eric@ericstern.com"
+        }
+    ]
+}
