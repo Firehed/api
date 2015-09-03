@@ -6,6 +6,9 @@
         "firehed/inputobjects": "^0.0.1",
         "psr/http-message": "^1.0"
     },
+    "bin": [
+        "bin/generate_endpoint_list"
+    ],
     "require-dev": {
         "phpunit/phpunit": "^4.8",
         "firehed/arctools": "^1.0"
