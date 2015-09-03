@@ -3,7 +3,8 @@
     "require": {
         "firehed/common": "^1.0",
         "firehed/input": "^0.0.1",
-        "firehed/inputobjects": "^0.0.1"
+        "firehed/inputobjects": "^0.0.1",
+        "psr/http-message": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8",
