@@ -4,7 +4,7 @@ namespace Firehed\API\Enums;
 
 use Firehed\Common\Enum;
 
-class HTTPMethod extends Enum;
+class HTTPMethod extends Enum
 {
 
     // Other methods exist, but these are the only relevant ones for RESTful
