@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8411f8610726ec8525f5e7cd356df035",
+    "hash": "11512c2f625f6d8e2aa3dc98f5a8690a",
     "packages": [
         {
             "name": "firehed/common",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Firehed/common.git",
-                "reference": "d37eb8320468b03f3a9f6a5c11574dfd5bec654d"
+                "reference": "6d873439f54607b87389bd252a79cf2fea2f99c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Firehed/common/zipball/d37eb8320468b03f3a9f6a5c11574dfd5bec654d",
-                "reference": "d37eb8320468b03f3a9f6a5c11574dfd5bec654d",
+                "url": "https://api.github.com/repos/Firehed/common/zipball/6d873439f54607b87389bd252a79cf2fea2f99c2",
+                "reference": "6d873439f54607b87389bd252a79cf2fea2f99c2",
                 "shasum": ""
             },
             "require-dev": {
@@ -44,7 +44,7 @@
                 }
             ],
             "description": "Common PHP tools",
-            "time": "2015-04-14 01:39:43"
+            "time": "2015-09-04 00:46:46"
         },
         {
             "name": "firehed/input",
