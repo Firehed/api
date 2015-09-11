@@ -55,7 +55,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testSetRequestReturnsSelf()
     {
         $d = new Dispatcher();
-        $req = $this->getMock('Psr\Http\Message\ServerRequestInterface');
+        $req = $this->getMock('Psr\Http\Message\RequestInterface');
         $this->assertSame($d,
             $d->setRequest($req),
             'setRequest did not return $this');

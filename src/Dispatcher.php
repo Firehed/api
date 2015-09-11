@@ -2,7 +2,7 @@
 
 namespace Firehed\API;
 
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Firehed\Input\Exceptions\InputException;
@@ -35,10 +35,10 @@ class Dispatcher
     /**
      * Inject the request
      *
-     * @param ServerRequestInterface The request
+     * @param RequestInterface The request
      * @return self
      */
-    public function setRequest(ServerRequestInterface $request)
+    public function setRequest(RequestInterface $request)
     {
         $this->request = $request;
         return $this;
