@@ -1,2 +1,39 @@
 #!/usr/bin/env php
+<?php
+$config_file = './.apiconfig';
+if (!file_exists($config_file) || !is_readable($config_file)) {
+    fwrite(STDERR, ".apiconfig file not found\n");
+    exit(1);
+}
+$config = json_decode(file_get_contents($config_file), true);
+if (JSON_ERROR_NONE !== json_last_error()) {
+    fwrite(STDERR, ".apiconfig contains invalid JSON\n");
+    exit(1);
+}
 
+$dir = __DIR__;
+while (!file_exists($dir.'/autoload.php') && $dir != DIRECTORY_SEPARATOR) {
+    $dir = dirname($dir);
+}
+require $dir.'/autoload.php';
+
+// Build out the endpoint map
+(new Firehed\Common\ClassMapGenerator())
+    ->setPath(getcwd().DIRECTORY_SEPARATOR.$config['source'])
+    ->setInterface('Firehed\API\Interfaces\EndpointInterface')
+    ->addCategory('getMethod')
+    ->setMethod('getURI')
+    ->setNamespace($config['namespace'])
+    ->setOutputFile(getcwd().'/__endpoint_list__.json')
+    ->generate();
+fwrite(STDOUT, "Wrote endpoint map to __endpoint_list__.json. Be sure to ".
+    "commit this file to version control.\n");
+
+// Also do the parser map
+(new Firehed\Common\ClassMapGenerator())
+    ->setPath(getcwd().'/vendor/firehed/input/src/Parsers')
+    ->setInterface('Firehed\Input\Interfaces\ParserInterface')
+    ->setMethod('getSupportedMimeTypes')
+    ->setNamespace('Firehed\Input\Parsers')
+    ->setOutputFile(getcwd().'/__parser_list__.json')
+    ->generate();
