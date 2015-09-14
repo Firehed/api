@@ -58,6 +58,15 @@ class Dispatcher
         return $this;
     }
 
+    /**
+     * Set the endpoint list. Can be an array consumable by ClassMapper or
+     * a string representing a file parsable by same. The list must be
+     * filterable by HTTP method and map absolute URI path components to
+     * controller methods.
+     *
+     * @param array|string The endpoint list or its path
+     * @return self
+     */
     public function setEndpointList($endpoint_list)
     {
         $this->endpoint_list = $endpoint_list;
@@ -77,12 +86,42 @@ class Dispatcher
         ], $http_code);
     }
 
+    /**
+     * Execute the request
+     *
+     * @return \Psr\Http\Message\ResponseInterface the completed HTTP response
+     */
     public function dispatch()
     {
-        if (!$this->request || !$this->parser_list || !$this->endpoint_list) {
+        if (null === $this->request ||
+            null === $this->parser_list ||
+            null === $this->endpoint_list) {
             return $this->error(500);
         }
 
+        try {
+            $endpoint = $this->getEndpoint();
+            $safe_input = $this->parseInput()
+                ->addData($this->getUriData())
+                ->validate($endpoint);
+        }
+        catch (HTTPException $e) {
+            return $this->error($e->getCode());
+        }
+        catch (InputException $e) {
+            return $this->error(400);
+        }
+
+
+        return $endpoint->execute($safe_input);
+    }
+
+    /**
+     * Parse the raw input body based on the content type
+     *
+     * @return ParsedInput the parsed input data
+     */
+    private function parseInput() {
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
         // don't use $_POST because additional content types are supported.
@@ -91,33 +130,49 @@ class Dispatcher
             list($parser_class) = (new ClassMapper($this->parser_list))
                 ->search($cth[0]);
             if (!$parser_class) {
-                // 400 Bad Request
-                return $this->error(400);
+                throw new HTTPException('Unsupported Content-type', 400);
             }
             $parser = new $parser_class;
             $data = $parser->parse($this->request->getBody());
         }
 
-        $parsed_input = new ParsedInput($data);
+        return new ParsedInput($data);
+    }
 
+    /**
+     * Find and instanciate the endpoint based on the request.
+     *
+     * @return Interfaces\EndpointInterface the routed endpoint
+     * @throws HTTPException if no endpoint matched the URI and HTTP Method
+     * from the request
+     */
+    private function getEndpoint()
+    {
         list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
             ->filter(strtoupper($this->request->getMethod()))
             ->search($this->request->getUri()->getPath());
         if (!$class) {
-            // Handle error: 404
-            return $this->error(404);
+            throw new HTTPException('Endpoint not found', 404);
         }
-        $parsed_input->addData(new ParsedInput($uri_data));
+        // Conceivably, we could use reflection to ensure the found class
+        // adheres to the interface; in practice, the built route is already
+        // doing the filtering so this should be redundant.
 
-        $endpoint = new $class;
-        try {
-            $safe_input = $parsed_input->validate($endpoint);
-        }
-        catch (InputException $e) {
-            return $this->error(400);
-        }
-        // something something middleware
-        return $endpoint->execute($safe_input);
+        $this->setUriData(new ParsedInput($uri_data));
+        return new $class;
 
     }
+
+    private $uri_data;
+    private function setUriData(ParsedInput $uri_data)
+    {
+        $this->uri_data = $uri_data;
+        return $this;
+    }
+
+    private function getUriData()
+    {
+        return $this->uri_data;
+    }
+
 }
