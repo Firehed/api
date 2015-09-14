@@ -2,11 +2,10 @@
 
 namespace Firehed\API;
 
-use Psr\Http\Message\RequestInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Firehed\Input\Exceptions\InputException;
-
+use Psr\Http\Message\RequestInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
 class Dispatcher
