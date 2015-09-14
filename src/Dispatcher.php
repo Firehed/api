@@ -15,6 +15,7 @@ class Dispatcher
     private $error_handler;
     private $parser_list;
     private $request;
+    private $uri_data;
 
     /**
      * Configure a callback when an error condition occurs. ... more info
@@ -111,7 +112,6 @@ class Dispatcher
             return $this->error(400);
         }
 
-
         return $endpoint->execute($safe_input);
     }
 
@@ -124,6 +124,8 @@ class Dispatcher
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
         // don't use $_POST because additional content types are supported.
+        // Since PSR-7 doesn't specify parsing the body of most MIME-types,
+        // we'll hand off to our own set of parsers.
         $cth = $this->request->getHeader('Content-type');
         if ($cth) {
             list($parser_class) = (new ClassMapper($this->parser_list))
@@ -134,7 +136,6 @@ class Dispatcher
             $parser = new $parser_class;
             $data = $parser->parse($this->request->getBody());
         }
-
         return new ParsedInput($data);
     }
 
@@ -156,13 +157,10 @@ class Dispatcher
         // Conceivably, we could use reflection to ensure the found class
         // adheres to the interface; in practice, the built route is already
         // doing the filtering so this should be redundant.
-
         $this->setUriData(new ParsedInput($uri_data));
         return new $class;
-
     }
 
-    private $uri_data;
     private function setUriData(ParsedInput $uri_data)
     {
         $this->uri_data = $uri_data;
