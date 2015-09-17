@@ -2,6 +2,8 @@
 
 namespace Firehed\API;
 
+use Firehed\Input\ValidationTestTrait;
+
 /**
  * Default test cases to be run against any object implementing
  * EndpointInterface. This amounts to glorified type-hinting, but still
@@ -11,11 +13,24 @@ namespace Firehed\API;
 trait EndpointTestTrait
 {
 
+    use ValidationTestTrait;
+
     /**
      * Get the endpoint under test
      * @return Interfaces\EndpointInterface
      */
     abstract protected function getEndpoint();
+
+    /**
+     * Because EndpointInterface extends ValidationInterface, provide the same
+     * object to the parent handler
+     *
+     * @return \Firehed\Input\Interfaces\ValidationInterface
+     */
+    protected function getValidation()
+    {
+        return $this->getEndpoint();
+    }
 
     /** @covers ::getUri */
     public function testGetUri()
@@ -34,40 +49,6 @@ trait EndpointTestTrait
         $this->assertInstanceOf('Firehed\API\Enums\HTTPMethod',
             $method,
             'getMethod did not return an HTTPMethod enum');
-    }
-
-    /** @covers ::getRequiredInputs */
-    public function testGetRequiredInputs()
-    {
-        $inputs = $this->getEndpoint()->getRequiredInputs();
-        $this->assertInternalType('array',
-            $inputs,
-            'getRequiredInputs did not return an array');
-        foreach ($inputs as $key => $type) {
-            $this->assertInternalType('string',
-                $key,
-                'getRequiredInputs contains an invalid key');
-            $this->assertInstanceOf('Firehed\Input\Objects\InputObject',
-                $type,
-                "getRequiredInputs[$key] is not an InputObject");
-        }
-    }
-
-    /** @covers ::getOptionalInputs */
-    public function testGetOptionalInputs()
-    {
-        $inputs = $this->getEndpoint()->getOptionalInputs();
-        $this->assertInternalType('array',
-            $inputs,
-            'getOptionalInputs did not return an array');
-        foreach ($inputs as $key => $type) {
-            $this->assertInternalType('string',
-                $key,
-                'getOptionalInputs contains an invalid key');
-            $this->assertInstanceOf('Firehed\Input\Objects\InputObject',
-                $type,
-                "getOptionalInputs[$key] is not an InputObject");
-        }
     }
 
 }
