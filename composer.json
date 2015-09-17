@@ -2,8 +2,8 @@
     "name": "firehed/api",
     "require": {
         "firehed/common": "^1.0",
-        "firehed/input": "^0.0.1",
-        "firehed/inputobjects": "^0.0.1",
+        "firehed/input": "0.*",
+        "firehed/inputobjects": "0.*",
         "psr/http-message": "^1.0",
         "zendframework/zend-diactoros": "^1.1"
     },

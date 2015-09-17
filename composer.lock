@@ -4,20 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fa3941f4a170f02f0a2276c36d48a306",
+    "hash": "765cc5f9e9568700d8e0ddb54628f637",
+    "content-hash": "2e2aa006863ac37d0df38b0299840a84",
     "packages": [
         {
             "name": "firehed/common",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Firehed/common.git",
-                "reference": "6d873439f54607b87389bd252a79cf2fea2f99c2"
+                "reference": "23a95c6c1d9286d0a9434143641955aebe5b3a02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Firehed/common/zipball/6d873439f54607b87389bd252a79cf2fea2f99c2",
-                "reference": "6d873439f54607b87389bd252a79cf2fea2f99c2",
+                "url": "https://api.github.com/repos/Firehed/common/zipball/23a95c6c1d9286d0a9434143641955aebe5b3a02",
+                "reference": "23a95c6c1d9286d0a9434143641955aebe5b3a02",
                 "shasum": ""
             },
             "require-dev": {
@@ -44,20 +45,20 @@
                 }
             ],
             "description": "Common PHP tools",
-            "time": "2015-09-04 00:46:46"
+            "time": "2015-09-04 19:47:04"
         },
         {
             "name": "firehed/input",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Firehed/input.git",
-                "reference": "291282e720bdace11a783edf34e19b4a33c3744b"
+                "reference": "cedc0169a50ec4d5dea5ca999056598924c2b9d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Firehed/input/zipball/291282e720bdace11a783edf34e19b4a33c3744b",
-                "reference": "291282e720bdace11a783edf34e19b4a33c3744b",
+                "url": "https://api.github.com/repos/Firehed/input/zipball/cedc0169a50ec4d5dea5ca999056598924c2b9d1",
+                "reference": "cedc0169a50ec4d5dea5ca999056598924c2b9d1",
                 "shasum": ""
             },
             "require-dev": {
@@ -67,7 +68,10 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Firehed\\Input\\": "src/"
+                    "Firehed\\Input\\": [
+                        "src/",
+                        "tests/"
+                    ]
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -81,24 +85,24 @@
                 }
             ],
             "description": "PHP Input Handling Tools",
-            "time": "2015-09-01 22:28:38"
+            "time": "2015-09-17 22:13:29"
         },
         {
             "name": "firehed/inputobjects",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Firehed/inputobjects.git",
-                "reference": "777af9ec0b8907b410a6bb248aba3bc6cca1ccde"
+                "reference": "319918cdf7e35c9978bc0d468717ad6acdfbc3c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Firehed/inputobjects/zipball/777af9ec0b8907b410a6bb248aba3bc6cca1ccde",
-                "reference": "777af9ec0b8907b410a6bb248aba3bc6cca1ccde",
+                "url": "https://api.github.com/repos/Firehed/inputobjects/zipball/319918cdf7e35c9978bc0d468717ad6acdfbc3c4",
+                "reference": "319918cdf7e35c9978bc0d468717ad6acdfbc3c4",
                 "shasum": ""
             },
             "require": {
-                "firehed/input": "^0.0.1",
+                "firehed/input": "0.*",
                 "sebastian/money": "^1.6"
             },
             "require-dev": {
@@ -125,7 +129,7 @@
                 }
             ],
             "description": "A collection of InputObjects to be used with firehed/input",
-            "time": "2015-09-02 20:21:11"
+            "time": "2015-09-17 22:22:12"
         },
         {
             "name": "psr/http-message",
@@ -475,16 +479,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "2.2.2",
+            "version": "2.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "2d7c03c0e4e080901b8f33b2897b0577be18a13c"
+                "reference": "ef1ca6835468857944d5c3b48fa503d5554cff2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2d7c03c0e4e080901b8f33b2897b0577be18a13c",
-                "reference": "2d7c03c0e4e080901b8f33b2897b0577be18a13c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ef1ca6835468857944d5c3b48fa503d5554cff2f",
+                "reference": "ef1ca6835468857944d5c3b48fa503d5554cff2f",
                 "shasum": ""
             },
             "require": {
@@ -533,7 +537,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-08-04 03:42:39"
+            "time": "2015-09-14 06:51:16"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -666,16 +670,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "1.4.6",
+            "version": "1.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "3ab72c62e550370a6cd5dc873e1a04ab57562f5b"
+                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3ab72c62e550370a6cd5dc873e1a04ab57562f5b",
-                "reference": "3ab72c62e550370a6cd5dc873e1a04ab57562f5b",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
+                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
                 "shasum": ""
             },
             "require": {
@@ -711,20 +715,20 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2015-08-16 08:51:00"
+            "time": "2015-09-15 10:49:45"
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.6",
+            "version": "4.8.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2246830f4a1a551c67933e4171bf2126dc29d357"
+                "reference": "dab2ada9e9a503d2ec3c32fe0fb59dea9bdd9dfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2246830f4a1a551c67933e4171bf2126dc29d357",
-                "reference": "2246830f4a1a551c67933e4171bf2126dc29d357",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/dab2ada9e9a503d2ec3c32fe0fb59dea9bdd9dfa",
+                "reference": "dab2ada9e9a503d2ec3c32fe0fb59dea9bdd9dfa",
                 "shasum": ""
             },
             "require": {
@@ -783,7 +787,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-08-24 04:09:38"
+            "time": "2015-09-14 06:57:22"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1214,16 +1218,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.7.3",
+            "version": "v2.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff"
+                "reference": "2dc7b06c065df96cc686c66da2705e5e18aef661"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/71340e996171474a53f3d29111d046be4ad8a0ff",
-                "reference": "71340e996171474a53f3d29111d046be4ad8a0ff",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/2dc7b06c065df96cc686c66da2705e5e18aef661",
+                "reference": "2dc7b06c065df96cc686c66da2705e5e18aef661",
                 "shasum": ""
             },
             "require": {
@@ -1259,7 +1263,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-28 14:07:07"
+            "time": "2015-08-24 07:13:45"
         }
     ],
     "aliases": [],
