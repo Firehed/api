@@ -20,6 +20,35 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
     // ----(Setters)-----------------------------------------------------------
 
+    /** @covers ::setContainer */
+    public function testSetContainerReturnsSelf()
+    {
+        $d = new Dispatcher();
+        $this->assertSame($d,
+            $d->setContainer([]),
+            'setContainer did not return $this');
+    }
+
+    /** @covers ::setContainer */
+    public function testSetContainerAcceptsArrayAccess()
+    {
+        $d = new Dispatcher();
+        $this->assertSame($d,
+            $d->setContainer($this->getMock('ArrayAccess')),
+            'setContainer did not return $this');
+    }
+
+    /**
+     * @covers ::setContainer
+     * @dataProvider nonArrays
+     * @expectedException UnexpectedValueException
+     */
+    public function testSetContainerRejectsNonArrayLike($non_array)
+    {
+        $d = new Dispatcher();
+        $d->setContainer($non_array);
+    }
+
     /** @covers ::setEndpointList */
     public function testSetEndpointListReturnsSelf()
     {
@@ -52,7 +81,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test successful all-the-way-through controller execution, including both
-     * URL-provided data (regex captures) and POST body
+     * URL-provided data (regex captures) and POST body.
      *
      * @covers ::dispatch
      */
@@ -81,6 +110,41 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ],
             $data,
             'The data did not reach the endpoint');
+    }
+
+    /**
+     * Default behavior is to directly use the class found in the endpoint
+     * list. If a value exists in the DI Container (well, really a service
+     * locator now) at the key of that class name, it should be preferred. This
+     * allows configuring the class without having to do crazy magic in the
+     * dispatcher.
+     *
+     * @covers ::dispatch
+     */
+    public function testContainerClassIsPrioritized()
+    {
+        $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
+        $endpoint->expects($this->atLeastOnce())
+            ->method('execute');
+        $endpoint->expects($this->any())
+            ->method('getRequiredInputs')
+            ->will($this->returnValue([]));
+        $endpoint->expects($this->any())
+            ->method('getOptionalInputs')
+            ->will($this->returnValue([]));
+        $req = $this->getMockRequestWithUriPath('/container', 'GET');
+        $list = [
+            'GET' => [
+                '/container' => 'ClassThatDoesNotExist',
+            ],
+        ];
+
+        $response = (new Dispatcher())
+            ->setContainer(['ClassThatDoesNotExist' => $endpoint])
+            ->setEndpointList($list)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->dispatch();
     }
 
     // ----(Error cases)--------------------------------------------------------
@@ -199,6 +263,18 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     {
         // This could also be dynamically built
         return dirname(__DIR__).'/vendor/firehed/input/src/Parsers/__parser_list__.json';
+    }
+
+    // ----(DataProviders)-----------------------------------------------------
+
+    public function nonArrays()
+    {
+        return [
+            [''],
+            [false],
+            [null],
+            [new \StdClass()],
+        ];
     }
 
 }

@@ -6,16 +6,38 @@ use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Firehed\Input\Exceptions\InputException;
 use Psr\Http\Message\RequestInterface;
+use UnexpectedValueException;
 use Zend\Diactoros\Response\JsonResponse;
 
 class Dispatcher
 {
 
+    private $container = [];
     private $endpoint_list;
     private $error_handler;
     private $parser_list;
     private $request;
     private $uri_data;
+
+    /**
+     * Provide a DI Container/Service Locator class or array. During
+     * dispatching, this structure will be queried for the routed endpoint by
+     * the fully-qualified class name. If the container has a class at that
+     * key, it will be used during execution; if not, the default behavior is
+     * to automatically instanciate it.
+     *
+     * @param array|ArrayAccess Container
+     * @return self
+     */
+    public function setContainer($container)
+    {
+        if (!(is_array($container) || ($container instanceof \ArrayAccess))) {
+            throw new UnexpectedValueException(
+                'Only arrays and classes implementing ArrayAccess may be provided');
+        }
+        $this->container = $container;
+        return $this;
+    }
 
     /**
      * Configure a callback when an error condition occurs. ... more info
@@ -158,6 +180,9 @@ class Dispatcher
         // adheres to the interface; in practice, the built route is already
         // doing the filtering so this should be redundant.
         $this->setUriData(new ParsedInput($uri_data));
+        if (isset($this->container[$class])) {
+            return $this->container[$class];
+        }
         return new $class;
     }
 
