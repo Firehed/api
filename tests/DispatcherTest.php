@@ -174,7 +174,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testFailedInputValidationReturns400()
     {
         // See tests/EndpointFixture
-        $req = $this->getMockRequestWithUriPath('/user/5', 'POSt');
+        $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
         $req->expects($this->any())
             ->method('getBody')
             ->will($this->returnValue('shortstring=thisistoolong'));
