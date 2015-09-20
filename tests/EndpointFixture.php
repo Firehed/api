@@ -5,7 +5,9 @@ namespace Firehed\API;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects\Text;
 use Firehed\InputObjects\WholeNumber;
-use Zend\Diactoros\Response\JsonResponse;
+use PHPUnit_Framework_Mockobject_Generator as Generator;
+use PHPUnit_Framework_MockObject_Matcher_InvokedAtLeastOnce as AtLeastOnce;
+use PHPUnit_Framework_MockObject_Stub_Return as ReturnValue;
 
 class EndpointFixture implements Interfaces\EndpointInterface
 {
@@ -36,8 +38,17 @@ class EndpointFixture implements Interfaces\EndpointInterface
 
     public function execute(SafeInput $input)
     {
-        return new JsonResponse($input->asArray());
+        // Use PHPUnit mocks outside of the TestCase... the DSL isn't quite as
+        // pretty here :)
+        $mockgen = new Generator();
+        $mock = $mockgen->getMock('Psr\Http\Message\ResponseInterface');
+        $mock->expects(new AtLeastOnce())
+            ->method('getStatusCode')
+            ->will(new ReturnValue(200));
+        $mock->expects(new AtLeastOnce())
+            ->method('getBody')
+            ->will(new ReturnValue(json_encode($input->asArray())));
+        return $mock;
     }
-
 
 }

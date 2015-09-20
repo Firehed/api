@@ -4,8 +4,7 @@
         "firehed/common": "^1.0",
         "firehed/input": "0.*",
         "firehed/inputobjects": "0.*",
-        "psr/http-message": "^1.0",
-        "zendframework/zend-diactoros": "^1.1"
+        "psr/http-message": "^1.0"
     },
     "bin": [
         "bin/generate_endpoint_list",

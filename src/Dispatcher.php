@@ -2,12 +2,14 @@
 
 namespace Firehed\API;
 
+use BadMethodCallException;
+use DomainException;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
-use Firehed\Input\Exceptions\InputException;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use OutOfBoundsException;
 use UnexpectedValueException;
-use Zend\Diactoros\Response\JsonResponse;
 
 class Dispatcher
 {
@@ -38,21 +40,6 @@ class Dispatcher
         $this->container = $container;
         return $this;
     }
-
-    /**
-     * Configure a callback when an error condition occurs. ... more info
-     * coming
-     *
-     *
-     * @param callable error handler
-     * @return self
-     *
-    public function setErrorHandler(callable $handler)
-    {
-        $this->error_handler = $handler;
-        return $this;
-    }
-    *** Not useful yet ***/
 
     /**
      * Inject the request
@@ -96,19 +83,6 @@ class Dispatcher
     }
 
     /**
-     * @param int HTTP status code
-     * @return Psr\Http\Message\ResponseInterface
-     */
-    protected function error($http_code)
-    {
-        return new JsonResponse([
-            'error' => [
-                'message' => 'MESSAGE',
-            ],
-        ], $http_code);
-    }
-
-    /**
      * Execute the request
      *
      * @return \Psr\Http\Message\ResponseInterface the completed HTTP response
@@ -118,23 +92,33 @@ class Dispatcher
         if (null === $this->request ||
             null === $this->parser_list ||
             null === $this->endpoint_list) {
-            return $this->error(500);
+            throw new BadMethodCallException(
+                'Set the request, parser list, and endpoint list before '.
+                'calling dispatch()', 500);
         }
 
-        try {
-            $endpoint = $this->getEndpoint();
-            $safe_input = $this->parseInput()
-                ->addData($this->getUriData())
-                ->validate($endpoint);
-        }
-        catch (HTTPException $e) {
-            return $this->error($e->getCode());
-        }
-        catch (InputException $e) {
-            return $this->error(400);
-        }
+        $endpoint = $this->getEndpoint();
+        $safe_input = $this->parseInput()
+            ->addData($this->getUriData())
+            ->validate($endpoint);
 
-        return $endpoint->execute($safe_input);
+        $response = $endpoint->execute($safe_input);
+        if (!$response instanceof ResponseInterface) {
+            if (is_object($response)) {
+                $type = get_class($response);
+            }
+            else {
+                $type = gettype($response);
+            }
+
+            throw new DomainException(sprintf(
+                'Incorrect return type from endpoint %s, got %s which does '.
+                'not implement Psr\Http\Message\ResponseInterface',
+                get_class($endpoint),
+                $type
+            ), 500);
+        }
+        return $response;
     }
 
     /**
@@ -153,7 +137,7 @@ class Dispatcher
             list($parser_class) = (new ClassMapper($this->parser_list))
                 ->search($cth[0]);
             if (!$parser_class) {
-                throw new HTTPException('Unsupported Content-type', 400);
+                throw new OutOfBoundsException('Unsupported Content-type', 400);
             }
             $parser = new $parser_class;
             $data = $parser->parse($this->request->getBody());
@@ -174,7 +158,7 @@ class Dispatcher
             ->filter(strtoupper($this->request->getMethod()))
             ->search($this->request->getUri()->getPath());
         if (!$class) {
-            throw new HTTPException('Endpoint not found', 404);
+            throw new OutOfBoundsException('Endpoint not found', 404);
         }
         // Conceivably, we could use reflection to ensure the found class
         // adheres to the interface; in practice, the built route is already

@@ -125,7 +125,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     {
         $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
         $endpoint->expects($this->atLeastOnce())
-            ->method('execute');
+            ->method('execute')
+            ->will($this->returnValue($this->getMock('Psr\Http\Message\ResponseInterface')));
         $endpoint->expects($this->any())
             ->method('getRequiredInputs')
             ->will($this->returnValue([]));
@@ -149,15 +150,22 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
     // ----(Error cases)--------------------------------------------------------
 
-    /** @covers ::dispatch */
-    public function testDispatchReturns500WhenMissingData()
+    /**
+     * @covers ::dispatch
+     * @expectedException BadMethodCallException
+     * @expectedExceptionCode 500
+     */
+    public function testDispatchThrowsWhenMissingData()
     {
         $d = new Dispatcher();
         $ret = $d->dispatch();
-        $this->checkResponse($ret, 500);
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @expectedException OutOfBoundsException
+     * @expectedExceptionCode 404
+     */
     public function testNoRouteMatchReturns404()
     {
         $req = $this->getMockRequestWithUriPath('/');
@@ -167,10 +175,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->setEndpointList([]) // No routes
             ->setParserList([])
             ->dispatch();
-        $this->checkResponse($ret, 404);
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @expectedException Firehed\Input\Exceptions\InputException
+     */
     public function testFailedInputValidationReturns400()
     {
         // See tests/EndpointFixture
@@ -188,11 +198,14 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
             ->dispatch();
-        $this->checkResponse($response, 400);
     }
 
-    /** @covers ::dispatch */
-    public function testUnsupportedContentTypeReturns400()
+    /**
+     * @covers ::dispatch
+     * @expectedException OutOfBoundsException
+     * @expectedExceptionCode 400
+     */
+    public function testUnsupportedContentTypeThrows()
     {
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
         $req->expects($this->any())
@@ -204,7 +217,37 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
             ->dispatch();
-        $this->checkResponse($response, 400);
+    }
+
+    /**
+     * @covers ::dispatch
+     * @expectedException DomainException
+     * @expectedExceptionCode 500
+     */
+    public function testBadResponseFromEndpointThrows()
+    {
+        $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
+        $endpoint->expects($this->atLeastOnce())
+            ->method('execute')
+            ->will($this->returnValue(false)); // Trigger a bad return value
+        $endpoint->expects($this->any())
+            ->method('getRequiredInputs')
+            ->will($this->returnValue([]));
+        $endpoint->expects($this->any())
+            ->method('getOptionalInputs')
+            ->will($this->returnValue([]));
+        $req = $this->getMockRequestWithUriPath('/container', 'GET');
+        $list = [
+            'GET' => [
+                '/container' => 'ClassThatDoesNotExist',
+            ],
+        ];
+        $response = (new Dispatcher())
+            ->setContainer(['ClassThatDoesNotExist' => $endpoint])
+            ->setEndpointList($list)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->dispatch();
     }
 
     // ----(Helper methods)----------------------------------------------------
