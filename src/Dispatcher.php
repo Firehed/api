@@ -98,6 +98,7 @@ class Dispatcher
         }
 
         $endpoint = $this->getEndpoint();
+        $endpoint->authenticate($this->request);
         $safe_input = $this->parseInput()
             ->addData($this->getUriData())
             ->validate($endpoint);

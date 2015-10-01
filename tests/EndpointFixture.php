@@ -8,9 +8,15 @@ use Firehed\InputObjects\WholeNumber;
 use PHPUnit_Framework_Mockobject_Generator as Generator;
 use PHPUnit_Framework_MockObject_Matcher_InvokedAtLeastOnce as AtLeastOnce;
 use PHPUnit_Framework_MockObject_Stub_Return as ReturnValue;
+use Psr\Http\Message\RequestInterface as Request;
 
 class EndpointFixture implements Interfaces\EndpointInterface
 {
+
+    public function authenticate(Request $request)
+    {
+        return $this;
+    }
 
     public function getUri()
     {
