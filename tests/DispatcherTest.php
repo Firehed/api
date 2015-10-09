@@ -113,6 +113,34 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test successful all-the-way-through controller execution, focusing on
+     * accessing $_GET/querystring data
+     *
+     * @covers ::dispatch
+     */
+    public function testQueryStringDataReachesEndpoint()
+    {
+        // See tests/EndpointFixture
+        $req = $this->getMockRequestWithUriPath('/user/5', 'GET', ['shortstring' => 'aBcD']);
+        $req->method('getBody')
+            ->will($this->returnValue('shortstring=aBcD'));
+
+        $response = (new Dispatcher())
+            ->setEndpointList($this->getEndpointListForFixture())
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->dispatch();
+        $this->checkResponse($response, 200);
+        $data = json_decode($response->getBody(), true);
+        $this->assertSame([
+                'id' => 5,
+                'shortstring' => 'aBcD',
+            ],
+            $data,
+            'The data did not reach the endpoint');
+    }
+
+    /**
      * Default behavior is to directly use the class found in the endpoint
      * list. If a value exists in the DI Container (well, really a service
      * locator now) at the key of that class name, it should be preferred. This
@@ -272,12 +300,14 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      * @param ?string optional HTTP method
      * @return \Psr\Http\Message\UriInterface
      */
-    private function getMockRequestWithUriPath($uri, $method = null)
+    private function getMockRequestWithUriPath($uri, $method = null, $query_data = [])
     {
         $mock_uri = $this->getMock('Psr\Http\Message\UriInterface');
         $mock_uri->expects($this->any())
             ->method('getPath')
             ->will($this->returnValue($uri));
+        $mock_uri->method('getQuery')
+            ->will($this->returnValue(http_build_query($query_data)));
 
         $req = $this->getMock('Psr\Http\Message\RequestInterface');
 
@@ -296,6 +326,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     private function getEndpointListForFixture()
     {
         return [
+            'GET' => [
+                '/user/(?P<id>[1-9]\d*)' => __NAMESPACE__.'\EndpointFixture'
+            ],
             'POST' => [
                 '/user/(?P<id>[1-9]\d*)' => __NAMESPACE__.'\EndpointFixture'
             ],

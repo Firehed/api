@@ -101,6 +101,7 @@ class Dispatcher
         $endpoint->authenticate($this->request);
         $safe_input = $this->parseInput()
             ->addData($this->getUriData())
+            ->addData($this->getQueryStringData())
             ->validate($endpoint);
 
         $response = $endpoint->execute($safe_input);
@@ -180,6 +181,14 @@ class Dispatcher
     private function getUriData()
     {
         return $this->uri_data;
+    }
+
+    private function getQueryStringData() {
+        $uri = $this->request->getUri();
+        $query = $uri->getQuery();
+        $data = [];
+        parse_str($query, $data);
+        return new ParsedInput($data);
     }
 
 }
