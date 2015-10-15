@@ -85,6 +85,8 @@ class Dispatcher
     /**
      * Execute the request
      *
+     * @throws LogicException if the dispatcher is misconfigured
+     * @throws RuntimeException on 404-type errors
      * @return \Psr\Http\Message\ResponseInterface the completed HTTP response
      */
     public function dispatch()
@@ -98,13 +100,32 @@ class Dispatcher
         }
 
         $endpoint = $this->getEndpoint();
-        $endpoint->authenticate($this->request);
-        $safe_input = $this->parseInput()
-            ->addData($this->getUriData())
-            ->addData($this->getQueryStringData())
-            ->validate($endpoint);
+        try {
+            $endpoint->authenticate($this->request);
+            $safe_input = $this->parseInput()
+                ->addData($this->getUriData())
+                ->addData($this->getQueryStringData())
+                ->validate($endpoint);
 
-        $response = $endpoint->execute($safe_input);
+            $response = $endpoint->execute($safe_input);
+            return $this->validateResponseFromEndpoint($response, $endpoint);
+        } catch (\Exception $e) {
+            return $endpoint->handleException($e);
+        }
+    }
+
+    /**
+     * Proxy method to add a return typecheck in PHP5. This will be removed in
+     * a PHP7 version of the library where return types are native, instead
+     * triggering a native TypeError.
+     *
+     * @param mixed The response from the endpoint
+     * @param EndpointInterface Endpoint the response came from
+     * @throws DomainException If the response was not a ResponseInterface
+     * @return ResponseInterface The validated response
+     */
+    private function validateResponseFromEndpoint($response, $endpoint)
+    {
         if (!$response instanceof ResponseInterface) {
             if (is_object($response)) {
                 $type = get_class($response);
@@ -128,7 +149,8 @@ class Dispatcher
      *
      * @return ParsedInput the parsed input data
      */
-    private function parseInput() {
+    private function parseInput()
+    {
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
         // don't use $_POST because additional content types are supported.
@@ -183,7 +205,8 @@ class Dispatcher
         return $this->uri_data;
     }
 
-    private function getQueryStringData() {
+    private function getQueryStringData()
+    {
         $uri = $this->request->getUri();
         $query = $uri->getQuery();
         $data = [];

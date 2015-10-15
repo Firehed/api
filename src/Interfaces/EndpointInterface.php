@@ -2,6 +2,7 @@
 
 namespace Firehed\API\Interfaces;
 
+use Exception;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\Input\Interfaces\ValidationInterface;
 use Psr\Http\Message\RequestInterface as Request;
@@ -47,5 +48,25 @@ interface EndpointInterface extends ValidationInterface
      * @throws \RuntimeException if authentication fails
      */
     public function authenticate(Request $request);
+
+    /**
+     * Handle uncaught exceptions
+     *
+     * This method MUST accept any type of Exception and return a PSR-7
+     * ResponseInterface object.
+     *
+     * It is RECOMMENDED to implement this method in a trait, since most
+     * Endpoints will share error handling logic. In most cases, one trait per
+     * supported MIME-type will probably suffice.
+     *
+     * n.b. A future update of this package for PHP 7 will require handling any
+     * `Throwable` object, so that new `Error` objects can also be handled. As
+     * this only changes the typehint but, in practice, not the actual
+     * interface, the only b/c issue should be the typehint itself.
+     *
+     * @param Exception The uncaught exception
+     * @return \Psr\Http\Message\ResponseInterface The response to render
+     */
+    public function handleException(Exception $e);
 
 }

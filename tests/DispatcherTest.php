@@ -2,7 +2,9 @@
 
 namespace Firehed\API;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
+use Firehed\API\Interfaces\EndpointInterface as Endpoint;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -151,29 +153,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testContainerClassIsPrioritized()
     {
-        $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
+        $endpoint = $this->getMockEndpoint();
         $endpoint->expects($this->atLeastOnce())
             ->method('execute')
-            ->will($this->returnValue($this->getMock('Psr\Http\Message\ResponseInterface')));
-        $endpoint->expects($this->any())
-            ->method('getRequiredInputs')
-            ->will($this->returnValue([]));
-        $endpoint->expects($this->any())
-            ->method('getOptionalInputs')
-            ->will($this->returnValue([]));
-        $req = $this->getMockRequestWithUriPath('/container', 'GET');
-        $list = [
-            'GET' => [
-                '/container' => 'ClassThatDoesNotExist',
-            ],
-        ];
-
-        $response = (new Dispatcher())
-            ->setContainer(['ClassThatDoesNotExist' => $endpoint])
-            ->setEndpointList($list)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
+            ->will($this->returnValue(
+                $this->getMock('Psr\Http\Message\ResponseInterface')));
+        $this->executeMockRequestOnEndpoint($endpoint);
     }
 
     // ----(Error cases)--------------------------------------------------------
@@ -205,11 +190,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->dispatch();
     }
 
-    /**
-     * @covers ::dispatch
-     * @expectedException Firehed\Input\Exceptions\InputException
-     */
-    public function testFailedInputValidationReturns400()
+    /** @covers ::dispatch */
+    public function testFailedInputValidationReachesErrorHandler()
     {
         // See tests/EndpointFixture
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
@@ -226,56 +208,77 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
             ->dispatch();
+        $this->assertSame(EndpointFixture::STATUS_ERROR,
+            $response->getStatusCode());
     }
 
-    /**
-     * @covers ::dispatch
-     * @expectedException OutOfBoundsException
-     * @expectedExceptionCode 400
-     */
-    public function testUnsupportedContentTypeThrows()
+    /** @covers ::dispatch */
+    public function testUnsupportedContentTypeReachesErrorHandler()
     {
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
         $req->expects($this->any())
             ->method('getHeader')
             ->with('Content-type')
             ->will($this->returnValue(['application/x-test-failure']));
-         $response = (new Dispatcher())
+        $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
             ->dispatch();
+        $this->assertSame(EndpointFixture::STATUS_ERROR,
+            $response->getStatusCode());
     }
 
-    /**
-     * @covers ::dispatch
-     * @expectedException DomainException
-     * @expectedExceptionCode 500
-     */
-    public function testBadResponseFromEndpointThrows()
+    /** @covers ::dispatch */
+    public function testFailedAuthenticationReachesErrorHandler()
     {
-        $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
+        $e = new Exception('This should reach the error handler');
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->method('authenticate')
+            ->will($this->throwException($e));
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($e);
+        $this->executeMockRequestOnEndpoint($endpoint);
+
+    }
+
+    /** @covers ::dispatch */
+    public function testFailedEndpointExecutionReachesErrorHandler()
+    {
+        $e = new Exception('This should reach the error handler');
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->method('execute')
+            ->will($this->throwException($e));
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($e);
+        $this->executeMockRequestOnEndpoint($endpoint);
+    }
+
+
+    /** @covers ::dispatch */
+    public function testScalarResponseFromEndpointReachesErrorHandler()
+    {
+        $endpoint = $this->getMockEndpoint();
         $endpoint->expects($this->atLeastOnce())
             ->method('execute')
             ->will($this->returnValue(false)); // Trigger a bad return value
-        $endpoint->expects($this->any())
-            ->method('getRequiredInputs')
-            ->will($this->returnValue([]));
-        $endpoint->expects($this->any())
-            ->method('getOptionalInputs')
-            ->will($this->returnValue([]));
-        $req = $this->getMockRequestWithUriPath('/container', 'GET');
-        $list = [
-            'GET' => [
-                '/container' => 'ClassThatDoesNotExist',
-            ],
-        ];
-        $response = (new Dispatcher())
-            ->setContainer(['ClassThatDoesNotExist' => $endpoint])
-            ->setEndpointList($list)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
+        $endpoint->expects($this->once())
+            ->method('handleException');
+        $this->executeMockRequestOnEndpoint($endpoint);
+    }
+
+    /** @covers ::dispatch */
+    public function testInvalidTypeResponseFromEndpointReachesErrorHandler()
+    {
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->expects($this->atLeastOnce())
+            ->method('execute')
+            ->will($this->returnValue(new \DateTime())); // Trigger a bad return value
+        $endpoint->expects($this->once())
+            ->method('handleException');
+        $this->executeMockRequestOnEndpoint($endpoint);
     }
 
     // ----(Helper methods)----------------------------------------------------
@@ -298,6 +301,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      *
      * @param string path component of URI
      * @param ?string optional HTTP method
+     * @param ?array optional raw, unescaped query string data
      * @return \Psr\Http\Message\UriInterface
      */
     private function getMockRequestWithUriPath($uri, $method = null, $query_data = [])
@@ -321,6 +325,47 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
                 ->will($this->returnValue($method));
         }
         return $req;
+    }
+
+    /**
+     * Convenience method for mocking an endpoint. The mock has no required or
+     * optional inputs.
+     *
+     * @return Endpoint
+     */
+    private function getMockEndpoint()
+    {
+        $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
+        $endpoint->method('getRequiredInputs')
+            ->will($this->returnValue([]));
+        $endpoint->method('getOptionalInputs')
+            ->will($this->returnValue([]));
+        $endpoint->method('handleException')
+            ->will($this->returnValue($this->getMock('Psr\Http\Message\ResponseInterface')));
+        return $endpoint;
+    }
+
+    /**
+     * Run the endpointwith an empty request
+     *
+     * @param Endpoint the endpoint to test
+     * @return ResponseInterface the endpoint response
+     */
+    private function executeMockRequestOnEndpoint(Endpoint $endpoint)
+    {
+        $req = $this->getMockRequestWithUriPath('/container', 'GET');
+        $list = [
+            'GET' => [
+                '/container' => 'ClassThatDoesNotExist',
+            ],
+        ];
+        $response = (new Dispatcher())
+            ->setContainer(['ClassThatDoesNotExist' => $endpoint])
+            ->setEndpointList($list)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->dispatch();
+        return $response;
     }
 
     private function getEndpointListForFixture()

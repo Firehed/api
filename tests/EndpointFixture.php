@@ -2,6 +2,7 @@
 
 namespace Firehed\API;
 
+use Exception;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects\Text;
 use Firehed\InputObjects\WholeNumber;
@@ -12,6 +13,8 @@ use Psr\Http\Message\RequestInterface as Request;
 
 class EndpointFixture implements Interfaces\EndpointInterface
 {
+
+    const STATUS_ERROR = 999;
 
     public function authenticate(Request $request)
     {
@@ -57,4 +60,12 @@ class EndpointFixture implements Interfaces\EndpointInterface
         return $mock;
     }
 
+    public function handleException(Exception $e)
+    {
+        $mock = (new Generator())
+            ->getMock('Psr\Http\Message\ResponseInterface');
+        $mock->method('getStatusCode')
+            ->will(new ReturnValue(self::STATUS_ERROR)); // Artificial test value
+        return $mock;
+    }
 }
