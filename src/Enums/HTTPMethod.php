@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firehed\API\Enums;
 
 use Firehed\Common\Enum;

@@ -2,16 +2,17 @@
     "name": "firehed/api",
     "require": {
         "firehed/common": "^1.0",
-        "firehed/input": "0.*",
-        "firehed/inputobjects": "0.*",
-        "psr/http-message": "^1.0"
+        "firehed/input": "^2.0",
+        "firehed/inputobjects": "^2.0",
+        "psr/http-message": "^1.0",
+        "php": ">=7"
     },
     "bin": [
         "bin/generate_endpoint_list",
         "bin/generate_front_controller"
     ],
     "require-dev": {
-        "phpunit/phpunit": "^4.8",
+        "phpunit/phpunit": "^5.0",
         "firehed/arctools": "^1.0"
     },
     "autoload": {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firehed\API;
 
 use BadMethodCallException;
@@ -31,7 +33,7 @@ class Dispatcher
      * @param array|ArrayAccess Container
      * @return self
      */
-    public function setContainer($container)
+    public function setContainer($container): self
     {
         if (!(is_array($container) || ($container instanceof \ArrayAccess))) {
             throw new UnexpectedValueException(
@@ -47,7 +49,7 @@ class Dispatcher
      * @param RequestInterface The request
      * @return self
      */
-    public function setRequest(RequestInterface $request)
+    public function setRequest(RequestInterface $request): self
     {
         $this->request = $request;
         return $this;
@@ -61,7 +63,7 @@ class Dispatcher
      * @param array|string The parser list or its path
      * @return self
      */
-    public function setParserList($parser_list)
+    public function setParserList($parser_list): self
     {
         $this->parser_list = $parser_list;
         return $this;
@@ -76,7 +78,7 @@ class Dispatcher
      * @param array|string The endpoint list or its path
      * @return self
      */
-    public function setEndpointList($endpoint_list)
+    public function setEndpointList($endpoint_list): self
     {
         $this->endpoint_list = $endpoint_list;
         return $this;
@@ -85,11 +87,13 @@ class Dispatcher
     /**
      * Execute the request
      *
+     * @throws TypeError if both execute and handleException have bad return
+     * types
      * @throws LogicException if the dispatcher is misconfigured
      * @throws RuntimeException on 404-type errors
-     * @return \Psr\Http\Message\ResponseInterface the completed HTTP response
+     * @return ResponseInterface the completed HTTP response
      */
-    public function dispatch()
+    public function dispatch(): ResponseInterface
     {
         if (null === $this->request ||
             null === $this->parser_list ||
@@ -107,41 +111,10 @@ class Dispatcher
                 ->addData($this->getQueryStringData())
                 ->validate($endpoint);
 
-            $response = $endpoint->execute($safe_input);
-            return $this->validateResponseFromEndpoint($response, $endpoint);
-        } catch (\Exception $e) {
+            return $endpoint->execute($safe_input);
+        } catch (\Throwable $e) {
             return $endpoint->handleException($e);
         }
-    }
-
-    /**
-     * Proxy method to add a return typecheck in PHP5. This will be removed in
-     * a PHP7 version of the library where return types are native, instead
-     * triggering a native TypeError.
-     *
-     * @param mixed The response from the endpoint
-     * @param EndpointInterface Endpoint the response came from
-     * @throws DomainException If the response was not a ResponseInterface
-     * @return ResponseInterface The validated response
-     */
-    private function validateResponseFromEndpoint($response, $endpoint)
-    {
-        if (!$response instanceof ResponseInterface) {
-            if (is_object($response)) {
-                $type = get_class($response);
-            }
-            else {
-                $type = gettype($response);
-            }
-
-            throw new DomainException(sprintf(
-                'Incorrect return type from endpoint %s, got %s which does '.
-                'not implement Psr\Http\Message\ResponseInterface',
-                get_class($endpoint),
-                $type
-            ), 500);
-        }
-        return $response;
     }
 
     /**
@@ -149,7 +122,7 @@ class Dispatcher
      *
      * @return ParsedInput the parsed input data
      */
-    private function parseInput()
+    private function parseInput(): ParsedInput
     {
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
@@ -173,10 +146,8 @@ class Dispatcher
      * Find and instanciate the endpoint based on the request.
      *
      * @return Interfaces\EndpointInterface the routed endpoint
-     * @throws HTTPException if no endpoint matched the URI and HTTP Method
-     * from the request
      */
-    private function getEndpoint()
+    private function getEndpoint(): Interfaces\EndpointInterface
     {
         list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
             ->filter(strtoupper($this->request->getMethod()))
@@ -194,18 +165,18 @@ class Dispatcher
         return new $class;
     }
 
-    private function setUriData(ParsedInput $uri_data)
+    private function setUriData(ParsedInput $uri_data): self
     {
         $this->uri_data = $uri_data;
         return $this;
     }
 
-    private function getUriData()
+    private function getUriData(): ParsedInput
     {
         return $this->uri_data;
     }
 
-    private function getQueryStringData()
+    private function getQueryStringData(): ParsedInput
     {
         $uri = $this->request->getUri();
         $query = $uri->getQuery();

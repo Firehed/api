@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firehed\API;
 
-use Firehed\Input\ValidationTestTrait;
+use Firehed\Input\ {
+    Interfaces\ValidationInterface,
+    ValidationTestTrait
+};
 
 /**
  * Default test cases to be run against any object implementing
@@ -19,7 +24,7 @@ trait EndpointTestTrait
      * Get the endpoint under test
      * @return Interfaces\EndpointInterface
      */
-    abstract protected function getEndpoint();
+    abstract protected function getEndpoint(): Interfaces\EndpointInterface;
 
     /**
      * Because EndpointInterface extends ValidationInterface, provide the same
@@ -27,7 +32,7 @@ trait EndpointTestTrait
      *
      * @return \Firehed\Input\Interfaces\ValidationInterface
      */
-    protected function getValidation()
+    protected function getValidation(): ValidationInterface
     {
         return $this->getEndpoint();
     }
@@ -55,7 +60,7 @@ trait EndpointTestTrait
      * @covers ::handleException
      * @dataProvider exceptionsToHandle
      */
-    public function testHandleException(\Exception $e)
+    public function testHandleException(\Throwable $e)
     {
         $response = $this->getEndpoint()->handleException($e);
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface',
@@ -82,7 +87,7 @@ trait EndpointTestTrait
      *
      *  @return array<array<Exception>>
      */
-    public function exceptionsToHandle()
+    public function exceptionsToHandle(): array
     {
         return [
             [new \Exception()],
@@ -101,14 +106,13 @@ trait EndpointTestTrait
                     [new \UnderflowException()],
                     [new \UnexpectedValueException()],
             // PHP7: Add new Error exceptions
-            // Error
-                // ArithmeticError
-                // AssertionError
-                // DivisionByZero
-                // ParseError
-                // TypeError
+            [new \Error()],
+                [new \ArithmeticError()],
+                [new \AssertionError()],
+                [new \DivisionByZeroError()],
+                [new \ParseError()],
+                [new \TypeError()],
         ];
     }
-
 
 }

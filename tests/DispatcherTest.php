@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firehed\API;
 
 use Exception;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ {
+    ResponseInterface,
+    RequestInterface
+};
 use Firehed\API\Interfaces\EndpointInterface as Endpoint;
 
 /**
@@ -123,7 +128,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testQueryStringDataReachesEndpoint()
     {
         // See tests/EndpointFixture
-        $req = $this->getMockRequestWithUriPath('/user/5', 'GET', ['shortstring' => 'aBcD']);
+        $req = $this->getMockRequestWithUriPath('/user/5',
+            'GET',
+            ['shortstring' => 'aBcD']);
         $req->method('getBody')
             ->will($this->returnValue('shortstring=aBcD'));
 
@@ -287,7 +294,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      * @param ResponseInterface response to test
      * @param int HTTP status code to check for
      */
-    private function checkResponse(ResponseInterface $response, $expected_code)
+    private function checkResponse(ResponseInterface $response, int $expected_code)
     {
         $this->assertSame($expected_code,
             $response->getStatusCode(),
@@ -300,12 +307,15 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      * if provided
      *
      * @param string path component of URI
-     * @param ?string optional HTTP method
-     * @param ?array optional raw, unescaped query string data
-     * @return \Psr\Http\Message\UriInterface
+     * @param [string] optional HTTP method
+     * @param [array] optional raw, unescaped query string data
+     * @return \Psr\Http\Message\RequestInterface
      */
-    private function getMockRequestWithUriPath($uri, $method = null, $query_data = [])
-    {
+    private function getMockRequestWithUriPath(
+        string $uri,
+        string $method = 'GET',
+        array $query_data = []
+    ): RequestInterface {
         $mock_uri = $this->getMock('Psr\Http\Message\UriInterface');
         $mock_uri->expects($this->any())
             ->method('getPath')
@@ -319,11 +329,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->method('getUri')
             ->will($this->returnValue($mock_uri));
 
-        if ($method) {
-            $req->expects($this->any())
-                ->method('getMethod')
-                ->will($this->returnValue($method));
-        }
+        $req->method('getMethod')
+            ->will($this->returnValue($method));
         return $req;
     }
 
@@ -333,7 +340,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      *
      * @return Endpoint
      */
-    private function getMockEndpoint()
+    private function getMockEndpoint(): Endpoint
     {
         $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
         $endpoint->method('getRequiredInputs')
@@ -351,7 +358,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      * @param Endpoint the endpoint to test
      * @return ResponseInterface the endpoint response
      */
-    private function executeMockRequestOnEndpoint(Endpoint $endpoint)
+    private function executeMockRequestOnEndpoint(Endpoint $endpoint): ResponseInterface
     {
         $req = $this->getMockRequestWithUriPath('/container', 'GET');
         $list = [
@@ -368,7 +375,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         return $response;
     }
 
-    private function getEndpointListForFixture()
+    private function getEndpointListForFixture(): array
     {
         return [
             'GET' => [
@@ -380,7 +387,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    private function getDefaultParserList()
+    private function getDefaultParserList(): string
     {
         // This could also be dynamically built
         return dirname(__DIR__).'/vendor/firehed/input/src/Parsers/__parser_list__.json';

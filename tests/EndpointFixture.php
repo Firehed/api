@@ -1,51 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Firehed\API;
 
-use Exception;
+use Throwable;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects\Text;
 use Firehed\InputObjects\WholeNumber;
-use PHPUnit_Framework_Mockobject_Generator as Generator;
+use PHPUnit_Framework_MockObject_Generator as Generator;
 use PHPUnit_Framework_MockObject_Matcher_InvokedAtLeastOnce as AtLeastOnce;
 use PHPUnit_Framework_MockObject_Stub_Return as ReturnValue;
-use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Message\ {
+    RequestInterface as Request,
+    ResponseInterface as Response
+};
 
 class EndpointFixture implements Interfaces\EndpointInterface
 {
 
     const STATUS_ERROR = 999;
 
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): Interfaces\EndpointInterface
     {
         return $this;
     }
 
-    public function getUri()
+    public function getUri(): string
     {
         return '/user/(?P<id>[1-9]\d*)';
     }
 
-    public function getRequiredInputs()
+    public function getRequiredInputs(): array
     {
         return [
             'id' => new WholeNumber(),
         ];
     }
 
-    public function getOptionalInputs()
+    public function getOptionalInputs(): array
     {
         return [
             'shortstring' => (new Text())->setMax(5),
         ];
     }
 
-    public function getMethod()
+    public function getMethod(): Enums\HTTPMethod
     {
         return Enums\HTTPMethod::GET();
     }
 
-    public function execute(SafeInput $input)
+    public function execute(SafeInput $input): Response
     {
         // Use PHPUnit mocks outside of the TestCase... the DSL isn't quite as
         // pretty here :)
@@ -60,7 +65,7 @@ class EndpointFixture implements Interfaces\EndpointInterface
         return $mock;
     }
 
-    public function handleException(Exception $e)
+    public function handleException(Throwable $e): Response
     {
         $mock = (new Generator())
             ->getMock('Psr\Http\Message\ResponseInterface');
