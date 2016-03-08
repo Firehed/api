@@ -186,7 +186,7 @@ class Dispatcher
                 throw new OutOfBoundsException('Unsupported Content-type', 400);
             }
             $parser = new $parser_class;
-            $data = $parser->parse($this->request->getBody());
+            $data = $parser->parse((string)$this->request->getBody());
         }
         return new ParsedInput($data);
     }
