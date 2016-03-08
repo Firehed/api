@@ -84,6 +84,14 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             'setRequest did not return $this');
     }
 
+    /** @covers ::addResponseMiddleware */
+    public function testAddResponseMiddlewareReturnsSelf()
+    {
+        $d = new Dispatcher();
+        $this->assertSame($d, $d->addResponseMiddleware(function($r,$n) {
+            return $n($r);
+        }), 'addResponseMiddleware did not return $this');
+    }
     // ----(Success case)-------------------------------------------------------
 
     /**
@@ -166,6 +174,116 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(
                 $this->getMock('Psr\Http\Message\ResponseInterface')));
         $this->executeMockRequestOnEndpoint($endpoint);
+    }
+
+    // Value to be set by a callback if it is run as desired
+    private $response_hits = 0;
+    public function testAllResponseMiddlewaresAreReachable()
+    {
+        $endpoint = $this->getMockEndpoint();
+        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
+        $list = [
+            'GET' => [
+                '/cb' => 'CBClass',
+            ],
+        ];
+        (new Dispatcher())
+            ->setContainer(['CBClass' => $endpoint])
+            ->setEndpointList($list)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->addResponseMiddleware(function($response, $next) {
+                $this->response_hits++;
+                return $next($response);
+            })
+            ->addResponseMiddleware(function($response, $next) {
+                $this->response_hits++;
+                return $next($response);
+            })
+            ->dispatch();
+        $this->assertSame(2, $this->response_hits,
+            'Not all response callbacks were fired');
+    }
+
+    public function testAllResponseMiddlewaresAreFIFO()
+    {
+        $endpoint = $this->getMockEndpoint();
+        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
+        $list = [
+            'GET' => [
+                '/cb' => 'CBClass',
+            ],
+        ];
+        (new Dispatcher())
+            ->setContainer(['CBClass' => $endpoint])
+            ->setEndpointList($list)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->addResponseMiddleware(function($response, $next) {
+                $this->response_hits = 'a';
+                return $next($response);
+            })
+            ->addResponseMiddleware(function($response, $next) {
+                $this->response_hits = 'b';
+                return $next($response);
+            })
+            ->dispatch();
+        $this->assertSame('b', $this->response_hits,
+            'Last provided response middleware wasn\'t fired last');
+    }
+
+    public function testResponseMiddlewaresAreShortCircuitable()
+    {
+        $endpoint = $this->getMockEndpoint();
+        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
+        $list = [
+            'GET' => [
+                '/cb' => 'CBClass',
+            ],
+        ];
+        (new Dispatcher())
+            ->setContainer(['CBClass' => $endpoint])
+            ->setEndpointList($list)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->addResponseMiddleware(function($response, $next) {
+                $this->response_hits = 'a';
+                return $response;
+            })
+            ->addResponseMiddleware(function($response, $next) {
+                // This should never hit
+                $this->response_hits = 'b';
+                return $next($response);
+            })
+            ->dispatch();
+        $this->assertSame('a', $this->response_hits,
+            'Second callback was fired that should have been bypassed');
+    }
+
+    public function testResponseMiddlewaresAreRunOnError()
+    {
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->expects($this->atLeastOnce())
+            ->method('execute')
+            ->will($this->throwException(new Exception('dummy')));
+        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
+        $list = [
+            'GET' => [
+                '/cb' => 'CBClass',
+            ],
+        ];
+        (new Dispatcher())
+            ->setContainer(['CBClass' => $endpoint])
+            ->setEndpointList($list)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->addResponseMiddleware(function($response, $next) {
+                $this->response_hits = 1;
+                return $next($response);
+            })
+            ->dispatch();
+        $this->assertSame(1, $this->response_hits,
+            'Second callback was fired that should have been bypassed');
     }
 
     // ----(Error cases)--------------------------------------------------------
