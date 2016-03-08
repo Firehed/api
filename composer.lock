@@ -287,20 +287,20 @@
         },
         {
             "name": "firehed/arctools",
-            "version": "1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Firehed/arctools.git",
-                "reference": "f3245b28e97233ffb04c6a495c8c1d8bffc0a0a0"
+                "reference": "033cc82e777dd10a5416f544b37afb84877332ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Firehed/arctools/zipball/f3245b28e97233ffb04c6a495c8c1d8bffc0a0a0",
-                "reference": "f3245b28e97233ffb04c6a495c8c1d8bffc0a0a0",
+                "url": "https://api.github.com/repos/Firehed/arctools/zipball/033cc82e777dd10a5416f544b37afb84877332ca",
+                "reference": "033cc82e777dd10a5416f544b37afb84877332ca",
                 "shasum": ""
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.3"
+                "phpunit/phpunit": "~5.0"
             },
             "type": "library",
             "autoload": {
@@ -319,7 +319,7 @@
                 }
             ],
             "description": "Easily integrate with Arcanist and libphutil",
-            "time": "2015-08-18 21:00:14"
+            "time": "2015-10-16 22:30:55"
         },
         {
             "name": "myclabs/deep-copy",
