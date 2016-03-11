@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "35024428042bd4ccb0f9c8b20f6aa91a",
-    "content-hash": "f312c4a2438ffd1ffea49e1cb6bb006b",
+    "hash": "155db2f9e41bf827dc7b5620520b0a00",
+    "content-hash": "7681f3fda55a34d32e3479727ce628af",
     "packages": [
         {
             "name": "firehed/common",
@@ -91,50 +91,6 @@
             "time": "2015-10-21 18:35:41"
         },
         {
-            "name": "firehed/inputobjects",
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Firehed/inputobjects.git",
-                "reference": "6f520b31eafb65d87f750b7bc2a79555a44deee3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Firehed/inputobjects/zipball/6f520b31eafb65d87f750b7bc2a79555a44deee3",
-                "reference": "6f520b31eafb65d87f750b7bc2a79555a44deee3",
-                "shasum": ""
-            },
-            "require": {
-                "firehed/input": "^2.0",
-                "sebastian/money": "^1.6"
-            },
-            "require-dev": {
-                "firehed/arctools": "^1.0",
-                "phpunit/phpunit": "^5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Firehed\\InputObjects\\": [
-                        "src/",
-                        "tests/"
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Eric Stern",
-                    "email": "eric@ericstern.com"
-                }
-            ],
-            "description": "A collection of InputObjects to be used with firehed/input",
-            "time": "2015-10-21 19:22:41"
-        },
-        {
             "name": "psr/http-message",
             "version": "1.0",
             "source": {
@@ -182,52 +138,6 @@
                 "response"
             ],
             "time": "2015-05-04 20:22:00"
-        },
-        {
-            "name": "sebastian/money",
-            "version": "v1.6.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/money.git",
-                "reference": "19e8660d60e7b39ee6769b09b91eb3e35b2470ec"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/money/zipball/19e8660d60e7b39ee6769b09b91eb3e35b2470ec",
-                "reference": "19e8660d60e7b39ee6769b09b91eb3e35b2470ec",
-                "shasum": ""
-            },
-            "require": {
-                "ext-intl": "*",
-                "php": ">=5.4"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de"
-                }
-            ],
-            "description": "Value Object that represents a monetary value (using a currency's smallest unit)",
-            "homepage": "http://www.github.com/sebastianbergmann/money",
-            "keywords": [
-                "money"
-            ],
-            "time": "2015-06-24 19:59:23"
         }
     ],
     "packages-dev": [

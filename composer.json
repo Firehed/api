@@ -3,9 +3,11 @@
     "require": {
         "firehed/common": "^1.0",
         "firehed/input": "^2.0",
-        "firehed/inputobjects": "^2.0",
         "psr/http-message": "^1.0",
         "php": ">=7"
+    },
+    "suggest": {
+        "firehed/inputobjects": "Pre-made Input components for validation"
     },
     "bin": [
         "bin/generate_endpoint_list",
