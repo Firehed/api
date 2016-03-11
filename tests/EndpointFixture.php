@@ -6,8 +6,7 @@ namespace Firehed\API;
 
 use Throwable;
 use Firehed\Input\Containers\SafeInput;
-use Firehed\InputObjects\Text;
-use Firehed\InputObjects\WholeNumber;
+use Firehed\Input\Objects\InputObject;
 use PHPUnit_Framework_MockObject_Generator as Generator;
 use PHPUnit_Framework_MockObject_Matcher_InvokedAtLeastOnce as AtLeastOnce;
 use PHPUnit_Framework_MockObject_Stub_Return as ReturnValue;
@@ -72,5 +71,34 @@ class EndpointFixture implements Interfaces\EndpointInterface
         $mock->method('getStatusCode')
             ->will(new ReturnValue(self::STATUS_ERROR)); // Artificial test value
         return $mock;
+    }
+}
+
+class WholeNumber extends InputObject
+{
+    public function validate($value): bool
+    {
+        return ((int)$value) == $value;
+    }
+
+    public function evaluate()
+    {
+        return $this->getValue() + 0;
+    }
+}
+class Text extends InputObject
+{
+
+    private $max = \PHP_INT_MAX;
+
+    public function setMax(int $max): self
+    {
+        $this->max = $max;
+        return $this;
+    }
+
+    public function validate($value): bool
+    {
+        return strlen($value) <= $this->max;
     }
 }
