@@ -137,9 +137,8 @@ class Dispatcher
             $response = $endpoint->execute($safe_input);
         } catch (\Throwable $e) {
             $response = $endpoint->handleException($e);
-        } finally {
-            return $this->executeResponseMiddleware($response);
         }
+        return $this->executeResponseMiddleware($response);
     }
 
     /**

@@ -286,6 +286,51 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             'Second callback was fired that should have been bypassed');
     }
 
+    /**
+     * Ensure that if an exception is thrown during execute() and another (or
+     * the same) exception is thrown during the subsequent call. Basically, we
+     * *want* the error-handling exception to leak, because
+     * a) trying to supress it will probably result in undefined behavior, and
+     * b) something is deeply broken in the application, which you should know
+     *
+     * @covers ::dispatch
+     */
+    public function testErrorInResponseHandler()
+    {
+        $execute = new Exception('Execute error');
+        $error = new Exception('Exception handler error');
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->expects($this->once())
+            ->method('execute')
+            ->will($this->throwException($execute));
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($execute)
+            ->will($this->throwException($error));
+
+        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
+        $list = [
+            'GET' => [
+                '/cb' => 'CBClass',
+            ],
+        ];
+        try {
+            $ret = (new Dispatcher())
+                ->setContainer(['CBClass' => $endpoint])
+                ->setEndpointList($list)
+                ->setParserList($this->getDefaultParserList())
+                ->setRequest($req)
+                ->dispatch();
+            $this->fail(
+                "The exception thrown from the error handler's failure should ".
+                "have made it through");
+        } catch (\Throwable $e) {
+            $this->assertSame($error, $e,
+                "Some exception other than the one from the exception handler ".
+                "was thrown");
+        }
+    }
+
     // ----(Error cases)--------------------------------------------------------
 
     /**
