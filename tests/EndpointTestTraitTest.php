@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Firehed\API;
 
 /**
- * @coversDefaultClass Firehed\API\EndpointTestTrait
- * @covers ::<protected>
- * @covers ::<private>
+ * @coversNothing (Technically it uses the endpoint-testing trait to cover
+ * itself, but the there's no src/ coverage)
  */
 class EndpointTestTraitTest extends \PHPUnit_Framework_TestCase
 {
