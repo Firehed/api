@@ -1,15 +1,6 @@
 #!/usr/bin/env php
 <?php
-$config_file = './.apiconfig';
-if (!file_exists($config_file) || !is_readable($config_file)) {
-    fwrite(STDERR, ".apiconfig file not found\n");
-    exit(1);
-}
-$config = json_decode(file_get_contents($config_file), true);
-if (JSON_ERROR_NONE !== json_last_error()) {
-    fwrite(STDERR, ".apiconfig contains invalid JSON\n");
-    exit(1);
-}
+$config = require 'load_config.php';
 
 $dir = __DIR__;
 while (!file_exists($dir.'/autoload.php') && $dir != DIRECTORY_SEPARATOR) {

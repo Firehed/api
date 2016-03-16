@@ -1,64 +1,55 @@
 #!/usr/bin/env php
 <?php
-$config_file = './.apiconfig';
-if (!file_exists($config_file) || !is_readable($config_file)) {
-    fwrite(STDERR, ".apiconfig file not found\n");
-    exit(1);
-}
-$config = json_decode(file_get_contents($config_file));
-if (JSON_ERROR_NONE !== json_last_error()) {
-    fwrite(STDERR, ".apiconfig contains invalid JSON\n");
-    exit(1);
-}
-// TODO: use config file meaningfully
+declare(strict_types=1);
 
+function resolveComposerAutoload(string $public): string {
+    $dirs = explode('/', $public);
+    return str_repeat('../', count($dirs)).'vendor/autoload.php';
+}
+$config = require 'load_config.php';
 
-$fc = <<<'php'
+$template = <<<'php'
 <?php
+declare(strict_types=1);
+
+// Convert all levels of PHP errors to ErrorExceptions
+set_error_handler(function($a, $b, $c, $d) {
+    throw new ErrorException($b, 0, $a, $c, $d);
+}, -1);
+
+// Handle the 'error handler threw an exception' case
+set_exception_handler(function(Throwable $e) {
+    error_log($e);
+    header('HTTP/1.1 500 Internal Server Error');
+    // Echo some sort of default failure message
+});
+
 // load autoloader
-$dir = __DIR__;
-while (!file_exists($dir.'/vendor/autoload.php') && $dir != DIRECTORY_SEPARATOR) {
-    $dir = dirname($dir);
-}
-require $dir.'/vendor/autoload.php';
+require __DIR__.'/%s';
 
-use Firehed\Common\ClassMapper;
 use Firehed\API\Dispatcher;
-use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\ServerRequestFactory;
-use Zend\Diactoros\Response\JsonResponse;
 
-// All of these assume HTTP request and will puke on CLI use
-$d = new Dispatcher();
 $response = (new Dispatcher())
+    // ->setContainer($yourDependencyInversionContainer)
     ->setEndpointList('__endpoint_list__.json')
     ->setParserList('__parser_list__.json')
     ->setRequest(ServerRequestFactory::fromGlobals())
-    // ->addMiddleware(function(){}) ...
+    // ->addResponseMiddleware(function(){}) ...
     ->dispatch();
 
-// If PHP<=7.0.0, assert response type since return values aren't yet hintable
-if (!$response instanceof ResponseInterface) {
-    $response = new JsonResponse([
-        'error' => 'Internal server error',
-    ], 500);
-}
-
-// Send HTTP code
-header(sprintf("HTTP/%s %s %s",
-    $response->getProtocolVersion(),
-    $response->getStatusCode(),
-    $response->getReasonPhrase()));
-// Additional headers
-foreach ($response->getHeaders() as $key => $values) {
-    foreach ($values as $value) {
-        header(sprintf("%s: %s", $key, $value), false);
-    }
-}
-// And then the body
-echo $response->getBody();
-
+Firehed\API\renderResponse($response);
 php;
 
 // TODO: write to file
-echo $fc;
+$fc = sprintf($template,
+    resolveComposerAutoload($config['webroot'])
+);
+
+$dir = $config['local_project_root'].'/'.$config['webroot'];
+if (!file_exists($dir)) {
+    echo "Making '$dir' with 0755 permissions\n";
+    mkdir($dir, 0755, true);
+}
+file_put_contents($dir.'/index.php', $fc);
+echo "Wrote front controller to $dir/index.php\n";
