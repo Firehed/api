@@ -2,15 +2,23 @@
 <?php
 declare(strict_types=1);
 
-function resolveComposerAutoload(string $public): string {
-    $dirs = explode('/', $public);
-    return str_repeat('../', count($dirs)).'vendor/autoload.php';
+// Returns a series of '/..'s to get from the directory of the webroot to that
+// of the project root
+function resolveProjectRoot(string $webroot): string {
+    $dirs = explode('/', $webroot);
+    return str_repeat('/..', count($dirs));
 }
 $config = require 'load_config.php';
 
 $template = <<<'php'
 <?php
 declare(strict_types=1);
+
+// Set CWD to repo root
+chdir(__DIR__.'%s');
+
+// Composer autoloader
+require 'vendor/autoload.php';
 
 // Convert all levels of PHP errors to ErrorExceptions
 set_error_handler(function($a, $b, $c, $d) {
@@ -23,9 +31,6 @@ set_exception_handler(function(Throwable $e) {
     header('HTTP/1.1 500 Internal Server Error');
     // Echo some sort of default failure message
 });
-
-// load autoloader
-require __DIR__.'/%s';
 
 use Firehed\API\Dispatcher;
 use Zend\Diactoros\ServerRequestFactory;
@@ -43,7 +48,7 @@ php;
 
 // TODO: write to file
 $fc = sprintf($template,
-    resolveComposerAutoload($config['webroot'])
+    resolveProjectRoot($config['webroot'])
 );
 
 $dir = $config['local_project_root'].'/'.$config['webroot'];
