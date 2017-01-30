@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Firehed\API\Traits\Request;
 
 /**
- * @coversDefaultClass Firehed\API\Traits\Delete
+ * @coversDefaultClass Firehed\API\Traits\Request\Delete
  * @covers ::<protected>
  * @covers ::<private>
  */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Firehed\API\Traits\Input;
 
 /**
- * @coversDefaultClass Firehed\API\Traits\NoRequired
+ * @coversDefaultClass Firehed\API\Traits\Input\NoRequired
  * @covers ::<protected>
  * @covers ::<private>
  */
