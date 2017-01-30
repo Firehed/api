@@ -19,10 +19,8 @@ class GetRequestTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use GetRequest;
         };
-        $this->assertEquals(
-            \Firehed\API\Enums\HTTPMethod::GET(),
-            $obj->getMethod(),
-            'getMethod did not return HTTP GET');
+        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $obj->getMethod();
     }
 
 

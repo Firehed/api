@@ -19,10 +19,8 @@ class DeleteRequestTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use DeleteRequest;
         };
-        $this->assertEquals(
-            \Firehed\API\Enums\HTTPMethod::DELETE(),
-            $obj->getMethod(),
-            'getMethod did not return HTTP DELETE');
+        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $obj->getMethod();
     }
 
 }

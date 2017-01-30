@@ -1,17 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Firehed\API\Traits;
+namespace Firehed\API\Traits\Request;
 
 use Firehed\API\Enums\HTTPMethod;
 
-trait PutRequest
+trait Put
 {
-
     public function getMethod(): HTTPMethod
     {
-        trigger_error('Moved to Firehed\API\Traits\Request\Put',
-            \E_USER_DEPRECATED);
         return HTTPMethod::PUT();
     }
 

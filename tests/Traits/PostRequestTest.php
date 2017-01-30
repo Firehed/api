@@ -20,10 +20,8 @@ class PostRequestTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use PostRequest;
         };
-        $this->assertEquals(
-            \Firehed\API\Enums\HTTPMethod::POST(),
-            $obj->getMethod(),
-            'getMethod did not return HTTP POST');
+        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $obj->getMethod();
     }
 
 }
