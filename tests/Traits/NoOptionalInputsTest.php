@@ -19,9 +19,8 @@ class NoOptionalInputsTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use NoOptionalInputs;
         };
-        $this->assertSame([],
-            $obj->getOptionalInputs(),
-            'getOptionalInputs did not return an empty array');
+        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $obj->getOptionalInputs();
     }
 
 

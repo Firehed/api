@@ -19,9 +19,8 @@ class NoRequiredInputsTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use NoRequiredInputs;
         };
-        $this->assertSame([],
-            $obj->getRequiredInputs(),
-            'getRequiredInputs did not return an empty array');
+        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $obj->getRequiredInputs();
     }
 
 }
