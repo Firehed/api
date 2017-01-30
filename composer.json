@@ -19,11 +19,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Firehed\\API\\": ["src/", "tests/"]
+            "Firehed\\API\\": ["src/"]
         },
         "files": [
             "src/renderResponse.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Firehed\\API\\": ["tests/"]
+        }
     },
     "license": "MIT",
     "authors": [
