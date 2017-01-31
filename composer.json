@@ -4,7 +4,8 @@
         "firehed/common": "^1.0",
         "firehed/input": "^2.0",
         "psr/http-message": "^1.0",
-        "php": ">=7"
+        "php": ">=7",
+        "zendframework/zend-diactoros": "^1.3"
     },
     "suggest": {
         "firehed/inputobjects": "Pre-made Input components for validation"
