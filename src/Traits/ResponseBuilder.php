@@ -65,5 +65,4 @@ trait ResponseBuilder
     {
         return new Response\TextResponse($body, $code);
     }
-
 }

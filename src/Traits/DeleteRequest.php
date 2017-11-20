@@ -10,9 +10,10 @@ trait DeleteRequest
 
     public function getMethod(): HTTPMethod
     {
-        trigger_error('Moved to Firehed\API\Traits\Request\Delete',
-            \E_USER_DEPRECATED);
+        trigger_error(
+            'Moved to Firehed\API\Traits\Request\Delete',
+            \E_USER_DEPRECATED
+        );
         return HTTPMethod::DELETE();
     }
-
 }

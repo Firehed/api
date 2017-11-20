@@ -10,9 +10,10 @@ trait PostRequest
 
     public function getMethod(): HTTPMethod
     {
-        trigger_error('Moved to Firehed\API\Traits\Request\Post',
-            \E_USER_DEPRECATED);
+        trigger_error(
+            'Moved to Firehed\API\Traits\Request\Post',
+            \E_USER_DEPRECATED
+        );
         return HTTPMethod::POST();
     }
-
 }

@@ -42,7 +42,8 @@ class Dispatcher
      * @param callable the callback to execute
      * @return self
      */
-    public function addResponseMiddleware(callable $callback): self {
+    public function addResponseMiddleware(callable $callback): self
+    {
         $this->response_middleware[] = $callback;
         return $this;
     }
@@ -120,7 +121,9 @@ class Dispatcher
             null === $this->endpoint_list) {
             throw new BadMethodCallException(
                 'Set the request, parser list, and endpoint list before '.
-                'calling dispatch()', 500);
+                'calling dispatch()',
+                500
+            );
         }
 
         $endpoint = $this->getEndpoint();
@@ -157,7 +160,7 @@ class Dispatcher
         }
         // Get the next in line and dispatch
         $middleware = array_shift($this->response_middleware);
-        return $middleware($response, function(ResponseInterface $response) {
+        return $middleware($response, function (ResponseInterface $response) {
             return $this->executeResponseMiddleware($response);
         });
     }
@@ -229,5 +232,4 @@ class Dispatcher
         parse_str($query, $data);
         return new ParsedInput($data);
     }
-
 }

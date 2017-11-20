@@ -12,5 +12,4 @@ trait Post
     {
         return HTTPMethod::POST();
     }
-
 }
