@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\API;
 
 use Exception;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ {
     ResponseInterface,
     RequestInterface
@@ -31,29 +32,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testSetContainerReturnsSelf()
     {
         $d = new Dispatcher();
+        $container = $this->getMockContainer([]);
         $this->assertSame($d,
-            $d->setContainer([]),
+            $d->setContainer($container),
             'setContainer did not return $this');
-    }
-
-    /** @covers ::setContainer */
-    public function testSetContainerAcceptsArrayAccess()
-    {
-        $d = new Dispatcher();
-        $this->assertSame($d,
-            $d->setContainer($this->getMock('ArrayAccess')),
-            'setContainer did not return $this');
-    }
-
-    /**
-     * @covers ::setContainer
-     * @dataProvider nonArrays
-     * @expectedException UnexpectedValueException
-     */
-    public function testSetContainerRejectsNonArrayLike($non_array)
-    {
-        $d = new Dispatcher();
-        $d->setContainer($non_array);
     }
 
     /** @covers ::setEndpointList */
@@ -188,7 +170,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         (new Dispatcher())
-            ->setContainer(['CBClass' => $endpoint])
+            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
@@ -215,7 +197,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         (new Dispatcher())
-            ->setContainer(['CBClass' => $endpoint])
+            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
@@ -242,7 +224,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         (new Dispatcher())
-            ->setContainer(['CBClass' => $endpoint])
+            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
@@ -273,7 +255,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         (new Dispatcher())
-            ->setContainer(['CBClass' => $endpoint])
+            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
@@ -316,7 +298,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         ];
         try {
             $ret = (new Dispatcher())
-                ->setContainer(['CBClass' => $endpoint])
+                ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
                 ->setEndpointList($list)
                 ->setParserList($this->getDefaultParserList())
                 ->setRequest($req)
@@ -530,7 +512,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         $response = (new Dispatcher())
-            ->setContainer(['ClassThatDoesNotExist' => $endpoint])
+            ->setContainer($this->getMockContainer(['ClassThatDoesNotExist' => $endpoint]))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
@@ -556,16 +538,20 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         return dirname(__DIR__).'/vendor/firehed/input/src/Parsers/__parser_list__.json';
     }
 
-    // ----(DataProviders)-----------------------------------------------------
-
-    public function nonArrays()
+    private function getMockContainer(array $values): ContainerInterface
     {
-        return [
-            [''],
-            [false],
-            [null],
-            [new \StdClass()],
-        ];
+        $container = $this->getMock(ContainerInterface::class);
+        foreach ($values as $key => $value) {
+            $container->method('has')
+                ->with($key)
+                ->will($this->returnValue(true));
+            $container->method('get')
+                ->with($key)
+                ->will($this->returnValue($value));
+        }
+
+
+        return $container;
     }
 
 }

@@ -8,6 +8,7 @@ use BadMethodCallException;
 use DomainException;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use OutOfBoundsException;
@@ -53,15 +54,11 @@ class Dispatcher
      * key, it will be used during execution; if not, the default behavior is
      * to automatically instanciate it.
      *
-     * @param array|ArrayAccess Container
+     * @param ContainerInterface Container
      * @return self
      */
-    public function setContainer($container): self
+    public function setContainer(ContainerInterface $container): self
     {
-        if (!(is_array($container) || ($container instanceof \ArrayAccess))) {
-            throw new UnexpectedValueException(
-                'Only arrays and classes implementing ArrayAccess may be provided');
-        }
         $this->container = $container;
         return $this;
     }
@@ -207,8 +204,8 @@ class Dispatcher
         // adheres to the interface; in practice, the built route is already
         // doing the filtering so this should be redundant.
         $this->setUriData(new ParsedInput($uri_data));
-        if (isset($this->container[$class])) {
-            return $this->container[$class];
+        if ($this->container && $this->container->has($class)) {
+            return $this->container->get($class);
         }
         return new $class;
     }
