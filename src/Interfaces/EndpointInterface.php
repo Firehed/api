@@ -15,6 +15,16 @@ use Psr\Http\Message\ {
     ResponseInterface as Response
 };
 
+/**
+ * Interface for implementing an endpoint in your application's API. All
+ * classes in the project implementing this interface will be auto-detected at
+ * build time (by `generate_endpoint_list`) and made available.
+ *
+ * If the implementing class has a constructor with parameters, the class MUST
+ * be configuired with a container injected into the Dispatcher. If there are
+ * no paramters on the constructor (or there is no constructor), that is
+ * optional.
+ */
 interface EndpointInterface extends ValidationInterface
 {
 
