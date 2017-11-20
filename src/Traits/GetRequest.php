@@ -10,9 +10,10 @@ trait GetRequest
 
     public function getMethod(): HTTPMethod
     {
-        trigger_error('Moved to Firehed\API\Traits\Request\Get',
-            \E_USER_DEPRECATED);
+        trigger_error(
+            'Moved to Firehed\API\Traits\Request\Get',
+            \E_USER_DEPRECATED
+        );
         return HTTPMethod::GET();
     }
-
 }

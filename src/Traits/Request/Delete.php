@@ -12,5 +12,4 @@ trait Delete
     {
         return HTTPMethod::DELETE();
     }
-
 }

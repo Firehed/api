@@ -11,5 +11,4 @@ trait Put
     {
         return HTTPMethod::PUT();
     }
-
 }

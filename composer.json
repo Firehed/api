@@ -47,6 +47,7 @@
         "@phpstan",
         "@phpcs"
       ],
+      "autofix": "phpcbf src",
       "phpunit": "phpunit tests",
       "phpstan": "phpstan analyse -q -l4 src",
       "phpcs": "phpcs src"

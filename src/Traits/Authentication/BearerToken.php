@@ -28,7 +28,8 @@ trait BearerToken
         if (!$this->handleBearerTokenCallback) {
             throw new BadMethodCallException(
                 'There is no callback to handle the Bearer token. Call '.
-                '`::setHandleBearerTokenCallback` first');
+                '`::setHandleBearerTokenCallback` first'
+            );
         }
 
         $auth = $request->getHeaderLine('Authorization');
@@ -37,14 +38,18 @@ trait BearerToken
         }
         if (0 !== strpos($auth, 'Bearer ')) {
             throw new RuntimeException(
-                'Authorization header is not a valid bearer token', 401);
+                'Authorization header is not a valid bearer token',
+                401
+            );
         }
 
         list($bearer, $token) = explode(' ', $auth, 2);
         $token = trim($token);
         if (!$token) {
             throw new RuntimeException(
-                'No bearer token present in Authorization header', 401);
+                'No bearer token present in Authorization header',
+                401
+            );
         }
 
         $callback = $this->handleBearerTokenCallback;
@@ -69,5 +74,4 @@ trait BearerToken
         $this->handleBearerTokenCallback = $callback;
         return $this;
     }
-
 }

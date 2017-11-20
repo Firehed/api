@@ -20,5 +20,4 @@ class HTTPMethod extends Enum
     {
         return $this->getValue();
     }
-
 }

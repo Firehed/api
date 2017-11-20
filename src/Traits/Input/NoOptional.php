@@ -10,5 +10,4 @@ trait NoOptional
     {
         return [];
     }
-
 }

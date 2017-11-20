@@ -13,5 +13,4 @@ trait None
     {
         return $this;
     }
-
 }

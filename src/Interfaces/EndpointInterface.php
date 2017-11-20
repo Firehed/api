@@ -6,14 +6,10 @@ namespace Firehed\API\Interfaces;
 
 use Throwable;
 use Firehed\API\Enums\HTTPMethod;
-use Firehed\Input\ {
-    Containers\SafeInput,
-    Interfaces\ValidationInterface
-};
-use Psr\Http\Message\ {
-    RequestInterface as Request,
-    ResponseInterface as Response
-};
+use Firehed\Input\Containers\SafeInput;
+use Firehed\Input\Interfaces\ValidationInterface;
+use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
 interface EndpointInterface extends ValidationInterface
 {
@@ -98,5 +94,4 @@ interface EndpointInterface extends ValidationInterface
      * @return ResponseInterface The response to render
      */
     public function handleException(Throwable $e): Response;
-
 }

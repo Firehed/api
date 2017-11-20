@@ -12,5 +12,4 @@ trait Get
     {
         return HTTPMethod::GET();
     }
-
 }
