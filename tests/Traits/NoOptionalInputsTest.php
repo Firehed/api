@@ -22,6 +22,4 @@ class NoOptionalInputsTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
         $obj->getOptionalInputs();
     }
-
-
 }

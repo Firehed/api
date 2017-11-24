@@ -6,11 +6,9 @@ namespace Firehed\API;
 
 use Exception;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ {
-    ResponseInterface,
-    RequestInterface,
-    UriInterface
-};
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 use Firehed\API\Interfaces\EndpointInterface;
 
 /**
@@ -23,8 +21,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     public function testConstruct()
     {
-        $this->assertInstanceOf('Firehed\API\Dispatcher',
-            new Dispatcher());
+        $this->assertInstanceOf(
+            'Firehed\API\Dispatcher',
+            new Dispatcher()
+        );
     }
 
     // ----(Setters)-----------------------------------------------------------
@@ -34,27 +34,33 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $d = new Dispatcher();
         $container = $this->getMockContainer([]);
-        $this->assertSame($d,
+        $this->assertSame(
+            $d,
             $d->setContainer($container),
-            'setContainer did not return $this');
+            'setContainer did not return $this'
+        );
     }
 
     /** @covers ::setEndpointList */
     public function testSetEndpointListReturnsSelf()
     {
         $d = new Dispatcher();
-        $this->assertSame($d,
+        $this->assertSame(
+            $d,
             $d->setEndpointList('list'),
-            'setEndpointList did not return $this');
+            'setEndpointList did not return $this'
+        );
     }
 
     /** @covers ::setParserList */
     public function testSetParserListReturnsSelf()
     {
         $d = new Dispatcher();
-        $this->assertSame($d,
+        $this->assertSame(
+            $d,
             $d->setParserList('list'),
-            'setParserList did not return $this');
+            'setParserList did not return $this'
+        );
     }
 
     /** @covers ::setRequest */
@@ -62,16 +68,18 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $d = new Dispatcher();
         $req = $this->createMock(RequestInterface::class);
-        $this->assertSame($d,
+        $this->assertSame(
+            $d,
             $d->setRequest($req),
-            'setRequest did not return $this');
+            'setRequest did not return $this'
+        );
     }
 
     /** @covers ::addResponseMiddleware */
     public function testAddResponseMiddlewareReturnsSelf()
     {
         $d = new Dispatcher();
-        $this->assertSame($d, $d->addResponseMiddleware(function($r,$n) {
+        $this->assertSame($d, $d->addResponseMiddleware(function ($r, $n) {
             return $n($r);
         }), 'addResponseMiddleware did not return $this');
     }
@@ -102,12 +110,14 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->dispatch();
         $this->checkResponse($response, 200);
         $data = json_decode($response->getBody(), true);
-        $this->assertSame([
+        $this->assertSame(
+            [
                 'id' => 5,
                 'shortstring' => 'aBcD',
             ],
             $data,
-            'The data did not reach the endpoint');
+            'The data did not reach the endpoint'
+        );
     }
 
     /**
@@ -119,9 +129,11 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testQueryStringDataReachesEndpoint()
     {
         // See tests/EndpointFixture
-        $req = $this->getMockRequestWithUriPath('/user/5',
+        $req = $this->getMockRequestWithUriPath(
+            '/user/5',
             'GET',
-            ['shortstring' => 'aBcD']);
+            ['shortstring' => 'aBcD']
+        );
         $req->method('getBody')
             ->will($this->returnValue('shortstring=aBcD'));
 
@@ -132,12 +144,14 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->dispatch();
         $this->checkResponse($response, 200);
         $data = json_decode($response->getBody(), true);
-        $this->assertSame([
+        $this->assertSame(
+            [
                 'id' => 5,
                 'shortstring' => 'aBcD',
             ],
             $data,
-            'The data did not reach the endpoint');
+            'The data did not reach the endpoint'
+        );
     }
 
     /**
@@ -155,7 +169,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $endpoint->expects($this->atLeastOnce())
             ->method('execute')
             ->will($this->returnValue(
-                $this->createMock(ResponseInterface::class)));
+                $this->createMock(ResponseInterface::class)
+            ));
         $this->executeMockRequestOnEndpoint($endpoint);
     }
 
@@ -175,17 +190,20 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
-            ->addResponseMiddleware(function($response, $next) {
+            ->addResponseMiddleware(function ($response, $next) {
                 $this->response_hits++;
                 return $next($response);
             })
-            ->addResponseMiddleware(function($response, $next) {
+            ->addResponseMiddleware(function ($response, $next) {
                 $this->response_hits++;
                 return $next($response);
             })
             ->dispatch();
-        $this->assertSame(2, $this->response_hits,
-            'Not all response callbacks were fired');
+        $this->assertSame(
+            2,
+            $this->response_hits,
+            'Not all response callbacks were fired'
+        );
     }
 
     public function testAllResponseMiddlewaresAreFIFO()
@@ -202,17 +220,20 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
-            ->addResponseMiddleware(function($response, $next) {
+            ->addResponseMiddleware(function ($response, $next) {
                 $this->response_hits = 'a';
                 return $next($response);
             })
-            ->addResponseMiddleware(function($response, $next) {
+            ->addResponseMiddleware(function ($response, $next) {
                 $this->response_hits = 'b';
                 return $next($response);
             })
             ->dispatch();
-        $this->assertSame('b', $this->response_hits,
-            'Last provided response middleware wasn\'t fired last');
+        $this->assertSame(
+            'b',
+            $this->response_hits,
+            'Last provided response middleware wasn\'t fired last'
+        );
     }
 
     public function testResponseMiddlewaresAreShortCircuitable()
@@ -229,18 +250,21 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
-            ->addResponseMiddleware(function($response, $next) {
+            ->addResponseMiddleware(function ($response, $next) {
                 $this->response_hits = 'a';
                 return $response;
             })
-            ->addResponseMiddleware(function($response, $next) {
+            ->addResponseMiddleware(function ($response, $next) {
                 // This should never hit
                 $this->response_hits = 'b';
                 return $next($response);
             })
             ->dispatch();
-        $this->assertSame('a', $this->response_hits,
-            'Second callback was fired that should have been bypassed');
+        $this->assertSame(
+            'a',
+            $this->response_hits,
+            'Second callback was fired that should have been bypassed'
+        );
     }
 
     public function testResponseMiddlewaresAreRunOnError()
@@ -260,13 +284,16 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
-            ->addResponseMiddleware(function($response, $next) {
+            ->addResponseMiddleware(function ($response, $next) {
                 $this->response_hits = 1;
                 return $next($response);
             })
             ->dispatch();
-        $this->assertSame(1, $this->response_hits,
-            'Second callback was fired that should have been bypassed');
+        $this->assertSame(
+            1,
+            $this->response_hits,
+            'Second callback was fired that should have been bypassed'
+        );
     }
 
     /**
@@ -306,11 +333,15 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
                 ->dispatch();
             $this->fail(
                 "The exception thrown from the error handler's failure should ".
-                "have made it through");
+                "have made it through"
+            );
         } catch (\Throwable $e) {
-            $this->assertSame($error, $e,
+            $this->assertSame(
+                $error,
+                $e,
                 "Some exception other than the one from the exception handler ".
-                "was thrown");
+                "was thrown"
+            );
         }
     }
 
@@ -361,8 +392,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
             ->dispatch();
-        $this->assertSame(EndpointFixture::STATUS_ERROR,
-            $response->getStatusCode());
+        $this->assertSame(
+            EndpointFixture::STATUS_ERROR,
+            $response->getStatusCode()
+        );
     }
 
     /** @covers ::dispatch */
@@ -378,8 +411,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
             ->dispatch();
-        $this->assertSame(EndpointFixture::STATUS_ERROR,
-            $response->getStatusCode());
+        $this->assertSame(
+            EndpointFixture::STATUS_ERROR,
+            $response->getStatusCode()
+        );
     }
 
     /** @covers ::dispatch */
@@ -393,7 +428,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('handleException')
             ->with($e);
         $this->executeMockRequestOnEndpoint($endpoint);
-
     }
 
     /** @covers ::dispatch */
@@ -442,9 +476,11 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      */
     private function checkResponse(ResponseInterface $response, int $expected_code)
     {
-        $this->assertSame($expected_code,
+        $this->assertSame(
+            $expected_code,
             $response->getStatusCode(),
-            'Incorrect status code in response');
+            'Incorrect status code in response'
+        );
     }
 
     /**
@@ -554,5 +590,4 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
         return $container;
     }
-
 }

@@ -19,10 +19,10 @@ class NoOptionalTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use NoOptional;
         };
-        $this->assertSame([],
+        $this->assertSame(
+            [],
             $obj->getOptionalInputs(),
-            'getOptionalInputs did not return an empty array');
+            'getOptionalInputs did not return an empty array'
+        );
     }
-
-
 }

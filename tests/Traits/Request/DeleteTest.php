@@ -22,7 +22,7 @@ class DeleteTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             \Firehed\API\Enums\HTTPMethod::DELETE(),
             $obj->getMethod(),
-            'getMethod did not return HTTP DELETE');
+            'getMethod did not return HTTP DELETE'
+        );
     }
-
 }

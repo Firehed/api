@@ -68,7 +68,8 @@ class RenderResponseTest extends \PHPUnit\Framework\TestCase
             $this->markTestIncomplete(
                 'headers_list does not work in CLI mode to test response '.
                 'rendering. Install xdebug to complete the test which uses '.
-                '`xdebug_get_headers`.');
+                '`xdebug_get_headers`.'
+            );
         }
         $rendered_headers = xdebug_get_headers();
         $expected_headers = [
@@ -79,8 +80,5 @@ class RenderResponseTest extends \PHPUnit\Framework\TestCase
         foreach ($expected_headers as $expected_header) {
             $this->assertContains($expected_header, $rendered_headers);
         }
-
-
     }
-
 }

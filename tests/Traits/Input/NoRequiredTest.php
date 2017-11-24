@@ -19,9 +19,10 @@ class NoRequiredTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use NoRequired;
         };
-        $this->assertSame([],
+        $this->assertSame(
+            [],
             $obj->getRequiredInputs(),
-            'getRequiredInputs did not return an empty array');
+            'getRequiredInputs did not return an empty array'
+        );
     }
-
 }

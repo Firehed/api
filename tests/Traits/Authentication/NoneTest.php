@@ -7,7 +7,6 @@ use Firehed\API\Traits;
 use Firehed\Input\Containers\SafeInput;
 use Psr\Http\Message;
 
-
 /**
  * @coversDefaultClass Firehed\API\Traits\Authentication\None
  * @covers ::<protected>
@@ -26,9 +25,15 @@ class NoneTest extends \PHPUnit\Framework\TestCase
             use Traits\Request\Get;
             use Traits\Input\NoRequired;
             use Traits\Input\NoOptional;
-            function getUri(): string { }
-            function handleException(\Throwable $e): Message\ResponseInterface { }
-            function execute(SafeInput $input): Message\ResponseInterface {}
+            function getUri(): string
+            {
+            }
+            function handleException(\Throwable $e): Message\ResponseInterface
+            {
+            }
+            function execute(SafeInput $input): Message\ResponseInterface
+            {
+            }
         };
 
         $request = $this->createMock(Message\RequestInterface::class);
@@ -36,8 +41,7 @@ class NoneTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             $obj,
             $obj->authenticate($request),
-            'authenticate did not return $this');
+            'authenticate did not return $this'
+        );
     }
-
 }
-

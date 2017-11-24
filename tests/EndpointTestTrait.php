@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Firehed\API;
 
-use Firehed\Input\ {
-    Interfaces\ValidationInterface,
-    ValidationTestTrait
-};
+use Firehed\Input\Interfaces\ValidationInterface;
+use Firehed\Input\ValidationTestTrait;
 
 /**
  * Default test cases to be run against any object implementing
@@ -42,18 +40,22 @@ trait EndpointTestTrait
     {
         $endpoint = $this->getEndpoint();
         $uri = $endpoint->getUri();
-        $this->assertInternalType('string',
+        $this->assertInternalType(
+            'string',
             $uri,
-            'getUri did not return a string');
+            'getUri did not return a string'
+        );
     }
 
     /** @covers ::getMethod */
     public function testGetMethod()
     {
         $method = $this->getEndpoint()->getMethod();
-        $this->assertInstanceOf('Firehed\API\Enums\HTTPMethod',
+        $this->assertInstanceOf(
+            'Firehed\API\Enums\HTTPMethod',
             $method,
-            'getMethod did not return an HTTPMethod enum');
+            'getMethod did not return an HTTPMethod enum'
+        );
     }
 
     /**
@@ -63,9 +65,11 @@ trait EndpointTestTrait
     public function testHandleException(\Throwable $e)
     {
         $response = $this->getEndpoint()->handleException($e);
-        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface',
+        $this->assertInstanceOf(
+            'Psr\Http\Message\ResponseInterface',
             $response,
-            'handleException() did not return a PSR7 response');
+            'handleException() did not return a PSR7 response'
+        );
     }
 
     /**
@@ -114,5 +118,4 @@ trait EndpointTestTrait
                 [new \TypeError()],
         ];
     }
-
 }

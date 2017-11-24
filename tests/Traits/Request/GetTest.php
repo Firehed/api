@@ -22,8 +22,7 @@ class GetTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             \Firehed\API\Enums\HTTPMethod::GET(),
             $obj->getMethod(),
-            'getMethod did not return HTTP GET');
+            'getMethod did not return HTTP GET'
+        );
     }
-
-
 }

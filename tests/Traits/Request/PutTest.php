@@ -22,8 +22,7 @@ class PutTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             \Firehed\API\Enums\HTTPMethod::PUT(),
             $obj->getMethod(),
-            'getMethod did not return HTTP PUT');
+            'getMethod did not return HTTP PUT'
+        );
     }
-
-
 }

@@ -10,7 +10,6 @@ use Firehed\Input\Containers\SafeInput;
 use Psr\Http\Message;
 use RuntimeException;
 
-
 /**
  * @coversDefaultClass Firehed\API\Traits\Authentication\BearerToken
  * @covers ::<protected>
@@ -35,7 +34,8 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             $endpoint,
             $endpoint->authenticate($request),
-            'authenticate did not return $this');
+            'authenticate did not return $this'
+        );
         // The injected callback will set the instance variables, so this is
         // asserting the callback was called with the correct parameters
         $this->assertSame($token, $this->calledWithToken);
@@ -103,9 +103,15 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
             use Traits\Request\Get;
             use Traits\Input\NoRequired;
             use Traits\Input\NoOptional;
-            function getUri(): string { }
-            function handleException(\Throwable $e): Message\ResponseInterface { }
-            function execute(SafeInput $input): Message\ResponseInterface {}
+            function getUri(): string
+            {
+            }
+            function handleException(\Throwable $e): Message\ResponseInterface
+            {
+            }
+            function execute(SafeInput $input): Message\ResponseInterface
+            {
+            }
         };
         if ($setCallback) {
             $endpoint->setHandleBearerTokenCallback([$this, 'bearerCallback']);
@@ -135,5 +141,4 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
             ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjF9.poptiU4cVJayalWC_n2zGrb1_6Rnzd48TbWLbpsu7lM'], // JWT
         ];
     }
-
 }
