@@ -8,9 +8,10 @@ use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ {
     ResponseInterface,
-    RequestInterface
+    RequestInterface,
+    UriInterface
 };
-use Firehed\API\Interfaces\EndpointInterface as Endpoint;
+use Firehed\API\Interfaces\EndpointInterface;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -60,7 +61,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testSetRequestReturnsSelf()
     {
         $d = new Dispatcher();
-        $req = $this->getMock('Psr\Http\Message\RequestInterface');
+        $req = $this->createMock(RequestInterface::class);
         $this->assertSame($d,
             $d->setRequest($req),
             'setRequest did not return $this');
@@ -154,7 +155,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $endpoint->expects($this->atLeastOnce())
             ->method('execute')
             ->will($this->returnValue(
-                $this->getMock('Psr\Http\Message\ResponseInterface')));
+                $this->createMock(ResponseInterface::class)));
         $this->executeMockRequestOnEndpoint($endpoint);
     }
 
@@ -461,14 +462,14 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         string $method = 'GET',
         array $query_data = []
     ): RequestInterface {
-        $mock_uri = $this->getMock('Psr\Http\Message\UriInterface');
+        $mock_uri = $this->createMock(UriInterface::class);
         $mock_uri->expects($this->any())
             ->method('getPath')
             ->will($this->returnValue($uri));
         $mock_uri->method('getQuery')
             ->will($this->returnValue(http_build_query($query_data)));
 
-        $req = $this->getMock('Psr\Http\Message\RequestInterface');
+        $req = $this->createMock(RequestInterface::class);
 
         $req->expects($this->any())
             ->method('getUri')
@@ -483,17 +484,17 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Convenience method for mocking an endpoint. The mock has no required or
      * optional inputs.
      *
-     * @return Endpoint
+     * @return EndpointInterface
      */
-    private function getMockEndpoint(): Endpoint
+    private function getMockEndpoint(): EndpointInterface
     {
-        $endpoint = $this->getMock('Firehed\API\Interfaces\EndpointInterface');
+        $endpoint = $this->createMock(EndpointInterface::class);
         $endpoint->method('getRequiredInputs')
             ->will($this->returnValue([]));
         $endpoint->method('getOptionalInputs')
             ->will($this->returnValue([]));
         $endpoint->method('handleException')
-            ->will($this->returnValue($this->getMock('Psr\Http\Message\ResponseInterface')));
+            ->will($this->returnValue($this->createMock(ResponseInterface::class)));
         return $endpoint;
     }
 
@@ -503,7 +504,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * @param Endpoint the endpoint to test
      * @return ResponseInterface the endpoint response
      */
-    private function executeMockRequestOnEndpoint(Endpoint $endpoint): ResponseInterface
+    private function executeMockRequestOnEndpoint(EndpointInterface $endpoint): ResponseInterface
     {
         $req = $this->getMockRequestWithUriPath('/container', 'GET');
         $list = [
@@ -540,7 +541,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     private function getMockContainer(array $values): ContainerInterface
     {
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->createMock(ContainerInterface::class);
         foreach ($values as $key => $value) {
             $container->method('has')
                 ->with($key)
