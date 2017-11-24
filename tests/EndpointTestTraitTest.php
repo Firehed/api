@@ -8,7 +8,7 @@ namespace Firehed\API;
  * @coversNothing (Technically it uses the endpoint-testing trait to cover
  * itself, but the there's no src/ coverage)
  */
-class EndpointTestTraitTest extends \PHPUnit_Framework_TestCase
+class EndpointTestTraitTest extends \PHPUnit\Framework\TestCase
 {
 
     use EndpointTestTrait;

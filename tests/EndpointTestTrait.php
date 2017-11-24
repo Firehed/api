@@ -73,7 +73,7 @@ trait EndpointTestTrait
      * alias this method during import and extend in the using class; i.e.:
      *
      * ```php
-     * class MyTest extends PHPUnit_Framework_TestCase {
+     * class MyTest extends PHPUnit\Framework\TestCase {
      *     use Firehed\API\EndpointTestTrait {
      *         exceptionsToTest as baseExceptions;
      *     }

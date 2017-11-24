@@ -8,7 +8,7 @@ namespace Firehed\API\Traits\Input;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class NoOptionalTest extends \PHPUnit_Framework_TestCase
+class NoOptionalTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

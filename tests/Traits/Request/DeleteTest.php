@@ -8,7 +8,7 @@ namespace Firehed\API\Traits\Request;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class DeleteTest extends \PHPUnit_Framework_TestCase
+class DeleteTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

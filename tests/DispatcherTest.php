@@ -17,7 +17,7 @@ use Firehed\API\Interfaces\EndpointInterface as Endpoint;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class DispatcherTest extends \PHPUnit_Framework_TestCase
+class DispatcherTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testConstruct()

@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
+class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

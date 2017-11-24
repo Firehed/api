@@ -13,7 +13,7 @@ use Psr\Http\Message;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class NoneTest extends \PHPUnit_Framework_TestCase
+class NoneTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

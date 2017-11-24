@@ -16,7 +16,7 @@ use RuntimeException;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class BearerTokenTest extends \PHPUnit_Framework_TestCase
+class BearerTokenTest extends \PHPUnit\Framework\TestCase
 {
 
     private $calledWithEndpoint;

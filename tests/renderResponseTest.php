@@ -6,7 +6,7 @@ namespace Firehed\API;
 
 use Psr\Http\Message\ResponseInterface;
 
-class RenderResponseTest extends \PHPUnit_Framework_TestCase
+class RenderResponseTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
