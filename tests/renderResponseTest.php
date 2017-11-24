@@ -29,7 +29,7 @@ class RenderResponseTest extends \PHPUnit\Framework\TestCase
 
         $body = 'Some text that came from the response';
 
-        $response = $this->getMock(ResponseInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
         $response->expects($this->atLeastOnce())
             ->method('getProtocolVersion')
             ->will($this->returnValue($version));

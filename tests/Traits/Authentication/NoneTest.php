@@ -31,7 +31,7 @@ class NoneTest extends \PHPUnit\Framework\TestCase
             function execute(SafeInput $input): Message\ResponseInterface {}
         };
 
-        $request = $this->getMock(Message\RequestInterface::class);
+        $request = $this->createMock(Message\RequestInterface::class);
 
         $this->assertEquals(
             $obj,

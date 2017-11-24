@@ -50,7 +50,7 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
         $endpoint = $this->getEndpoint();
         $request = $this->getRequest(null);
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $endpoint->authenticate($request);
     }
 
@@ -62,7 +62,7 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
         $endpoint = $this->getEndpoint();
         $request = $this->getRequest('Basic QWxhZGRpbjpPcGVuU2VzYW1l');
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $endpoint->authenticate($request);
     }
 
@@ -74,7 +74,7 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
         $endpoint = $this->getEndpoint();
         $request = $this->getRequest('Bearer ');
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $endpoint->authenticate($request);
     }
 
@@ -86,7 +86,7 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
         $endpoint = $this->getEndpoint(false);
         $request = $this->getRequest('Bearer sometoken');
 
-        $this->setExpectedException(BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $endpoint->authenticate($request);
     }
 
@@ -115,7 +115,7 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
 
     private function getRequest(string $headerValue = null): Message\RequestInterface
     {
-        $request = $this->getMock(Message\RequestInterface::class);
+        $request = $this->createMock(Message\RequestInterface::class);
         $request->expects($this->any())
             ->method('getHeaderLine')
             ->with('Authorization')
