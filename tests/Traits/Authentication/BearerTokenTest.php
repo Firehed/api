@@ -10,13 +10,12 @@ use Firehed\Input\Containers\SafeInput;
 use Psr\Http\Message;
 use RuntimeException;
 
-
 /**
  * @coversDefaultClass Firehed\API\Traits\Authentication\BearerToken
  * @covers ::<protected>
  * @covers ::<private>
  */
-class BearerTokenTest extends \PHPUnit_Framework_TestCase
+class BearerTokenTest extends \PHPUnit\Framework\TestCase
 {
 
     private $calledWithEndpoint;
@@ -35,7 +34,8 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $endpoint,
             $endpoint->authenticate($request),
-            'authenticate did not return $this');
+            'authenticate did not return $this'
+        );
         // The injected callback will set the instance variables, so this is
         // asserting the callback was called with the correct parameters
         $this->assertSame($token, $this->calledWithToken);
@@ -50,7 +50,7 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
         $endpoint = $this->getEndpoint();
         $request = $this->getRequest(null);
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $endpoint->authenticate($request);
     }
 
@@ -62,7 +62,7 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
         $endpoint = $this->getEndpoint();
         $request = $this->getRequest('Basic QWxhZGRpbjpPcGVuU2VzYW1l');
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $endpoint->authenticate($request);
     }
 
@@ -74,7 +74,7 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
         $endpoint = $this->getEndpoint();
         $request = $this->getRequest('Bearer ');
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $endpoint->authenticate($request);
     }
 
@@ -86,7 +86,7 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
         $endpoint = $this->getEndpoint(false);
         $request = $this->getRequest('Bearer sometoken');
 
-        $this->setExpectedException(BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $endpoint->authenticate($request);
     }
 
@@ -103,9 +103,15 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
             use Traits\Request\Get;
             use Traits\Input\NoRequired;
             use Traits\Input\NoOptional;
-            function getUri(): string { }
-            function handleException(\Throwable $e): Message\ResponseInterface { }
-            function execute(SafeInput $input): Message\ResponseInterface {}
+            function getUri(): string
+            {
+            }
+            function handleException(\Throwable $e): Message\ResponseInterface
+            {
+            }
+            function execute(SafeInput $input): Message\ResponseInterface
+            {
+            }
         };
         if ($setCallback) {
             $endpoint->setHandleBearerTokenCallback([$this, 'bearerCallback']);
@@ -115,7 +121,7 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
 
     private function getRequest(string $headerValue = null): Message\RequestInterface
     {
-        $request = $this->getMock(Message\RequestInterface::class);
+        $request = $this->createMock(Message\RequestInterface::class);
         $request->expects($this->any())
             ->method('getHeaderLine')
             ->with('Authorization')
@@ -135,5 +141,4 @@ class BearerTokenTest extends \PHPUnit_Framework_TestCase
             ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjF9.poptiU4cVJayalWC_n2zGrb1_6Rnzd48TbWLbpsu7lM'], // JWT
         ];
     }
-
 }

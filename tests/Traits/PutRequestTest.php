@@ -8,7 +8,7 @@ namespace Firehed\API\Traits;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class PutRequestTest extends \PHPUnit_Framework_TestCase
+class PutRequestTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -19,9 +19,7 @@ class PutRequestTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use PutRequest;
         };
-        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
         $obj->getMethod();
     }
-
-
 }

@@ -10,10 +10,8 @@ use Firehed\Input\Objects\InputObject;
 use PHPUnit_Framework_MockObject_Generator as Generator;
 use PHPUnit_Framework_MockObject_Matcher_InvokedAtLeastOnce as AtLeastOnce;
 use PHPUnit_Framework_MockObject_Stub_Return as ReturnValue;
-use Psr\Http\Message\ {
-    RequestInterface as Request,
-    ResponseInterface as Response
-};
+use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
 class EndpointFixture implements Interfaces\EndpointInterface
 {

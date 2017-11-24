@@ -8,7 +8,7 @@ namespace Firehed\API\Traits\Request;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class DeleteTest extends \PHPUnit_Framework_TestCase
+class DeleteTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -22,7 +22,7 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             \Firehed\API\Enums\HTTPMethod::DELETE(),
             $obj->getMethod(),
-            'getMethod did not return HTTP DELETE');
+            'getMethod did not return HTTP DELETE'
+        );
     }
-
 }

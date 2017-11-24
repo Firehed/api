@@ -8,7 +8,7 @@ namespace Firehed\API\Traits;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class NoRequiredInputsTest extends \PHPUnit_Framework_TestCase
+class NoRequiredInputsTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -19,8 +19,7 @@ class NoRequiredInputsTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use NoRequiredInputs;
         };
-        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
         $obj->getRequiredInputs();
     }
-
 }

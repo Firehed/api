@@ -1,1 +1,3 @@
 /vendor/
+# Ignored since this is a library
+composer.lock

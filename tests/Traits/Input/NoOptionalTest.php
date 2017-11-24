@@ -8,7 +8,7 @@ namespace Firehed\API\Traits\Input;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class NoOptionalTest extends \PHPUnit_Framework_TestCase
+class NoOptionalTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -19,10 +19,10 @@ class NoOptionalTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use NoOptional;
         };
-        $this->assertSame([],
+        $this->assertSame(
+            [],
             $obj->getOptionalInputs(),
-            'getOptionalInputs did not return an empty array');
+            'getOptionalInputs did not return an empty array'
+        );
     }
-
-
 }
