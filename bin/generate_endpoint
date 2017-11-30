@@ -12,10 +12,10 @@ if ($argc < 2) {
 }
 
 $name = end($argv);
-$namespace = explode('/', $name);
+$namespace = $defaultUrl = explode('/', $name);
 $className = array_pop($namespace);
 
-$code = <<<'php'
+$template = <<<'php'
 <?php
 declare(strict_types=1);
 
@@ -65,12 +65,11 @@ class %s implements EndpointInterface
 php;
 
 $class = sprintf(
-    $code,
+    $template,
     $config['namespace'],
     $namespace ? '\\' . implode('\\', array_map('ucfirst', $namespace)) : '',
     ucfirst($className),
-    implode('/', $namespace) . '/' . $className
-
+    implode('/', $defaultUrl)
 );
 
 echo $class;
