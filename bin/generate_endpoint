@@ -1,0 +1,88 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+use SimpleLogger\Stderr;
+
+$config = require 'load_config.php';
+
+if ($argc < 2) {
+    (new Stderr())->error('File name is required');
+    exit(1);
+}
+
+$name = end($argv);
+$namespace = $defaultUrl = explode('/', $name);
+$className = array_pop($namespace);
+
+$template = <<<'php'
+<?php
+declare(strict_types=1);
+
+namespace %s%s;
+
+use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\API\Traits\Authentication;
+use Firehed\API\Traits\Input;
+use Firehed\API\Traits\Request;
+use Firehed\Input\Containers\SafeInput;
+use Firehed\InputObjects;
+use Psr\Http\Message\ResponseInterface;
+use Throwable;
+
+class %s implements EndpointInterface
+{
+    // use Authentication\None;
+    // use Input\NoOptional;
+    // use Input\NoRequired;
+    // use Request\Get;
+
+    public function getUri(): string
+    {
+        return '/%s';
+    }
+
+    public function getRequiredInputs(): array
+    {
+        return [];
+    }
+
+    public function getOptionalInputs(): array
+    {
+        return [];
+    }
+
+    public function execute(SafeInput $input): ResponseInterface
+    {
+        // Implement this
+    }
+
+    public function handleException(Throwable $t): ResponseInterface
+    {
+        // Implememt this
+    }
+}
+php;
+
+$class = sprintf(
+    $template,
+    $config['namespace'],
+    $namespace ? '\\' . implode('\\', array_map('ucfirst', $namespace)) : '',
+    ucfirst($className),
+    implode('/', $defaultUrl)
+);
+
+echo $class;
+
+// For now, just echo the class skeleton and allow the user to handle it as
+// they want. A future version of this should intelligently resolve paths and
+// write the file directly.
+/*
+$targetFile = sprintf(
+    '%s/%s/%s/%s.php',
+    $config['source'],
+    strtr($config['namespace'], '\\', '/'),
+    implode('/', $namespace),
+    $className
+);
+ */
