@@ -29,12 +29,17 @@ Firehed\API\Traits\
 The traits marked with an asterisk (\*) replace their deprecated counterparts; see below
 
 ### Changed
-- Code is now tested automatically with Travis CI. PHP 7.0 and 7.1 are supported.
+- Code is now tested automatically with Travis CI. PHP 7.0, 7.1, and 7.2 are supported
 - [Zend-Diactoros](https://github.com/zendframework/zend-diactoros) is now included as a dependency. It is only used by the `ResponseBuilder` trait described above, but any PSR-7 library can be used
+- Improved logging and error handling, with support for `PSR-3` loggers
+- [**Breaking**] The container that's optionally injected into the Dispatcher is now expected to be PSR-11 compliant
 
 
 ### Deprecated
 The HTTP request method and No Input traits in the root `Traits` namespace are being deprecated in favor of the additions noted above. Using them will emit an `E_USER_DEPRECATED` error at runtime. Existing code should be migrated to using the above, which only requires changing the `use` statement. The behavior is otherwise identical
+
+### Internals
+Additional code quality tools have been added
 
 ## [2.3.1] - 2016-03-17
 ### Changed

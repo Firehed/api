@@ -17,7 +17,7 @@ use UnexpectedValueException;
 class Dispatcher
 {
 
-    private $container = [];
+    private $container;
     private $endpoint_list;
     private $error_handler;
     private $parser_list;
