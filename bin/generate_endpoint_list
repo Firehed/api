@@ -1,12 +1,11 @@
 #!/usr/bin/env php
 <?php
-$config = require 'load_config.php';
+declare(strict_types=1);
 
-$dir = __DIR__;
-while (!file_exists($dir.'/autoload.php') && $dir != DIRECTORY_SEPARATOR) {
-    $dir = dirname($dir);
-}
-require $dir.'/autoload.php';
+use SimpleLogger\Stdout;
+
+$config = require 'load_config.php';
+$logger = new Stdout();
 
 // Build out the endpoint map
 (new Firehed\Common\ClassMapGenerator())
@@ -17,8 +16,11 @@ require $dir.'/autoload.php';
     ->setNamespace($config['namespace'])
     ->setOutputFile(getcwd().'/__endpoint_list__.json')
     ->generate();
-fwrite(STDOUT, "Wrote endpoint map to __endpoint_list__.json. Be sure to ".
-    "commit this file to version control.\n");
+
+$logger->info(
+    'Wrote endpoint map to __endpoint_list__.json. Be sure to commit this ' .
+    'file to version control.'
+);
 
 // Also do the parser map
 (new Firehed\Common\ClassMapGenerator())

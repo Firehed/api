@@ -17,7 +17,7 @@ use UnexpectedValueException;
 class Dispatcher
 {
 
-    private $container = [];
+    private $container;
     private $endpoint_list;
     private $error_handler;
     private $parser_list;
@@ -58,7 +58,7 @@ class Dispatcher
      * @param ContainerInterface Container
      * @return self
      */
-    public function setContainer(ContainerInterface $container): self
+    public function setContainer(ContainerInterface $container = null): self
     {
         $this->container = $container;
         return $this;
