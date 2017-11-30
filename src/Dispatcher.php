@@ -58,7 +58,7 @@ class Dispatcher
      * @param ContainerInterface Container
      * @return self
      */
-    public function setContainer(ContainerInterface $container): self
+    public function setContainer(ContainerInterface $container = null): self
     {
         $this->container = $container;
         return $this;

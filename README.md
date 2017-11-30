@@ -10,3 +10,16 @@
 API is available via composer:
 
 `composer require firehed/api`
+
+## Configuration
+
+Place a file named `.apiconfig` in your project root. It uses JSON for the format.
+
+### Options
+
+`webroot`: **required** *string*
+`namespace`: **required** *string*
+`source`: **required** *string*
+`container`: **optional** *string*
+
+### `.apiconfig` example

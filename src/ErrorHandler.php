@@ -4,20 +4,23 @@ declare(strict_types=1);
 namespace Firehed\API;
 
 use ErrorException;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
-class ErrorHandler implements LoggerAwareInterface
+class ErrorHandler
 {
-    use LoggerAwareTrait;
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
     public function handleThrowable(Throwable $t)
     {
         header('HTTP/1.1 500 Internal Server Error');
-        if ($this->logger) {
-            $this->logger->error((string) $t);
-        }
+        $this->logger->error((string) $t);
     }
 
     public function handleError($severity, $message, $file, $line)
