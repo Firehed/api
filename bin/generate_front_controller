@@ -49,7 +49,7 @@ set_exception_handler([$handler, 'handleThrowable']);
 
 
 $response = (new Dispatcher())
-    ->setContainer(%s)
+    ->setContainer($config)
     ->setEndpointList('__endpoint_list__.json')
     ->setParserList('__parser_list__.json')
     ->setRequest(ServerRequestFactory::fromGlobals())
@@ -70,7 +70,6 @@ $container = array_key_exists('container', $config)
 $fc = sprintf(
     $template,
     resolveProjectRoot($config['webroot']),
-    $container,
     $container
 );
 

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use Psr\Container\ContainerInterface;
 use SimpleLogger\Stderr;
 
 $root = __DIR__;
@@ -65,8 +66,15 @@ if (array_key_exists('container', $config)) {
         $stderr->error(".apiconfig[container] must point to a file returning a PSR-11 container");
         exit(1);
     }
-    $container = require $config['container'];
-    if (!$container instanceof Psr\Container\ContainerInterface) {
+
+    // Require the container file in a closure to avoid any variable scope
+    // leaking into the current context.
+    $load = function (string $path): ContainerInterface {
+        return require $path;
+    };
+    try {
+        $container = $load($config['container']);
+    } catch (TypeError $e) {
         $stderr->error(".apiconfig[container] must point to a file returning a PSR-11 container");
         exit(1);
     }
