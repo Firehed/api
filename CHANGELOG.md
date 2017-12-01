@@ -4,42 +4,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.0.0] - 2017-12-01
+
+### Summary of Breaking Changes
+
+- Containers injected into the `Dispatcher` must now be PSR-11 compliant
+- `EndpointTestTrait` renamed to `Traits\EndpointTestCases`
+
 ### Added
 - Added (and backfilled) this change log
 - Added `ResponseBuilder` trait. It adds `emptyResponse()`, `htmlResponse()`, `jsonResponse()`, and `textResponse()` methods to build a PSR-7-compliant response with the provided data and optional HTTP status code. Internally uses the Zend Diactoros library
-- New common use-case traits:
-
-```
-Firehed\API\Traits\
-  Request\
-    Get *
-    Post *
-    Put *
-    Delete *
-  Input\
-    NoOptional *
-    NoRequired *
-  Authentication\
-    None
-    BearerToken
-
-```
-
-The traits marked with an asterisk (\*) replace their deprecated counterparts; see below
+- Added `ErrorHandler` class for request-level fallback (`set_error_handler` and `set_exception_handler`)
+- Added basic endpoint skeleton generator: `bin/generate_endpoint [url]`
+- Added traits for common endpoint behavior:
+  - `Request\Get`
+  - `Request\Post`
+  - `Request\Put`
+  - `Request\Delete`
+  - `Input\NoRequired`
+  - `Input\NoOptional`
+  - `Authentication\None`
+  - `Authentication\BearerToken`
 
 ### Changed
 - Code is now tested automatically with Travis CI. PHP 7.0, 7.1, and 7.2 are supported
 - [Zend-Diactoros](https://github.com/zendframework/zend-diactoros) is now included as a dependency. It is only used by the `ResponseBuilder` trait described above, but any PSR-7 library can be used
 - Improved logging and error handling, with support for `PSR-3` loggers
+- Improved validation of `.apiconfig`, displaying more useful errors to the user
 - [**Breaking**] The container that's optionally injected into the Dispatcher is now expected to be PSR-11 compliant
+- [**Breaking**] EndpointTestTrait moved to `Traits\EndpointTestCases`
 
 
 ### Deprecated
-The HTTP request method and No Input traits in the root `Traits` namespace are being deprecated in favor of the additions noted above. Using them will emit an `E_USER_DEPRECATED` error at runtime. Existing code should be migrated to using the above, which only requires changing the `use` statement. The behavior is otherwise identical
+- Reorganized endpoint traits; old versions still work but will now emit a `E_USER_DEPRECATED` error when used. Their behavior is unchanged.
+  - `GetRequest` => `Traits\Request\Get`
+  - `PostRequest` => `Traits\Request\Post`
+  - `PutRequest` => `Traits\Request\Put`
+  - `DeleteRequest` => `Traits\Request\Delete`
+  - `NoRequiredInputs` => `Traits\Input\NoRequired`
+  - `NoOptionalInputs` => `Traits\Input\NoOptional`
 
 ### Internals
-Additional code quality tools have been added
+- Additional code quality tools have been added
 
 ## [2.3.1] - 2016-03-17
 ### Changed
