@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Fixed minor issue where variables with certain names defined in the included configuration container's file could impact the code generation scripts
+- Fixed issue in generated front controller where config file would be loaded twice
 
 ## [3.0.0] - 2017-12-01
 
