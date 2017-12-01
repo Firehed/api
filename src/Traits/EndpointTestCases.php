@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Firehed\API;
+namespace Firehed\API\Traits;
 
 use Firehed\Input\Interfaces\ValidationInterface;
 use Firehed\Input\ValidationTestTrait;
@@ -13,7 +13,7 @@ use Firehed\Input\ValidationTestTrait;
  * provides valuable automated coverage that would otherwise only be available
  * at runtime
  */
-trait EndpointTestTrait
+trait EndpointTestCases
 {
 
     use ValidationTestTrait;
