@@ -36,6 +36,21 @@ $required_keys = [
     'namespace',
     'source',
 ];
+$optionalKeys = [
+    'container',
+];
+
+$allKeys = array_merge($required_keys, $optionalKeys);
+
+$keysInConfig = array_keys($config);
+
+if ($diff = array_diff($keysInConfig, $allKeys)) {
+    $stderr->error(sprintf(
+        'Found unexpected config keys in .apiconfig: %s',
+        implode(', ', $diff)
+    ));
+    exit(1);
+}
 
 foreach ($required_keys as $required_key) {
     if (!array_key_exists($required_key, $config)) {
