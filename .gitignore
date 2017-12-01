@@ -1,1 +1,4 @@
 /vendor/
+/build/
+# Ignored since this is a library
+composer.lock

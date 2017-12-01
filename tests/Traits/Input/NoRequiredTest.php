@@ -8,7 +8,7 @@ namespace Firehed\API\Traits\Input;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class NoRequiredTest extends \PHPUnit_Framework_TestCase
+class NoRequiredTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -19,9 +19,10 @@ class NoRequiredTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use NoRequired;
         };
-        $this->assertSame([],
+        $this->assertSame(
+            [],
             $obj->getRequiredInputs(),
-            'getRequiredInputs did not return an empty array');
+            'getRequiredInputs did not return an empty array'
+        );
     }
-
 }

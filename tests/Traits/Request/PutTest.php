@@ -8,7 +8,7 @@ namespace Firehed\API\Traits\Request;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class PutTest extends \PHPUnit_Framework_TestCase
+class PutTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -22,8 +22,7 @@ class PutTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             \Firehed\API\Enums\HTTPMethod::PUT(),
             $obj->getMethod(),
-            'getMethod did not return HTTP PUT');
+            'getMethod did not return HTTP PUT'
+        );
     }
-
-
 }

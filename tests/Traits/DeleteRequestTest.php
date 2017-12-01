@@ -8,7 +8,7 @@ namespace Firehed\API\Traits;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class DeleteRequestTest extends \PHPUnit_Framework_TestCase
+class DeleteRequestTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -19,8 +19,7 @@ class DeleteRequestTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use DeleteRequest;
         };
-        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
         $obj->getMethod();
     }
-
 }

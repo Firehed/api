@@ -6,7 +6,7 @@ namespace Firehed\API;
 
 use Psr\Http\Message\ResponseInterface;
 
-class RenderResponseTest extends \PHPUnit_Framework_TestCase
+class RenderResponseTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -29,7 +29,7 @@ class RenderResponseTest extends \PHPUnit_Framework_TestCase
 
         $body = 'Some text that came from the response';
 
-        $response = $this->getMock(ResponseInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
         $response->expects($this->atLeastOnce())
             ->method('getProtocolVersion')
             ->will($this->returnValue($version));
@@ -68,7 +68,8 @@ class RenderResponseTest extends \PHPUnit_Framework_TestCase
             $this->markTestIncomplete(
                 'headers_list does not work in CLI mode to test response '.
                 'rendering. Install xdebug to complete the test which uses '.
-                '`xdebug_get_headers`.');
+                '`xdebug_get_headers`.'
+            );
         }
         $rendered_headers = xdebug_get_headers();
         $expected_headers = [
@@ -79,8 +80,5 @@ class RenderResponseTest extends \PHPUnit_Framework_TestCase
         foreach ($expected_headers as $expected_header) {
             $this->assertContains($expected_header, $rendered_headers);
         }
-
-
     }
-
 }

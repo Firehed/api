@@ -8,7 +8,7 @@ namespace Firehed\API\Traits\Request;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class PostTest extends \PHPUnit_Framework_TestCase
+class PostTest extends \PHPUnit\Framework\TestCase
 {
 
 
@@ -23,7 +23,7 @@ class PostTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             \Firehed\API\Enums\HTTPMethod::POST(),
             $obj->getMethod(),
-            'getMethod did not return HTTP POST');
+            'getMethod did not return HTTP POST'
+        );
     }
-
 }

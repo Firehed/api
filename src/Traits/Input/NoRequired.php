@@ -10,5 +10,4 @@ trait NoRequired
     {
         return [];
     }
-
 }

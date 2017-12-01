@@ -8,7 +8,7 @@ namespace Firehed\API\Traits;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class PostRequestTest extends \PHPUnit_Framework_TestCase
+class PostRequestTest extends \PHPUnit\Framework\TestCase
 {
 
 
@@ -20,8 +20,7 @@ class PostRequestTest extends \PHPUnit_Framework_TestCase
         $obj = new class {
             use PostRequest;
         };
-        $this->expectException(\PHPUnit_Framework_Error_Deprecated::class);
+        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
         $obj->getMethod();
     }
-
 }
