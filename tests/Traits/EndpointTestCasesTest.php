@@ -38,4 +38,29 @@ class EndpointTestTraitTest extends \PHPUnit\Framework\TestCase
             $this->assertInstanceOf(Throwable::Class, $testParam);
         }
     }
+
+    public function goodUris(): array
+    {
+        return [
+            '/user/1' => ['id' => '1'],
+            '/user/10' => ['id' => '10'],
+            '/user/3' => ['id' => '3'],
+            '/user/134098435089225' => ['id' => '134098435089225'],
+        ];
+    }
+
+    public function badUris(): array
+    {
+        return [
+            '/',
+            '/0/user/',
+            '/3/user',
+            'user/3',
+            '/user',
+            '/user/',
+            '/user/0',
+            '/user/01234',
+            '/user/username',
+        ];
+    }
 }

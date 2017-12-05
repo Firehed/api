@@ -35,16 +35,63 @@ trait EndpointTestCases
         return $this->getEndpoint();
     }
 
-    /** @covers ::getUri */
-    public function testGetUri()
+    /**
+     * @covers ::getUri
+     * @dataProvider uris
+     *
+     * @param string $uri The URI to match against
+     * @param bool $match Whether or not the provied URI should match
+     * @param array $expectedMatches Named captures in a positive match
+     */
+    public function testGetUri(string $uri, bool $match, array $expectedMatches)
     {
         $endpoint = $this->getEndpoint();
-        $uri = $endpoint->getUri();
         $this->assertInternalType(
             'string',
-            $uri,
+            $endpoint->getUri(),
             'getUri did not return a string'
         );
+
+        $pattern = '#^' . $endpoint->getUri() . '$#';
+
+        $this->assertSame($match, (bool) preg_match($pattern, $uri, $matches));
+        foreach ($expectedMatches as $key => $value) {
+            $this->assertTrue(array_key_exists($key, $matches));
+            $this->assertSame($value, $matches[$key]);
+        }
+    }
+
+    public function uris(): array
+    {
+        $good = $this->goodUris();
+        $bad = $this->badUris();
+        if (!$good || !$bad) {
+            $message = <<<'TEXT'
+No URIs provided to validate. To provide URIs, add methods `goodUris()` and
+`badUris()` to your test case class. `goodUris()` should return a map of URI to
+named captures; e.g. ['/some/uri' => ['paramName' => 'uri']]. `badURIs()`
+should return an array of strings; e.g. ['/some/non/matching/path'].
+TEXT;
+            $this->markTestSkipped($message);
+        }
+        return array_merge(
+            array_map(function ($uri, $matches) {
+                return [$uri, true, $matches];
+            }, array_keys($good), array_values($good)),
+            array_map(function ($uri) {
+                return [$uri, false, []];
+            }, $bad)
+        );
+    }
+
+    protected function goodUris(): array
+    {
+        return [];
+    }
+
+    protected function badUris(): array
+    {
+        return [];
     }
 
     /** @covers ::getMethod */
