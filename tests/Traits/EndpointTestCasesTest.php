@@ -39,6 +39,9 @@ class EndpointTestTraitTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /**
+     * @covers Firehed\API\Traits\EndpointTestCases::uris
+     */
     public function goodUris(): array
     {
         return [
@@ -49,6 +52,9 @@ class EndpointTestTraitTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @covers Firehed\API\Traits\EndpointTestCases::uris
+     */
     public function badUris(): array
     {
         return [
