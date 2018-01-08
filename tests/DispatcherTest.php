@@ -417,6 +417,25 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @covers ::dispatch
+     */
+    public function testMatchingContentTypeWithDirectives()
+    {
+        $contentType = 'application/json; charset=utf-8';
+        $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
+        $req->expects($this->any())
+            ->method('getHeader')
+            ->with('Content-type')
+            ->will($this->returnValue([$contentType]));
+        $response = (new Dispatcher())
+            ->setEndpointList($this->getEndpointListForFixture())
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->dispatch();
+        $this->checkResponse($response, 200);
+    }
+
     /** @covers ::dispatch */
     public function testFailedAuthenticationReachesErrorHandler()
     {

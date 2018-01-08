@@ -177,10 +177,17 @@ class Dispatcher
         // don't use $_POST because additional content types are supported.
         // Since PSR-7 doesn't specify parsing the body of most MIME-types,
         // we'll hand off to our own set of parsers.
-        $cth = $this->request->getHeader('Content-type');
-        if ($cth) {
+        $header = $this->request->getHeader('Content-type');
+        if ($header) {
+            $directives = explode(';', $header[0]);
+            if (!count($directives)) {
+                throw new OutOfBoundsException('Invalid Content-type header', 400);
+            }
+            $mediaType = array_shift($directives);
+            // Future: trim and format directives; e.g. ' charset=utf-8' =>
+            // ['charset' => 'utf-8']
             list($parser_class) = (new ClassMapper($this->parser_list))
-                ->search($cth[0]);
+                ->search($mediaType);
             if (!$parser_class) {
                 throw new OutOfBoundsException('Unsupported Content-type', 400);
             }
