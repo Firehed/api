@@ -4,9 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.0.2] - 2018-01-08
+## [3.0.3] - 2018-01-08
+
 ### Changed
 - Fixed issue where `Content-type` headers with directives (e.g. `Content-type: application/json; charset=utf-8`) are processed correctly
+
+## [3.0.2] - 2018-01-03
+
+### Changed
+- Added URI matching tests into `EndpointTestCases`. Updating to this version will result in existing passing tests using said trait being skipped until good and bad URI matches are added into the test case.
 
 ## [3.0.1] - 2017-12-01
 
