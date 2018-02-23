@@ -15,6 +15,7 @@ class HTTPMethod extends Enum
     const POST = 'POST';
     const PUT = 'PUT';
     const DELETE = 'DELETE';
+    const OPTIONS = 'OPTIONS';
 
     public function __toString()
     {
