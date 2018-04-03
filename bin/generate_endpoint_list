@@ -2,10 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use SimpleLogger\Stdout;
-
 $config = require 'load_config.php';
-$logger = new Stdout();
 
 // Build out the endpoint map
 (new Firehed\Common\ClassMapGenerator())
@@ -17,7 +14,8 @@ $logger = new Stdout();
     ->setOutputFile(getcwd().'/__endpoint_list__.json')
     ->generate();
 
-$logger->info(
+fwrite(
+    STDOUT,
     'Wrote endpoint map to __endpoint_list__.json. Be sure to commit this ' .
     'file to version control.'
 );

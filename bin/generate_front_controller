@@ -2,10 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use SimpleLogger\Stdout;
-
 $config = require 'load_config.php';
-$logger = new Stdout();
 
 // Returns a series of '/..'s to get from the directory of the webroot to that
 // of the project root
@@ -75,8 +72,8 @@ $fc = sprintf(
 
 $dir = $config['local_project_root'].'/'.$config['webroot'];
 if (!file_exists($dir)) {
-    $logger->info("Making '$dir' with 0755 permissions");
+    fwrite(STDOUT, "Making '$dir' with 0755 permissions");
     mkdir($dir, 0755, true);
 }
 file_put_contents($dir.'/index.php', $fc);
-$logger->info("Wrote front controller to $dir/index.php");
+fwrite(STDOUT, "Wrote front controller to $dir/index.php");
