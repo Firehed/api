@@ -2,12 +2,10 @@
 <?php
 declare(strict_types=1);
 
-use SimpleLogger\Stderr;
-
 $config = require 'load_config.php';
 
 if ($argc < 2) {
-    (new Stderr())->error('File name is required');
+    fwrite(STDERR, 'File name is required');
     exit(1);
 }
 
