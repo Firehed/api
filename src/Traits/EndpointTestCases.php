@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Firehed\API\Traits;
 
+use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\Input\Interfaces\ValidationInterface;
 use Firehed\Input\ValidationTestTrait;
 
@@ -22,7 +23,7 @@ trait EndpointTestCases
      * Get the endpoint under test
      * @return Interfaces\EndpointInterface
      */
-    abstract protected function getEndpoint(): Interfaces\EndpointInterface;
+    abstract protected function getEndpoint(): EndpointInterface;
 
     /**
      * Because EndpointInterface extends ValidationInterface, provide the same
