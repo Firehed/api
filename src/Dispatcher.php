@@ -11,10 +11,12 @@ use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use OutOfBoundsException;
 use UnexpectedValueException;
 
-class Dispatcher
+class Dispatcher implements RequestHandlerInterface
 {
 
     private $container;
@@ -24,6 +26,15 @@ class Dispatcher
     private $response_middleware = [];
     private $request;
     private $uri_data;
+
+    /**
+     * PSR-15 Entrypoint
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $this->setRequest($request);
+        return $this->dispatch();
+    }
 
     /**
      * Add a callback to run on the response after controller executation (or
