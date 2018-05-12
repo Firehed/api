@@ -1,13 +1,15 @@
 {
     "name": "firehed/api",
     "require": {
+        "php": ">=7",
         "firehed/common": "^1.0",
         "firehed/input": "^2.0",
-        "psr/http-message": "^1.0",
-        "php": ">=7",
-        "zendframework/zend-diactoros": "^1.3",
         "psr/container": "^1.0",
-        "psr/log": "^1.0"
+        "psr/http-message": "^1.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "psr/log": "^1.0",
+        "zendframework/zend-diactoros": "^1.3"
     },
     "suggest": {
         "firehed/inputobjects": "Pre-made Input components for validation"
@@ -44,6 +46,9 @@
             "email": "eric@ericstern.com"
         }
     ],
+    "config": {
+      "sort-packages": true
+    },
     "scripts": {
       "test": [
         "@phpunit",
