@@ -6,6 +6,13 @@ namespace Firehed\API\Enums;
 
 use Firehed\Common\Enum;
 
+/**
+ * @method static HTTPMethod DELETE()
+ * @method static HTTPMethod GET()
+ * @method static HTTPMethod OPTIONS()
+ * @method static HTTPMethod POST()
+ * @method static HTTPMethod PUT()
+ */
 class HTTPMethod extends Enum
 {
 
