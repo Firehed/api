@@ -15,6 +15,9 @@ class GenerateFrontController extends Command
 {
     const TEMPLATE_FILE = 'FrontController.php.tpl';
 
+    /** @var Config */
+    private $config;
+
     public function __construct(Config $config)
     {
         parent::__construct();
