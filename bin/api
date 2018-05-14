@@ -21,5 +21,6 @@ $config = Config::load('.apiconfig');
 $application = new Application();
 
 $application->add(new Console\GenerateEndpointList($config));
+$application->add(new Console\GenerateFrontController($config));
 
 $application->run();
