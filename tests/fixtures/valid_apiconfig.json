@@ -1,0 +1,5 @@
+{
+  "source": "src",
+  "webroot": "public",
+  "namespace": "My\\Company"
+}
