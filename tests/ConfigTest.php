@@ -64,6 +64,20 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($config->has('this_key_is_not_set'));
     }
 
+    /**
+     * @covers ::load
+     * @dataProvider loadProvider
+     */
+    public function testLoad(string $file, string $exceptionClass = null)
+    {
+        if ($exceptionClass !== null) {
+            $this->expectException($exceptionClass);
+        }
+        $config = Config::load($file);
+        $this->assertInstanceOf(Config::class, $config);
+        $this->assertInstanceOf(ContainerInterface::class, $config);
+    }
+
     public function constructProvider(): array
     {
         return [
@@ -103,6 +117,16 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
                 ],
                 RuntimeException::class,
             ],
+        ];
+    }
+
+    public function loadProvider(): array
+    {
+        return [
+            [__DIR__.'/fixtures/valid_apiconfig.json'],
+            [__DIR__.'/fixtures/invalid_apiconfig_format.json', RuntimeException::class],
+            [__DIR__.'/fixtures/invalid_apiconfig_missing_data.json', RuntimeException::class],
+            [__DIR__.'/fixtures/missing_file.json', RuntimeException::class],
         ];
     }
 }
