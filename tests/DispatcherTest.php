@@ -411,17 +411,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
             ->dispatch();
-        try {
         $this->assertSame(
             415,
             $response->getStatusCode()
         );
-        } catch (\Throwable $e) {
-            echo $e;
-            echo $response->getBody();
-            throw $e;
-        }
-
     }
 
     /**
