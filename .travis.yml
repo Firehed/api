@@ -6,7 +6,7 @@ php:
 
 # From PHPUnit's config
 install:
-  - travis_retry composer install --no-interaction --prefer-source
+  - travis_retry composer install --no-interaction --no-progress --no-suggest --prefer-dist
 
 script: "./vendor/bin/phpunit --coverage-text --whitelist src/ tests/"
 
