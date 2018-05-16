@@ -181,7 +181,7 @@ class Dispatcher
         if ($header) {
             $directives = explode(';', $header[0]);
             if (!count($directives)) {
-                throw new OutOfBoundsException('Invalid Content-type header', 400);
+                throw new OutOfBoundsException('Invalid Content-type header', Enums\HTTPResponse::UNSUPPORTED_MEDIA_TYPE);
             }
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
@@ -189,7 +189,7 @@ class Dispatcher
             list($parser_class) = (new ClassMapper($this->parser_list))
                 ->search($mediaType);
             if (!$parser_class) {
-                throw new OutOfBoundsException('Unsupported Content-type', 400);
+                throw new OutOfBoundsException('Unsupported Content-type', Enums\HTTPResponse::UNSUPPORTED_MEDIA_TYPE);
             }
             $parser = new $parser_class;
             $data = $parser->parse((string)$this->request->getBody());
