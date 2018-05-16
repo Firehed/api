@@ -87,6 +87,8 @@ class EndpointFixture implements Interfaces\EndpointInterface
         }
         $mock->method('getStatusCode')
             ->will(new ReturnStub($code));
+        $mock->method('getBody')
+            ->will(new ReturnStub($e)); // This is incorrect, but makes debugging tests easier
         return $mock;
     }
 }
