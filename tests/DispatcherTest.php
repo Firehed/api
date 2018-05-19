@@ -489,7 +489,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($endpoint);
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @covers ::setErrorHandler
+     */
     public function testExceptionsReachDefaultErrorHandlerWhenSet()
     {
         $e = new Exception('This should reach the main error handler');
@@ -506,7 +509,11 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnCallback($cb));
 
         $dispatcher = new Dispatcher();
-        $dispatcher->setErrorHandler($handler);
+        $this->assertSame(
+            $dispatcher,
+            $dispatcher->setErrorHandler($handler),
+            'setErrorHandler should return $this'
+        );
 
         $endpoint = $this->getMockEndpoint();
         $endpoint->method('execute')
