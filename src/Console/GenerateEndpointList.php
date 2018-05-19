@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateEndpointList extends Command
 {
+    /** @var Config */
+    private $config;
+
     public function __construct(Config $config)
     {
         parent::__construct();

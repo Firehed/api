@@ -23,6 +23,9 @@ class GenerateEndpoint extends Command
 
     const TEMPLATE_FILE = 'Endpoint.php.tpl';
 
+    /** @var Config */
+    private $config;
+
     public function __construct(Config $config)
     {
         parent::__construct();
