@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Firehed\API\Interfaces;
 
-use Throwable;
 use Firehed\API\Enums\HTTPMethod;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\Input\Interfaces\ValidationInterface;
@@ -20,8 +19,13 @@ use Psr\Http\Message\ResponseInterface as Response;
  * be configuired with a container injected into the Dispatcher. If there are
  * no paramters on the constructor (or there is no constructor), that is
  * optional.
+ *
+ * In the next major version of this framework, this interface will no longer
+ * extend HandlesOwnErrorsInterface; endpoints that actually have special error
+ * handling logic must explictly implement that interface upon migrating to
+ * that version.
  */
-interface EndpointInterface extends ValidationInterface
+interface EndpointInterface extends ValidationInterface, HandlesOwnErrorsInterface
 {
 
     /**
@@ -89,19 +93,4 @@ interface EndpointInterface extends ValidationInterface
      * @throws \RuntimeException if authentication fails
      */
     public function authenticate(Request $request): self;
-
-    /**
-     * Handle uncaught exceptions
-     *
-     * This method MUST accept any type of Exception and return a PSR-7
-     * ResponseInterface object.
-     *
-     * It is RECOMMENDED to implement this method in a trait, since most
-     * Endpoints will share error handling logic. In most cases, one trait per
-     * supported MIME-type will probably suffice.
-     *
-     * @param Exception The uncaught exception
-     * @return ResponseInterface The response to render
-     */
-    public function handleException(Throwable $e): Response;
 }

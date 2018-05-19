@@ -7,6 +7,7 @@ namespace Firehed\API;
 use BadMethodCallException;
 use DomainException;
 use Firehed\API\Interfaces\ErrorHandlerInterface;
+use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
@@ -152,7 +153,11 @@ class Dispatcher
             $response = $endpoint->execute($safe_input);
         } catch (Throwable $e) {
             try {
-                $response = $endpoint->handleException($e);
+                if ($endpoint instanceof HandlesOwnErrorsInterface) {
+                    $response = $endpoint->handleException($e);
+                } else {
+                    throw $e;
+                }
             } catch (Throwable $e) {
                 // If an application-wide handler has been defined, use the
                 // response that it generates. If not, just rethrow the
