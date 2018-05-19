@@ -412,7 +412,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setRequest($req)
             ->dispatch();
         $this->assertSame(
-            EndpointFixture::STATUS_ERROR,
+            415,
             $response->getStatusCode()
         );
     }
