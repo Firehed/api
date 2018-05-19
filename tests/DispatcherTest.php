@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Firehed\API;
 
 use Exception;
+use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\API\Interfaces\ErrorHandlerInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use Firehed\API\Interfaces\EndpointInterface;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -450,7 +452,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::dispatch */
-    public function testFailedEndpointExecutionReachesErrorHandler()
+    public function testFailedEndpointExecutionReachesEndpointErrorHandler()
     {
         $e = new Exception('This should reach the error handler');
         $endpoint = $this->getMockEndpoint();
@@ -485,6 +487,35 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $endpoint->expects($this->once())
             ->method('handleException');
         $this->executeMockRequestOnEndpoint($endpoint);
+    }
+
+    /** @covers ::dispatch */
+    public function testExceptionsReachDefaultErrorHandlerWhenSet()
+    {
+        $e = new Exception('This should reach the main error handler');
+        $res = $this->createMock(ResponseInterface::class);
+        $cb = function ($req, $ex) use ($e, $res) {
+            $this->assertSame($e, $ex, 'A different exception reached the handler');
+
+            return $res;
+        };
+
+        $handler = $this->createMock(ErrorHandlerInterface::class);
+        $handler->expects($this->once())
+            ->method('handle')
+            ->will($this->returnCallback($cb));
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->setErrorHandler($handler);
+
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->method('execute')
+            ->will($this->throwException($e));
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($e)
+            ->will($this->throwException($e));
+        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
     }
 
     // ----(Helper methods)----------------------------------------------------
@@ -524,7 +555,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $mock_uri->method('getQuery')
             ->will($this->returnValue(http_build_query($query_data)));
 
-        $req = $this->createMock(RequestInterface::class);
+        $req = $this->createMock(ServerRequestInterface::class);
 
         $req->expects($this->any())
             ->method('getUri')
@@ -557,17 +588,23 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Run the endpointwith an empty request
      *
      * @param Endpoint the endpoint to test
+     * @param ?Dispatcher $dispatcher a configured dispatcher
      * @return ResponseInterface the endpoint response
      */
-    private function executeMockRequestOnEndpoint(EndpointInterface $endpoint): ResponseInterface
-    {
+    private function executeMockRequestOnEndpoint(
+        EndpointInterface $endpoint,
+        Dispatcher $dispatcher = null
+    ): ResponseInterface {
         $req = $this->getMockRequestWithUriPath('/container', 'GET');
         $list = [
             'GET' => [
                 '/container' => 'ClassThatDoesNotExist',
             ],
         ];
-        $response = (new Dispatcher())
+        if (!$dispatcher) {
+            $dispatcher = new Dispatcher();
+        }
+        $response = $dispatcher
             ->setContainer($this->getMockContainer(['ClassThatDoesNotExist' => $endpoint]))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
