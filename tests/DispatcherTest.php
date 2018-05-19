@@ -518,6 +518,30 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
     }
 
+    /** @covers ::dispatch */
+    public function testExceptionsLeakWhenNoErrorHandler()
+    {
+        $e = new Exception('This should reach the top level');
+
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->method('execute')
+            ->will($this->throwException($e));
+        // This is a quasi-v4 endpoint: one where the endpoint's exception
+        // handler just rethrows the exception. This should be the same as not
+        // choosing to have an endpoint handle exeptions directly in v4.
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($e)
+            ->will($this->throwException($e));
+
+        try {
+            $this->executeMockRequestOnEndpoint($endpoint);
+            $this->fail('An exception should have been thrown');
+        } catch (\Throwable $t) {
+            $this->assertSame($e, $t, 'A different exception was thrown');
+        }
+    }
+
     // ----(Helper methods)----------------------------------------------------
 
     /**
