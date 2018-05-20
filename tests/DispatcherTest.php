@@ -12,6 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Throwable;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -337,7 +338,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
                 "The exception thrown from the error handler's failure should ".
                 "have made it through"
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->assertSame(
                 $error,
                 $e,
@@ -522,7 +523,43 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('handleException')
             ->with($e)
             ->will($this->throwException($e));
-        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+    }
+
+    /**
+     * This is a sort of BC-prevention test: in v4, the Dispatcher will only
+     * accept a ServerRequestInterface instead of the base-level
+     * RequestInterface. The new error handler is typehinted as such. This
+     * checks that if the base class was provided to the dispatcher, it
+     * shouldn't attempt to use the error handler since it would just result in
+     * a TypeError. This will be removed in v4.
+     *
+     * @covers ::dispatch
+     */
+    public function testExceptionsLeakWhenRequestIsBaseClass()
+    {
+        $e = new Exception('This should reach the top level');
+
+        $handler = $this->createMock(ErrorHandlerInterface::class);
+        $handler->expects($this->never())
+            ->method('handle');
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->setErrorHandler($handler);
+
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->method('execute')
+            ->will($this->throwException($e));
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($e)
+            ->will($this->throwException($e));
+        try {
+            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $t) {
+            $this->assertSame($e, $t);
+        }
     }
 
     /** @covers ::dispatch */
@@ -544,7 +581,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         try {
             $this->executeMockRequestOnEndpoint($endpoint);
             $this->fail('An exception should have been thrown');
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->assertSame($e, $t, 'A different exception was thrown');
         }
     }
@@ -572,12 +609,14 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * @param string path component of URI
      * @param [string] optional HTTP method
      * @param [array] optional raw, unescaped query string data
+     * @param string $requestClass What RequestInterface to mock
      * @return \Psr\Http\Message\RequestInterface
      */
     private function getMockRequestWithUriPath(
         string $uri,
         string $method = 'GET',
-        array $query_data = []
+        array $query_data = [],
+        string $requestClass = RequestInterface::class
     ): RequestInterface {
         $mock_uri = $this->createMock(UriInterface::class);
         $mock_uri->expects($this->any())
@@ -586,7 +625,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $mock_uri->method('getQuery')
             ->will($this->returnValue(http_build_query($query_data)));
 
-        $req = $this->createMock(ServerRequestInterface::class);
+        $req = $this->createMock($requestClass);
 
         $req->expects($this->any())
             ->method('getUri')
@@ -624,9 +663,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      */
     private function executeMockRequestOnEndpoint(
         EndpointInterface $endpoint,
-        Dispatcher $dispatcher = null
+        Dispatcher $dispatcher = null,
+        string $requestClass = RequestInterface::class
     ): ResponseInterface {
-        $req = $this->getMockRequestWithUriPath('/container', 'GET');
+        $req = $this->getMockRequestWithUriPath('/container', 'GET', [], $requestClass);
         $list = [
             'GET' => [
                 '/container' => 'ClassThatDoesNotExist',

@@ -12,6 +12,7 @@ use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
@@ -157,7 +158,7 @@ class Dispatcher
                 // If an application-wide handler has been defined, use the
                 // response that it generates. If not, just rethrow the
                 // exception for the system default (if defined) to handle.
-                if ($this->error_handler) {
+                if ($this->error_handler && $this->request instanceof ServerRequestInterface) {
                     $response = $this->error_handler->handle($this->request, $e);
                 } else {
                     throw $e;
