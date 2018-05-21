@@ -15,14 +15,14 @@ class ResponseRenderer
         $this->response = $response;
     }
 
-    public static function render(ResponseInterface $response): void
+    public static function render(ResponseInterface $response)
     {
         $renderer = new ResponseRenderer($response);
         $renderer->sendHeaders();
         $renderer->sendBody();
     }
 
-    public function sendHeaders(): void
+    public function sendHeaders()
     {
         // Send HTTP code
         header(sprintf(
@@ -39,7 +39,7 @@ class ResponseRenderer
         }
     }
 
-    public function sendBody(): void
+    public function sendBody()
     {
         echo $this->response->getBody();
     }
