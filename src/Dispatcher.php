@@ -231,9 +231,10 @@ class Dispatcher
      */
     private function getEndpoint(): Interfaces\EndpointInterface
     {
+        $requestUri = $this->request->getUri()->getPath();
         list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
             ->filter(strtoupper($this->request->getMethod()))
-            ->search($this->request->getUri()->getPath());
+            ->search(rtrim($requestUri, '/'));
         if (!$class) {
             throw new OutOfBoundsException('Endpoint not found', 404);
         }

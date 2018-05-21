@@ -124,6 +124,33 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful execution where the request URI has a trailing slash and
+     * the endpoint does not
+     *
+     * @covers ::dispatch
+     */
+    public function testRoutingRequestWithTrailingSlash()
+    {
+        $req = $this->getMockRequestWithUriPath('/user/5/', 'GET', ['shortstring' => 'aBcD']);
+
+        $response = (new Dispatcher())
+            ->setEndpointList($this->getEndpointListForFixture())
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req)
+            ->dispatch();
+        $this->checkResponse($response, 200);
+        $data = json_decode($response->getBody(), true);
+        $this->assertSame(
+            [
+                'id' => 5,
+                'shortstring' => 'aBcD',
+            ],
+            $data,
+            'The data did not reach the endpoint'
+        );
+    }
+
+    /**
      * Test successful all-the-way-through controller execution, focusing on
      * accessing $_GET/querystring data
      *
