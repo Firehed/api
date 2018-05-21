@@ -6,11 +6,14 @@ namespace Firehed\API;
 
 use BadMethodCallException;
 use DomainException;
+use Firehed\API\Interfaces\ErrorHandlerInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
 
@@ -61,6 +64,19 @@ class Dispatcher
     public function setContainer(ContainerInterface $container = null): self
     {
         $this->container = $container;
+        return $this;
+    }
+
+    /**
+     * Provide a default error handler. This will be used in the event that an
+     * endpoint does not define its own handler.
+     *
+     * @param ErrorHandlerInterface $handler
+     * @return self
+     */
+    public function setErrorHandler(ErrorHandlerInterface $handler): self
+    {
+        $this->error_handler = $handler;
         return $this;
     }
 
@@ -135,8 +151,19 @@ class Dispatcher
                 ->validate($endpoint);
 
             $response = $endpoint->execute($safe_input);
-        } catch (\Throwable $e) {
-            $response = $endpoint->handleException($e);
+        } catch (Throwable $e) {
+            try {
+                $response = $endpoint->handleException($e);
+            } catch (Throwable $e) {
+                // If an application-wide handler has been defined, use the
+                // response that it generates. If not, just rethrow the
+                // exception for the system default (if defined) to handle.
+                if ($this->error_handler && $this->request instanceof ServerRequestInterface) {
+                    $response = $this->error_handler->handle($this->request, $e);
+                } else {
+                    throw $e;
+                }
+            }
         }
         return $this->executeResponseMiddleware($response);
     }
