@@ -490,8 +490,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     // ----(Helper methods)----------------------------------------------------
 
     /**
-     * @param ResponseInterface response to test
-     * @param int HTTP status code to check for
+     * @param ResponseInterface $response response to test
+     * @param int $expected_code HTTP status code to check for
      */
     private function checkResponse(ResponseInterface $response, int $expected_code)
     {
@@ -507,10 +507,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * returning a mock PSR-7 URI with the provided path, and the HTTP method
      * if provided
      *
-     * @param string path component of URI
-     * @param [string] optional HTTP method
-     * @param [array] optional raw, unescaped query string data
-     * @return \Psr\Http\Message\RequestInterface
+     * @param string $uri path component of URI
+     * @param string $method optional HTTP method
+     * @param array $query_data optional raw, unescaped query string data
+     * @return RequestInterface | \PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockRequestWithUriPath(
         string $uri,
@@ -539,7 +539,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Convenience method for mocking an endpoint. The mock has no required or
      * optional inputs.
      *
-     * @return EndpointInterface
+     * @return EndpointInterface | \PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockEndpoint(): EndpointInterface
     {
@@ -556,7 +556,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Run the endpointwith an empty request
      *
-     * @param Endpoint the endpoint to test
+     * @param EndpointInterface $endpoint the endpoint to test
      * @return ResponseInterface the endpoint response
      */
     private function executeMockRequestOnEndpoint(EndpointInterface $endpoint): ResponseInterface
