@@ -10,21 +10,9 @@ use Psr\Http\Message\ResponseInterface;
  * Takes a PSR-7 Response and outputs all headers and body. This should be the
  * very last thing done in request processing.
  */
-function renderResponse(ResponseInterface $response)
+function renderResponse(ResponseInterface $response): void
 {
-    // Send HTTP code
-    header(sprintf(
-        "HTTP/%s %s %s",
-        $response->getProtocolVersion(),
-        $response->getStatusCode(),
-        $response->getReasonPhrase()
-    ));
-    // Additional headers
-    foreach ($response->getHeaders() as $key => $values) {
-        foreach ($values as $value) {
-            header(sprintf("%s: %s", $key, $value), false);
-        }
-    }
-    // And then the body
-    echo $response->getBody();
+    $renderer = new ResponseRenderer($response);
+    $renderer->sendHeaders();
+    $renderer->sendBody();
 }
