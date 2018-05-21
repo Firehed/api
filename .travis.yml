@@ -8,7 +8,10 @@ php:
 install:
   - travis_retry composer install --no-interaction --no-progress --no-suggest --prefer-dist
 
-script: "./vendor/bin/phpunit --coverage-text --whitelist src/ tests/"
+script:
+  - composer phpunit
+  - composer phpstan
+  - composer phpcs
 
 after_success:
     - travis_retry php vendor/bin/coveralls

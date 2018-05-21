@@ -42,7 +42,7 @@ class Dispatcher
      *
      * The callbacks are treated as a queue (FIFO)
      *
-     * @param callable the callback to execute
+     * @param callable $callback the callback to execute
      * @return self
      */
     public function addResponseMiddleware(callable $callback): self
@@ -58,7 +58,7 @@ class Dispatcher
      * key, it will be used during execution; if not, the default behavior is
      * to automatically instanciate it.
      *
-     * @param ContainerInterface Container
+     * @param ContainerInterface $container Container
      * @return self
      */
     public function setContainer(ContainerInterface $container = null): self
@@ -83,7 +83,7 @@ class Dispatcher
     /**
      * Inject the request
      *
-     * @param RequestInterface The request
+     * @param RequestInterface $request The request
      * @return self
      */
     public function setRequest(RequestInterface $request): self
@@ -97,7 +97,7 @@ class Dispatcher
      * a string representing a file parsable by same. The list must map
      * MIME-types to Firehed\Input\ParserInterface class names.
      *
-     * @param array|string The parser list or its path
+     * @param array|string $parser_list The parser list or its path
      * @return self
      */
     public function setParserList($parser_list): self
@@ -112,7 +112,7 @@ class Dispatcher
      * filterable by HTTP method and map absolute URI path components to
      * controller methods.
      *
-     * @param array|string The endpoint list or its path
+     * @param array|string $endpoint_list The endpoint list or its path
      * @return self
      */
     public function setEndpointList($endpoint_list): self
@@ -175,7 +175,7 @@ class Dispatcher
      * short-circuit all remaining callbacks, but still must return
      * a ResponseInterface object
      *
-     * @param ResponseInterface the response so far
+     * @param ResponseInterface $response the response so far
      * @return ResponseInterface the response after any additional processing
      */
     private function executeResponseMiddleware(

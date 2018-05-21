@@ -589,8 +589,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     // ----(Helper methods)----------------------------------------------------
 
     /**
-     * @param ResponseInterface response to test
-     * @param int HTTP status code to check for
+     * @param ResponseInterface $response response to test
+     * @param int $expected_code HTTP status code to check for
      */
     private function checkResponse(ResponseInterface $response, int $expected_code)
     {
@@ -606,11 +606,11 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * returning a mock PSR-7 URI with the provided path, and the HTTP method
      * if provided
      *
-     * @param string path component of URI
-     * @param [string] optional HTTP method
-     * @param [array] optional raw, unescaped query string data
+     * @param string $uri path component of URI
+     * @param string $method optional HTTP method
+     * @param array $query_data optional raw, unescaped query string data
      * @param string $requestClass What RequestInterface to mock
-     * @return \Psr\Http\Message\RequestInterface
+     * @return RequestInterface | \PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockRequestWithUriPath(
         string $uri,
@@ -625,6 +625,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $mock_uri->method('getQuery')
             ->will($this->returnValue(http_build_query($query_data)));
 
+        /** @var RequestInterface | \PHPUnit\Framework\MockObject\MockObject */
         $req = $this->createMock($requestClass);
 
         $req->expects($this->any())
@@ -640,7 +641,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Convenience method for mocking an endpoint. The mock has no required or
      * optional inputs.
      *
-     * @return EndpointInterface
+     * @return EndpointInterface | \PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockEndpoint(): EndpointInterface
     {
@@ -657,7 +658,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Run the endpointwith an empty request
      *
-     * @param Endpoint the endpoint to test
+     * @param EndpointInterface $endpoint the endpoint to test
      * @param ?Dispatcher $dispatcher a configured dispatcher
      * @return ResponseInterface the endpoint response
      */
