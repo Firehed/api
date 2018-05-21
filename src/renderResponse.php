@@ -9,10 +9,10 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Takes a PSR-7 Response and outputs all headers and body. This should be the
  * very last thing done in request processing.
+ *
+ * @deprecated 3.1.0 Use ResponseRenderer instead
  */
 function renderResponse(ResponseInterface $response): void
 {
-    $renderer = new ResponseRenderer($response);
-    $renderer->sendHeaders();
-    $renderer->sendBody();
+    ResponseRenderer::render($response);
 }

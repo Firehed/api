@@ -15,6 +15,13 @@ class ResponseRenderer
         $this->response = $response;
     }
 
+    public static function render(ResponseInterface $response): void
+    {
+        $renderer = new ResponseRenderer($response);
+        $renderer->sendHeaders();
+        $renderer->sendBody();
+    }
+
     public function sendHeaders(): void
     {
         // Send HTTP code
