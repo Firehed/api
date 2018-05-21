@@ -7,8 +7,9 @@ namespace Firehed\API\Interfaces;
 use Firehed\API\Enums\HTTPMethod;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\Input\Interfaces\ValidationInterface;
-use Psr\Http\Message\RequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 /**
  * Interface for implementing an endpoint in your application's API. All
@@ -39,10 +40,10 @@ interface EndpointInterface extends ValidationInterface, HandlesOwnErrorsInterfa
      * RECOMMENDED to handle all errors in `handleException()` rather than
      * catching and handling them in this method when possible.
      *
-     * @param SafeInput the parsed and validated input
+     * @param SafeInput $input the parsed and validated input
      * @return ResponseInterface
      */
-    public function execute(SafeInput $input): Response;
+    public function execute(SafeInput $input): ResponseInterface;
 
     /**
      * Indiate the request URI path that must be used for the inbound requests
@@ -88,9 +89,9 @@ interface EndpointInterface extends ValidationInterface, HandlesOwnErrorsInterfa
      * It is RECOMMENDED to implement this method in a trait, since most
      * Endpoints will share authentication logic.
      *
-     * @param Request Inbound PSR-7 HTTP Request
+     * @param RequestInterface $request Inbound PSR-7 HTTP Request
      * @return self
      * @throws \RuntimeException if authentication fails
      */
-    public function authenticate(Request $request): self;
+    public function authenticate(RequestInterface $request): self;
 }

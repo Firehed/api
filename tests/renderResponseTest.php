@@ -6,9 +6,9 @@ namespace Firehed\API;
 
 use Psr\Http\Message\ResponseInterface;
 
-class RenderResponseTest extends \PHPUnit\Framework\TestCase
+// phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
+class renderResponseTest extends \PHPUnit\Framework\TestCase
 {
-
     /**
      * The function should just blindly render the data, assuming everything is
      * reasonably well-formed and spec-compliant.

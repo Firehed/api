@@ -12,6 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Throwable;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -337,7 +338,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
                 "The exception thrown from the error handler's failure should ".
                 "have made it through"
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->assertSame(
                 $error,
                 $e,
@@ -489,7 +490,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($endpoint);
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @covers ::setErrorHandler
+     */
     public function testExceptionsReachDefaultErrorHandlerWhenSet()
     {
         $e = new Exception('This should reach the main error handler');
@@ -506,6 +510,41 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnCallback($cb));
 
         $dispatcher = new Dispatcher();
+        $this->assertSame(
+            $dispatcher,
+            $dispatcher->setErrorHandler($handler),
+            'setErrorHandler should return $this'
+        );
+
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->method('execute')
+            ->will($this->throwException($e));
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($e)
+            ->will($this->throwException($e));
+        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+    }
+
+    /**
+     * This is a sort of BC-prevention test: in v4, the Dispatcher will only
+     * accept a ServerRequestInterface instead of the base-level
+     * RequestInterface. The new error handler is typehinted as such. This
+     * checks that if the base class was provided to the dispatcher, it
+     * shouldn't attempt to use the error handler since it would just result in
+     * a TypeError. This will be removed in v4.
+     *
+     * @covers ::dispatch
+     */
+    public function testExceptionsLeakWhenRequestIsBaseClass()
+    {
+        $e = new Exception('This should reach the top level');
+
+        $handler = $this->createMock(ErrorHandlerInterface::class);
+        $handler->expects($this->never())
+            ->method('handle');
+
+        $dispatcher = new Dispatcher();
         $dispatcher->setErrorHandler($handler);
 
         $endpoint = $this->getMockEndpoint();
@@ -515,14 +554,43 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('handleException')
             ->with($e)
             ->will($this->throwException($e));
-        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+        try {
+            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $t) {
+            $this->assertSame($e, $t);
+        }
+    }
+
+    /** @covers ::dispatch */
+    public function testExceptionsLeakWhenNoErrorHandler()
+    {
+        $e = new Exception('This should reach the top level');
+
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->method('execute')
+            ->will($this->throwException($e));
+        // This is a quasi-v4 endpoint: one where the endpoint's exception
+        // handler just rethrows the exception. This should be the same as not
+        // choosing to have an endpoint handle exeptions directly in v4.
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($e)
+            ->will($this->throwException($e));
+
+        try {
+            $this->executeMockRequestOnEndpoint($endpoint);
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $t) {
+            $this->assertSame($e, $t, 'A different exception was thrown');
+        }
     }
 
     // ----(Helper methods)----------------------------------------------------
 
     /**
-     * @param ResponseInterface response to test
-     * @param int HTTP status code to check for
+     * @param ResponseInterface $response response to test
+     * @param int $expected_code HTTP status code to check for
      */
     private function checkResponse(ResponseInterface $response, int $expected_code)
     {
@@ -538,15 +606,17 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * returning a mock PSR-7 URI with the provided path, and the HTTP method
      * if provided
      *
-     * @param string path component of URI
-     * @param [string] optional HTTP method
-     * @param [array] optional raw, unescaped query string data
-     * @return \Psr\Http\Message\RequestInterface
+     * @param string $uri path component of URI
+     * @param string $method optional HTTP method
+     * @param array $query_data optional raw, unescaped query string data
+     * @param string $requestClass What RequestInterface to mock
+     * @return RequestInterface | \PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockRequestWithUriPath(
         string $uri,
         string $method = 'GET',
-        array $query_data = []
+        array $query_data = [],
+        string $requestClass = RequestInterface::class
     ): RequestInterface {
         $mock_uri = $this->createMock(UriInterface::class);
         $mock_uri->expects($this->any())
@@ -555,7 +625,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $mock_uri->method('getQuery')
             ->will($this->returnValue(http_build_query($query_data)));
 
-        $req = $this->createMock(ServerRequestInterface::class);
+        /** @var RequestInterface | \PHPUnit\Framework\MockObject\MockObject */
+        $req = $this->createMock($requestClass);
 
         $req->expects($this->any())
             ->method('getUri')
@@ -570,7 +641,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Convenience method for mocking an endpoint. The mock has no required or
      * optional inputs.
      *
-     * @return EndpointInterface
+     * @return EndpointInterface | \PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockEndpoint(): EndpointInterface
     {
@@ -587,15 +658,16 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Run the endpointwith an empty request
      *
-     * @param Endpoint the endpoint to test
+     * @param EndpointInterface $endpoint the endpoint to test
      * @param ?Dispatcher $dispatcher a configured dispatcher
      * @return ResponseInterface the endpoint response
      */
     private function executeMockRequestOnEndpoint(
         EndpointInterface $endpoint,
-        Dispatcher $dispatcher = null
+        Dispatcher $dispatcher = null,
+        string $requestClass = RequestInterface::class
     ): ResponseInterface {
-        $req = $this->getMockRequestWithUriPath('/container', 'GET');
+        $req = $this->getMockRequestWithUriPath('/container', 'GET', [], $requestClass);
         $list = [
             'GET' => [
                 '/container' => 'ClassThatDoesNotExist',
