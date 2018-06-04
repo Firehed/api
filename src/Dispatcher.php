@@ -21,6 +21,8 @@ use UnexpectedValueException;
 class Dispatcher
 {
 
+    private $authenticationProvider;
+    private $authorizationProvider;
     private $container;
     private $endpoint_list;
     private $error_handler;
@@ -50,6 +52,16 @@ class Dispatcher
     {
         $this->response_middleware[] = $callback;
         return $this;
+    }
+
+    public function setAuthenticationProvider(Interfaces\AuthenticationProviderInterface $provider)
+    {
+        $this->authenticationProvider = $provider;
+    }
+
+    public function setAuthorizationProvider(Interfaces\AuthorizationProviderInterface $provider)
+    {
+        $this->authorizationProvider = $provider;
     }
 
     /**
@@ -143,7 +155,17 @@ class Dispatcher
             );
         }
 
+        $isSRI = $this->request instanceof ServerRequestInterface;
+        // Soon: issue a warning if !isSRI
+
         $endpoint = $this->getEndpoint();
+        if ($isSRI && $this->authenticationProvider && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface) {
+            $auth = $this->authenticationProvider->authenticate($this->request);
+            $endpoint->setAuthentication($auth);
+            if ($this->authorizationProvider) {
+                $this->authorizationProvider->authorize($endpoint, $auth);
+            }
+        }
         try {
             $endpoint->authenticate($this->request);
             $safe_input = $this->parseInput()
