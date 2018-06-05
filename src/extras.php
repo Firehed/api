@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Firehed\API\Interfaces;
 
+use Firehed\API\Exceptions\AuthenticationException;
 use Psr\Http\Message\ServerRequestInterface;
 // These need to be organized or possibly split into their own repo
 
@@ -49,16 +50,13 @@ class ChainAuthenticationProvider implements AuthenticationProviderInterface
     public function authenticate(ServerRequestInterface $request): AuthenticationContainerInterface
     {
         foreach ($this->providers as $provider) {
-            $auth = $provider->authenticate($request);
-            if ($auth->isAuthenticated()) {
-                return $auth;
+            try {
+                return $provider->authenticate($request);
+            } catch (AuthenticationException $e) {
             }
         }
-        return new class implements AuthenticationInterface {
-            public function isAuthenticated(): bool
-            {
-                return false;
-            }
-        };
+        // Maybe? This could be some wacky exception(previous) chain rather
+        // than just the last one.
+        throw $e;
     }
 }

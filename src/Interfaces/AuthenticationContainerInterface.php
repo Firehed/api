@@ -10,5 +10,4 @@ use Psr\Container\ContainerInterface;
  */
 interface AuthenticationContainerInterface extends ContainerInterface
 {
-    public function isAuthenticated(): bool;
 }
