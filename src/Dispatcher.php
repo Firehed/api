@@ -54,14 +54,19 @@ class Dispatcher
         return $this;
     }
 
-    public function setAuthenticationProvider(Interfaces\AuthenticationProviderInterface $provider)
-    {
-        $this->authenticationProvider = $provider;
-    }
-
-    public function setAuthorizationProvider(Interfaces\AuthorizationProviderInterface $provider)
-    {
-        $this->authorizationProvider = $provider;
+    /**
+     * Provide the authentication and authorization providers. These will be
+     * run after routing but before the endpoint is executed.
+     *
+     * @return $this
+     */
+    public function setAuthProviders(
+        Interfaces\AuthenticationProviderInterface $authn,
+        Interfaces\AuthorizationProviderInterface $authz
+    ): self {
+        $this->authenticationProvider = $authn;
+        $this->authorizationProvider = $authz;
+        return $this;
     }
 
     /**
