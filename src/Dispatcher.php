@@ -89,6 +89,16 @@ class Dispatcher
      */
     public function setRequest(RequestInterface $request): self
     {
+        if (!$request instanceof ServerRequestInterface) {
+            trigger_error(
+                sprintf(
+                    'Providing %s is deprecated. Use %s instead',
+                    RequestInterface::class,
+                    ServerRequestInterface::class
+                ),
+                E_USER_DEPRECATED
+            );
+        }
         $this->request = $request;
         return $this;
     }
