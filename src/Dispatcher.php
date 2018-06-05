@@ -176,9 +176,7 @@ class Dispatcher
         if ($isSRI && $this->authenticationProvider && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface) {
             $auth = $this->authenticationProvider->authenticate($this->request);
             $endpoint->setAuthentication($auth);
-            if ($this->authorizationProvider) {
-                $this->authorizationProvider->authorize($endpoint, $auth);
-            }
+            $this->authorizationProvider->authorize($endpoint, $auth);
         }
         try {
             $endpoint->authenticate($this->request);
