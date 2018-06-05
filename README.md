@@ -1,7 +1,8 @@
 # API Framework
 
 [![Build Status](https://travis-ci.org/Firehed/api.svg?branch=master)](https://travis-ci.org/Firehed/api)
-[![Coverage Status](https://coveralls.io/repos/github/Firehed/api/badge.svg?branch=master)](https://coveralls.io/github/Firehed/api?branch=master)
+[![codecov](https://codecov.io/gh/Firehed/api/branch/master/graph/badge.svg)](https://codecov.io/gh/Firehed/api)
+
 
 ## Installation
 
