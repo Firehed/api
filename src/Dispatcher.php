@@ -171,7 +171,6 @@ class Dispatcher
         }
 
         $isSRI = $this->request instanceof ServerRequestInterface;
-        // Soon: issue a warning if !isSRI
 
         $endpoint = $this->getEndpoint();
         if ($isSRI && $this->authenticationProvider && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface) {
