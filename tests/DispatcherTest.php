@@ -22,6 +22,19 @@ use Throwable;
 class DispatcherTest extends \PHPUnit\Framework\TestCase
 {
 
+    private $reporting;
+
+    public function setUp()
+    {
+        $this->reporting = error_reporting();
+        error_reporting($this->reporting & ~E_USER_DEPRECATED);
+    }
+
+    public function tearDown()
+    {
+        error_reporting($this->reporting);
+    }
+
     public function testConstruct()
     {
         $this->assertInstanceOf(
@@ -584,6 +597,24 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         } catch (Throwable $t) {
             $this->assertSame($e, $t, 'A different exception was thrown');
         }
+    }
+
+    /** @covers ::setRequest */
+    public function testDeprecationWarningIsIssuedWithBaseRequest()
+    {
+        error_reporting($this->reporting); // Turn standard reporting back on
+        $dispatcher = new Dispatcher();
+        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $dispatcher->setRequest($this->createMock(RequestInterface::class));
+    }
+
+    /** @covers ::setRequest */
+    public function testDeprecationWarningIsNotIssuedWithServerRequest()
+    {
+        error_reporting($this->reporting); // Turn standard reporting back on
+        $dispatcher = new Dispatcher();
+        $dispatcher->setRequest($this->createMock(ServerRequestInterface::class));
+        $this->assertTrue(true, 'No error should have been raised');
     }
 
     // ----(Helper methods)----------------------------------------------------
