@@ -6,6 +6,7 @@ namespace Firehed\API;
 
 use BadMethodCallException;
 use DomainException;
+use FastRoute;
 use Firehed\API\Interfaces\ErrorHandlerInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
@@ -246,20 +247,38 @@ class Dispatcher
      */
     private function getEndpoint(): Interfaces\EndpointInterface
     {
-        list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
-            ->filter(strtoupper($this->request->getMethod()))
-            ->search($this->request->getUri()->getPath());
-        if (!$class) {
-            throw new OutOfBoundsException('Endpoint not found', 404);
+        $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rc) {
+            $data = json_decode(file_get_contents($this->endpoint_list), true);
+            unset($data['@gener'.'ated']);
+            $pattern = '#\(\?P?<(\w+)>(.*)\)#U';
+            foreach ($data as $method => $routes) {
+                // var_dump($routes);
+                foreach ($routes as $regex => $fqcn) {
+                    $frUri = preg_replace($pattern, '{\1:\2}', $regex);
+                    // var_dump($frUri);
+                    $rc->addRoute($method, $frUri, $fqcn);
+                }
+            }
+        });
+        $info = $dispatcher->dispatch(
+            $this->request->getMethod(),
+            $this->request->GetUri()->getPath()
+        );
+        switch ($info[0]) {
+            case FastRoute\Dispatcher::NOT_FOUND:
+                throw new OutOfBoundsException('Endpoint not found', 404);
+            case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+                // allowed methods = $info[1]
+                throw new OutOfBoundsException('Method not allowed', 405);
+            case FastRoute\Dispatcher::FOUND:
+                $fqcn = $info[1];
+                $uriData = $info[2];
+                $this->setUriData(new ParsedInput($uriData));
+                if ($this->container && $this->container->has($fqcn)) {
+                    return $this->container->get($fqcn);
+                }
+                return new $class;
         }
-        // Conceivably, we could use reflection to ensure the found class
-        // adheres to the interface; in practice, the built route is already
-        // doing the filtering so this should be redundant.
-        $this->setUriData(new ParsedInput($uri_data));
-        if ($this->container && $this->container->has($class)) {
-            return $this->container->get($class);
-        }
-        return new $class;
     }
 
     private function setUriData(ParsedInput $uri_data): self
