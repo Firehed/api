@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Firehed\API\Interfaces;
+namespace Firehed\API\Authentication;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-interface AuthenticationProviderInterface
+interface ProviderInterface
 {
     /**
      * Upon successful authentication, the provider MUST return an
@@ -14,7 +14,7 @@ interface AuthenticationProviderInterface
      * possible.
      *
      * If authentication fails, the provider MUST throw
-     * a Firehed\API\Exceptions\AuthenticationException.
+     * a Firehed\API\Authentication\Exception.
      */
-    public function authenticate(ServerRequestInterface $request): AuthenticationContainerInterface;
+    public function authenticate(ServerRequestInterface $request): ContainerInterface;
 }

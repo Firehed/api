@@ -61,8 +61,8 @@ class Dispatcher
      * @return $this
      */
     public function setAuthProviders(
-        Interfaces\AuthenticationProviderInterface $authn,
-        Interfaces\AuthorizationProviderInterface $authz
+        Authentication\ProviderInterface $authn,
+        Authorization\ProviderInterface $authz
     ): self {
         $this->authenticationProvider = $authn;
         $this->authorizationProvider = $authz;
