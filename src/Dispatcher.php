@@ -248,7 +248,11 @@ class Dispatcher
     private function getEndpoint(): Interfaces\EndpointInterface
     {
         $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rc) {
-            $data = json_decode(file_get_contents($this->endpoint_list), true);
+            if (is_array($this->endpoint_list)) {
+                $data = $this->endpoint_list;
+            } else {
+                $data = json_decode(file_get_contents($this->endpoint_list), true);
+            }
             unset($data['@gener'.'ated']);
             $pattern = '#\(\?P?<(\w+)>(.*)\)#U';
             foreach ($data as $method => $routes) {
