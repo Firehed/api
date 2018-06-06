@@ -281,7 +281,7 @@ class Dispatcher
                 if ($this->container && $this->container->has($fqcn)) {
                     return $this->container->get($fqcn);
                 }
-                return new $class;
+                return new $fqcn;
         }
     }
 
