@@ -173,12 +173,15 @@ class Dispatcher
         $isSRI = $this->request instanceof ServerRequestInterface;
 
         $endpoint = $this->getEndpoint();
-        if ($isSRI && $this->authenticationProvider && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface) {
-            $auth = $this->authenticationProvider->authenticate($this->request);
-            $endpoint->setAuthentication($auth);
-            $this->authorizationProvider->authorize($endpoint, $auth);
-        }
         try {
+            if ($isSRI
+                && $this->authenticationProvider
+                && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
+            ) {
+                $auth = $this->authenticationProvider->authenticate($this->request);
+                $endpoint->setAuthentication($auth);
+                $this->authorizationProvider->authorize($endpoint, $auth);
+            }
             $endpoint->authenticate($this->request);
             $safe_input = $this->parseInput()
                 ->addData($this->getUriData())

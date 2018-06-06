@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Firehed\API;
 
 use Exception;
+use Firehed\API\Authentication;
+use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Interfaces\ErrorHandlerInterface;
 use Psr\Container\ContainerInterface;
@@ -615,6 +617,103 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $dispatcher = new Dispatcher();
         $dispatcher->setRequest($this->createMock(ServerRequestInterface::class));
         $this->assertTrue(true, 'No error should have been raised');
+    }
+
+    /** @covers ::dispatch */
+    public function testAuthHappensWhenProvided()
+    {
+        $authContainer = $this->createMock(Authentication\ContainerInterface::class);
+
+        $authn = $this->createMock(Authentication\ProviderInterface::class);
+        $authn->expects($this->once())
+            ->method('authenticate')
+            ->willReturn($authContainer);
+
+        $response = $this->createMock(ResponseInterface::class);
+
+        $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
+        $endpoint->expects($this->once())
+            ->method('setAuthentication')
+            ->with($authContainer);
+        $endpoint->expects($this->once())
+            ->method('execute')
+            ->willReturn($response);
+
+        $authz = $this->createMock(Authorization\ProviderInterface::class);
+        $authz->expects($this->once())
+            ->method('authorize')
+            ->with($endpoint, $authContainer)
+            ->willReturn(new Authorization\Ok());
+
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->setAuthProviders($authn, $authz);
+        $res = $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+        $this->assertSame($response, $res);
+    }
+
+    public function testExecuteIsNotCalledWhenAuthzFails()
+    {
+        $authContainer = $this->createMock(Authentication\ContainerInterface::class);
+        $authn = $this->createMock(Authentication\ProviderInterface::class);
+        $authn->expects($this->once())
+            ->method('authenticate')
+            ->willReturn($authContainer);
+
+        $authzEx = new Authorization\Exception();
+
+        $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
+        $endpoint->expects($this->never())
+            ->method('execute');
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($authzEx)
+            ->will($this->throwException($authzEx));
+
+        $authz = $this->createMock(Authorization\ProviderInterface::class);
+        $authz->expects($this->once())
+            ->method('authorize')
+            ->with($endpoint, $authContainer)
+            ->will($this->throwException($authzEx));
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->setAuthProviders($authn, $authz);
+        try {
+            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+            $this->fail('An authorization exception should have been thrown');
+        } catch (Authorization\Exception $e) {
+            $this->assertSame($authzEx, $e);
+        }
+    }
+
+    public function testExecuteIsNotCalledWhenAuthnFails()
+    {
+        $authnEx = new Authentication\Exception();
+        $authn = $this->createMock(Authentication\ProviderInterface::class);
+        $authn->expects($this->once())
+            ->method('authenticate')
+            ->will($this->throwException($authnEx));
+
+        $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
+        $endpoint->expects($this->never())
+            ->method('execute');
+        $endpoint->expects($this->once())
+            ->method('handleException')
+            ->with($authnEx)
+            ->will($this->throwException($authnEx));
+
+        $authz = $this->createMock(Authorization\ProviderInterface::class);
+        $authz->expects($this->never())
+            ->method('authorize');
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->setAuthProviders($authn, $authz);
+        try {
+            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+            $this->fail('An exception should have been thrown');
+        } catch (Authentication\Exception $e) {
+            $this->assertSame($authnEx, $e);
+        }
     }
 
     // ----(Helper methods)----------------------------------------------------
