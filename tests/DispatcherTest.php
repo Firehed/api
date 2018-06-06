@@ -619,6 +619,20 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(true, 'No error should have been raised');
     }
 
+    /** @covers ::setAuthProviders */
+    public function testSetAuthProviders()
+    {
+        $dispatcher = new Dispatcher();
+        $this->assertSame(
+            $dispatcher,
+            $dispatcher->setAuthProviders(
+                $this->createMock(Authentication\ProviderInterface::class),
+                $this->createMock(Authorization\ProviderInterface::class)
+            ),
+            'Dispacher did not return $this'
+        );
+    }
+
     /** @covers ::dispatch */
     public function testAuthHappensWhenProvided()
     {
@@ -652,6 +666,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($response, $res);
     }
 
+    /** @covers ::dispatch */
     public function testExecuteIsNotCalledWhenAuthzFails()
     {
         $authContainer = $this->createMock(Authentication\ContainerInterface::class);
@@ -686,6 +701,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /** @covers ::dispatch */
     public function testExecuteIsNotCalledWhenAuthnFails()
     {
         $authnEx = new Authentication\Exception();
