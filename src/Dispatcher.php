@@ -83,6 +83,9 @@ class Dispatcher
     {
         $this->container = $container;
 
+        if (!$container) {
+            return $this;
+        }
         // Auto-detect auth components
         if (!$this->authenticationProvider && !$this->authorizationProvider) {
             if ($container->has(Authentication\ProviderInterface::class)
