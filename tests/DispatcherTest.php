@@ -633,6 +633,84 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @covers ::setAuthProviders
+     * @covers ::setContainer
+     * @covers ::dispatch
+     */
+    public function testAuthComponentsAreAutoDetected()
+    {
+        $authn = $this->createMock(Authentication\ProviderInterface::class);
+        $authn->expects($this->once())
+            ->method('authenticate')
+            ->willReturn($this->createMock(ContainerInterface::class));
+        $authz = $this->createMock(Authorization\ProviderInterface::class);
+        $authz->expects($this->once())
+            ->method('authorize')
+            ->willReturn(new Authorization\Ok());
+
+        $req = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
+        $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
+
+        $container = $this->getMockContainer([
+            Authentication\ProviderInterface::class => $authn,
+            Authorization\ProviderInterface::class => $authz,
+            'ClassThatDoesNotExist' => $endpoint,
+        ]);
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->setContainer($container)
+            ->setEndpointList($routes)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req);
+        $dispatcher->dispatch();
+    }
+
+    /**
+     * @covers ::setAuthProviders
+     * @covers ::setContainer
+     * @covers ::dispatch
+     */
+    public function testAutoDetectedAuthComponentsDoNotOverrideExplicit()
+    {
+        // explicitly provided should run
+        $authn1 = $this->createMock(Authentication\ProviderInterface::class);
+        $authn1->expects($this->once())
+            ->method('authenticate')
+            ->willReturn($this->createMock(ContainerInterface::class));
+        $authz1 = $this->createMock(Authorization\ProviderInterface::class);
+        $authz1->expects($this->once())
+            ->method('authorize')
+            ->willReturn(new Authorization\Ok());
+
+        // implicit from container should not
+        $authn2 = $this->createMock(Authentication\ProviderInterface::class);
+        $authn2->expects($this->never())
+            ->method('authenticate');
+        $authz2 = $this->createMock(Authorization\ProviderInterface::class);
+        $authz2->expects($this->never())
+            ->method('authorize');
+
+        $req = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
+        $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
+
+        $container = $this->getMockContainer([
+            Authentication\ProviderInterface::class => $authn2,
+            Authorization\ProviderInterface::class => $authz2,
+            'ClassThatDoesNotExist' => $endpoint,
+        ]);
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->setContainer($container)
+            ->setAuthProviders($authn1, $authz1)
+            ->setEndpointList($routes)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req);
+        $dispatcher->dispatch();
+    }
+
     /** @covers ::dispatch */
     public function testAuthHappensWhenProvided()
     {
@@ -852,16 +930,14 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     private function getMockContainer(array $values): ContainerInterface
     {
         $container = $this->createMock(ContainerInterface::class);
-        foreach ($values as $key => $value) {
-            $container->method('has')
-                ->with($key)
-                ->will($this->returnValue(true));
-            $container->method('get')
-                ->with($key)
-                ->will($this->returnValue($value));
-        }
-
-
+        $container->method('has')
+            ->willReturnCallback(function ($id) use ($values) {
+                return array_key_exists($id, $values);
+            });
+        $container->method('get')
+            ->willReturnCallback(function ($id) use ($values) {
+                return $values[$id];
+            });
         return $container;
     }
 }

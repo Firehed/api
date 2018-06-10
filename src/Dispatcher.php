@@ -82,6 +82,19 @@ class Dispatcher
     public function setContainer(ContainerInterface $container = null): self
     {
         $this->container = $container;
+
+        // Auto-detect auth components
+        if (!$this->authenticationProvider && !$this->authorizationProvider) {
+            if ($container->has(Authentication\ProviderInterface::class)
+                && $container->has(Authorization\ProviderInterface::class)
+            ) {
+                $this->setAuthProviders(
+                    $container->get(Authentication\ProviderInterface::class),
+                    $container->get(Authorization\ProviderInterface::class)
+                );
+            }
+        }
+
         return $this;
     }
 
