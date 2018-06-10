@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Firehed\API\Interfaces;
 
-use Firehed\API\Authentication\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 interface AuthenticatedEndpointInterface extends EndpointInterface
 {

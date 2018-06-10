@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Firehed\API\Authorization;
 
-use Firehed\API\Authentication;
 use Firehed\API\Interfaces\AuthenticatedEndpointInterface;
+use Psr\Container\ContainerInterface;
 
 interface ProviderInterface
 {
@@ -17,6 +17,6 @@ interface ProviderInterface
      */
     public function authorize(
         AuthenticatedEndpointInterface $endpoint,
-        Authentication\ContainerInterface $auth
+        ContainerInterface $auth
     ): Ok;
 }

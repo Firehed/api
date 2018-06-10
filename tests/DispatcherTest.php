@@ -636,7 +636,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     /** @covers ::dispatch */
     public function testAuthHappensWhenProvided()
     {
-        $authContainer = $this->createMock(Authentication\ContainerInterface::class);
+        $authContainer = $this->createMock(ContainerInterface::class);
 
         $authn = $this->createMock(Authentication\ProviderInterface::class);
         $authn->expects($this->once())
@@ -669,7 +669,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     /** @covers ::dispatch */
     public function testExecuteIsNotCalledWhenAuthzFails()
     {
-        $authContainer = $this->createMock(Authentication\ContainerInterface::class);
+        $authContainer = $this->createMock(ContainerInterface::class);
         $authn = $this->createMock(Authentication\ProviderInterface::class);
         $authn->expects($this->once())
             ->method('authenticate')
