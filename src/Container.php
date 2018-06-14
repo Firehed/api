@@ -7,7 +7,7 @@ use Psr\Container as Psr;
 
 /**
  * Ultra simple array wrapper for a PSR container. No closures, no evaluation,
- * nothign else. Just a dumb-as-rocks key/value store.
+ * nothing else. Just a dumb-as-rocks key/value store.
  */
 class Container implements Psr\ContainerInterface
 {
