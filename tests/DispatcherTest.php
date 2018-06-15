@@ -317,6 +317,11 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @covers ::addMiddleware
+     * @covers ::dispatch
+     * @covers ::handle
+     */
     public function testPsr15()
     {
         $request = $this->createMock(ServerRequestInterface::class);
@@ -337,9 +342,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $mw2 = $this->createMock(MiddlewareInterface::class);
         $mw2->expects($this->once())
             ->method('process')
-            ->willReturnCallback(function ($req, $handler) use ($modifiedRequest, $dispatcher, $response, $modifiedResponse) {
+            ->willReturnCallback(function ($req, $handler) use ($modifiedRequest, $response, $modifiedResponse) {
                 $this->assertSame($req, $modifiedRequest, 'Request mismatch');
-                $this->assertSame($dispatcher, $handler, 'Handler mismatch');
                 $endpointResponse = $handler->handle($req);
                 $this->assertSame($response, $endpointResponse, 'Response mismatch');
                 return $modifiedResponse;
