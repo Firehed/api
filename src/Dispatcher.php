@@ -196,22 +196,29 @@ class Dispatcher implements RequestHandlerInterface
             );
         }
 
-        $isSRI = $this->request instanceof ServerRequestInterface;
+        $request = $this->request;
 
-        $endpoint = $this->getEndpoint();
+        return $this->doDispatch($request);
+    }
+
+    private function doDispatch(RequestInterface $request)
+    {
+        $isSRI = $request instanceof ServerRequestInterface;
+
+        $endpoint = $this->getEndpoint($request);
         try {
             if ($isSRI
                 && $this->authenticationProvider
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
             ) {
-                $auth = $this->authenticationProvider->authenticate($this->request);
+                $auth = $this->authenticationProvider->authenticate($request);
                 $endpoint->setAuthentication($auth);
                 $this->authorizationProvider->authorize($endpoint, $auth);
             }
-            $endpoint->authenticate($this->request);
-            $safe_input = $this->parseInput()
+            $endpoint->authenticate($request);
+            $safe_input = $this->parseInput($request)
                 ->addData($this->getUriData())
-                ->addData($this->getQueryStringData())
+                ->addData($this->getQueryStringData($request))
                 ->validate($endpoint);
 
             $response = $endpoint->execute($safe_input);
@@ -226,8 +233,8 @@ class Dispatcher implements RequestHandlerInterface
                 // If an application-wide handler has been defined, use the
                 // response that it generates. If not, just rethrow the
                 // exception for the system default (if defined) to handle.
-                if ($this->error_handler && $this->request instanceof ServerRequestInterface) {
-                    $response = $this->error_handler->handle($this->request, $e);
+                if ($this->error_handler && $isSRI) {
+                    $response = $this->error_handler->handle($request, $e);
                 } else {
                     throw $e;
                 }
@@ -263,16 +270,17 @@ class Dispatcher implements RequestHandlerInterface
     /**
      * Parse the raw input body based on the content type
      *
+     * @param RequestInterface $request
      * @return ParsedInput the parsed input data
      */
-    private function parseInput(): ParsedInput
+    private function parseInput(RequestInterface $request): ParsedInput
     {
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
         // don't use $_POST because additional content types are supported.
         // Since PSR-7 doesn't specify parsing the body of most MIME-types,
         // we'll hand off to our own set of parsers.
-        $header = $this->request->getHeader('Content-type');
+        $header = $request->getHeader('Content-type');
         if ($header) {
             $directives = explode(';', $header[0]);
             if (!count($directives)) {
@@ -287,7 +295,7 @@ class Dispatcher implements RequestHandlerInterface
                 throw new OutOfBoundsException('Unsupported Content-type', 415);
             }
             $parser = new $parser_class;
-            $data = $parser->parse((string)$this->request->getBody());
+            $data = $parser->parse((string)$request->getBody());
         }
         return new ParsedInput($data);
     }
@@ -297,11 +305,11 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @return Interfaces\EndpointInterface the routed endpoint
      */
-    private function getEndpoint(): Interfaces\EndpointInterface
+    private function getEndpoint(RequestInterface $request): Interfaces\EndpointInterface
     {
         list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
-            ->filter(strtoupper($this->request->getMethod()))
-            ->search($this->request->getUri()->getPath());
+            ->filter(strtoupper($request->getMethod()))
+            ->search($request->getUri()->getPath());
         if (!$class) {
             throw new OutOfBoundsException('Endpoint not found', 404);
         }
@@ -326,9 +334,9 @@ class Dispatcher implements RequestHandlerInterface
         return $this->uri_data;
     }
 
-    private function getQueryStringData(): ParsedInput
+    private function getQueryStringData(RequestInterface $request): ParsedInput
     {
-        $uri = $this->request->getUri();
+        $uri = $request->getUri();
         $query = $uri->getQuery();
         $data = [];
         parse_str($query, $data);
