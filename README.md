@@ -87,22 +87,64 @@ The path to a file which returns a `PSR-11`-compliant container for config value
 
 ### Container
 
-If you set a `container` value in `.apiconfig`, the API will be made aware of the container.
+If you set a `container` value in `.apiconfig`, the API will be made aware of the container (if you do not use the generated front controller, you may also do this manually).
 This is how to configure API endpoints at runtime.
 By convention, if the container `has()` an endpoint's fully-qualified class name, the dispatcher will `get()` and use that value when the route is dispatched.
 If no container is configured, or the container does not have a configuration for the routed endpoint, the routed endpoint will simply be instanciated via `new $routedEndpointClassName`.
 
-Further, if your container `has()` a `Psr\Log\LoggerInterface`, the default error handler will automatically be configured to use it.
-If it does not, it will use `Psr\Log\NullLogger`, resulting in no logs being written anywhere.
-It is therefore *highly recommended* to provide a `PSR-3` logger through the container.
+Other auto-detected container entries:
 
-### `.apiconfig` example
+| Key | Usage | Detected |
+|---|---|---|
+| Psr\Log\LoggerInterface | Internal logging | generated front controller |
+| Firehed\API\Authentication\ProviderInterface | Authentication Provider | Always if an AuthorizationProvider is set |
+| Firehed\API\Authorization\ProviderInterface | Authorization Provider | Always if an AuthenticationProvider is set |
+
+
+### Example
+
+`.apiconfig`:
 
 ```json
 {
     "webroot": "public",
-    "namespace": "Company\\Project",
+    "namespace": "Your\\Application",
     "source": "src",
-    "container": "config/config.php"
+    "container": "config.php"
 }
 ```
+
+`config.php`:
+
+```php
+<?php
+use Firehed\API;
+use Psr\Log\LoggerInterface;
+use Your\Application\Endpoints;
+
+$container = new Pimple\Container();
+// Endpoint config
+$container[Endpoints\UserPost::class] = function ($c) {
+    return new Endpoints\UserPost($c['some-dependency']);
+};
+
+// Other services
+$container[API\Authentication\ProviderInterface::class] = function ($c) {
+    // return your provider
+};
+$container[API\Authorization\ProviderInterface::class] = function ($c) {
+    // return your provider
+};
+$container[LoggerInterface::class] = function ($c) {
+    return new Monolog\Logger('your-application');
+};
+
+// ...
+return new Pimple\Psr11\Container($container);
+```
+
+In this example, when your `UserPost` endpoint is routed, it will use the endpoint defined in the container - this allows for endpoints with required constructor arguments or other configuration.
+
+If you have e.g. a `UserGet` endpoint which is _not_ in the container, the dispatcher will automatically attempt to instantiate it with `new`.
+If that endpoint has no constructor arguments, this will be fine.
+However, this means your application will crash at runtime if it does - so any endpoints with required constructors **must** be configured in the container.

@@ -21,6 +21,8 @@ use UnexpectedValueException;
 class Dispatcher
 {
 
+    private $authenticationProvider;
+    private $authorizationProvider;
     private $container;
     private $endpoint_list;
     private $error_handler;
@@ -53,6 +55,21 @@ class Dispatcher
     }
 
     /**
+     * Provide the authentication and authorization providers. These will be
+     * run after routing but before the endpoint is executed.
+     *
+     * @return $this
+     */
+    public function setAuthProviders(
+        Authentication\ProviderInterface $authn,
+        Authorization\ProviderInterface $authz
+    ): self {
+        $this->authenticationProvider = $authn;
+        $this->authorizationProvider = $authz;
+        return $this;
+    }
+
+    /**
      * Provide a DI Container/Service Locator class or array. During
      * dispatching, this structure will be queried for the routed endpoint by
      * the fully-qualified class name. If the container has a class at that
@@ -65,6 +82,22 @@ class Dispatcher
     public function setContainer(ContainerInterface $container = null): self
     {
         $this->container = $container;
+
+        if (!$container) {
+            return $this;
+        }
+        // Auto-detect auth components
+        if (!$this->authenticationProvider && !$this->authorizationProvider) {
+            if ($container->has(Authentication\ProviderInterface::class)
+                && $container->has(Authorization\ProviderInterface::class)
+            ) {
+                $this->setAuthProviders(
+                    $container->get(Authentication\ProviderInterface::class),
+                    $container->get(Authorization\ProviderInterface::class)
+                );
+            }
+        }
+
         return $this;
     }
 
@@ -153,8 +186,18 @@ class Dispatcher
             );
         }
 
+        $isSRI = $this->request instanceof ServerRequestInterface;
+
         $endpoint = $this->getEndpoint();
         try {
+            if ($isSRI
+                && $this->authenticationProvider
+                && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
+            ) {
+                $auth = $this->authenticationProvider->authenticate($this->request);
+                $endpoint->setAuthentication($auth);
+                $this->authorizationProvider->authorize($endpoint, $auth);
+            }
             $endpoint->authenticate($this->request);
             $safe_input = $this->parseInput()
                 ->addData($this->getUriData())
