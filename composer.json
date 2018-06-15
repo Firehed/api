@@ -49,9 +49,6 @@
             "email": "eric@ericstern.com"
         }
     ],
-    "config": {
-      "sort-packages": true
-    },
     "scripts": {
       "test": [
         "@phpunit",
