@@ -6,6 +6,8 @@ namespace Firehed\API;
 
 use BadMethodCallException;
 use DomainException;
+use Firehed\API\Interfaces\ErrorHandlerInterface;
+use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
@@ -13,12 +15,15 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
 
 class Dispatcher implements RequestHandlerInterface
 {
 
+    private $authenticationProvider;
+    private $authorizationProvider;
     private $container;
     private $endpoint_list;
     private $error_handler;
@@ -50,12 +55,27 @@ class Dispatcher implements RequestHandlerInterface
      *
      * The callbacks are treated as a queue (FIFO)
      *
-     * @param callable the callback to execute
+     * @param callable $callback the callback to execute
      * @return self
      */
     public function addResponseMiddleware(callable $callback): self
     {
         $this->response_middleware[] = $callback;
+        return $this;
+    }
+
+    /**
+     * Provide the authentication and authorization providers. These will be
+     * run after routing but before the endpoint is executed.
+     *
+     * @return $this
+     */
+    public function setAuthProviders(
+        Authentication\ProviderInterface $authn,
+        Authorization\ProviderInterface $authz
+    ): self {
+        $this->authenticationProvider = $authn;
+        $this->authorizationProvider = $authz;
         return $this;
     }
 
@@ -66,23 +86,62 @@ class Dispatcher implements RequestHandlerInterface
      * key, it will be used during execution; if not, the default behavior is
      * to automatically instanciate it.
      *
-     * @param ContainerInterface Container
+     * @param ContainerInterface $container Container
      * @return self
      */
     public function setContainer(ContainerInterface $container = null): self
     {
         $this->container = $container;
+
+        if (!$container) {
+            return $this;
+        }
+        // Auto-detect auth components
+        if (!$this->authenticationProvider && !$this->authorizationProvider) {
+            if ($container->has(Authentication\ProviderInterface::class)
+                && $container->has(Authorization\ProviderInterface::class)
+            ) {
+                $this->setAuthProviders(
+                    $container->get(Authentication\ProviderInterface::class),
+                    $container->get(Authorization\ProviderInterface::class)
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Provide a default error handler. This will be used in the event that an
+     * endpoint does not define its own handler.
+     *
+     * @param ErrorHandlerInterface $handler
+     * @return self
+     */
+    public function setErrorHandler(ErrorHandlerInterface $handler): self
+    {
+        $this->error_handler = $handler;
         return $this;
     }
 
     /**
      * Inject the request
      *
-     * @param RequestInterface The request
+     * @param RequestInterface $request The request
      * @return self
      */
     public function setRequest(RequestInterface $request): self
     {
+        if (!$request instanceof ServerRequestInterface) {
+            trigger_error(
+                sprintf(
+                    'Providing %s is deprecated. Use %s instead',
+                    RequestInterface::class,
+                    ServerRequestInterface::class
+                ),
+                E_USER_DEPRECATED
+            );
+        }
         $this->request = $request;
         return $this;
     }
@@ -92,7 +151,7 @@ class Dispatcher implements RequestHandlerInterface
      * a string representing a file parsable by same. The list must map
      * MIME-types to Firehed\Input\ParserInterface class names.
      *
-     * @param array|string The parser list or its path
+     * @param array|string $parser_list The parser list or its path
      * @return self
      */
     public function setParserList($parser_list): self
@@ -107,7 +166,7 @@ class Dispatcher implements RequestHandlerInterface
      * filterable by HTTP method and map absolute URI path components to
      * controller methods.
      *
-     * @param array|string The endpoint list or its path
+     * @param array|string $endpoint_list The endpoint list or its path
      * @return self
      */
     public function setEndpointList($endpoint_list): self
@@ -137,8 +196,18 @@ class Dispatcher implements RequestHandlerInterface
             );
         }
 
+        $isSRI = $this->request instanceof ServerRequestInterface;
+
         $endpoint = $this->getEndpoint();
         try {
+            if ($isSRI
+                && $this->authenticationProvider
+                && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
+            ) {
+                $auth = $this->authenticationProvider->authenticate($this->request);
+                $endpoint->setAuthentication($auth);
+                $this->authorizationProvider->authorize($endpoint, $auth);
+            }
             $endpoint->authenticate($this->request);
             $safe_input = $this->parseInput()
                 ->addData($this->getUriData())
@@ -146,8 +215,23 @@ class Dispatcher implements RequestHandlerInterface
                 ->validate($endpoint);
 
             $response = $endpoint->execute($safe_input);
-        } catch (\Throwable $e) {
-            $response = $endpoint->handleException($e);
+        } catch (Throwable $e) {
+            try {
+                if ($endpoint instanceof HandlesOwnErrorsInterface) {
+                    $response = $endpoint->handleException($e);
+                } else {
+                    throw $e;
+                }
+            } catch (Throwable $e) {
+                // If an application-wide handler has been defined, use the
+                // response that it generates. If not, just rethrow the
+                // exception for the system default (if defined) to handle.
+                if ($this->error_handler && $this->request instanceof ServerRequestInterface) {
+                    $response = $this->error_handler->handle($this->request, $e);
+                } else {
+                    throw $e;
+                }
+            }
         }
         return $this->executeResponseMiddleware($response);
     }
@@ -159,7 +243,7 @@ class Dispatcher implements RequestHandlerInterface
      * short-circuit all remaining callbacks, but still must return
      * a ResponseInterface object
      *
-     * @param ResponseInterface the response so far
+     * @param ResponseInterface $response the response so far
      * @return ResponseInterface the response after any additional processing
      */
     private function executeResponseMiddleware(
