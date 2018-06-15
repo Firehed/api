@@ -176,6 +176,9 @@ class Dispatcher implements RequestHandlerInterface
 
     /**
      * PSR-15 Entrypoint
+     *
+     * This method is intended for internal use only, and should not be called
+     * outside of the context of a Middleware's RequestHandler parameter
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -217,7 +220,6 @@ class Dispatcher implements RequestHandlerInterface
         // If legacy ResponseInterace only, do not even try
         return $this->doDispatch($request);
     }
-
 
     private function doDispatch(RequestInterface $request)
     {
