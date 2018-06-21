@@ -14,11 +14,13 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
 
-class Dispatcher
+class Dispatcher implements RequestHandlerInterface
 {
 
     private $authenticationProvider;
@@ -27,6 +29,7 @@ class Dispatcher
     private $endpoint_list;
     private $error_handler;
     private $parser_list;
+    private $psrMiddleware = [];
     private $response_middleware = [];
     private $request;
     private $uri_data;
@@ -51,6 +54,12 @@ class Dispatcher
     public function addResponseMiddleware(callable $callback): self
     {
         $this->response_middleware[] = $callback;
+        return $this;
+    }
+
+    public function addMiddleware(MiddlewareInterface $mw): self
+    {
+        $this->psrMiddleware[] = $mw;
         return $this;
     }
 
@@ -166,6 +175,22 @@ class Dispatcher
     }
 
     /**
+     * PSR-15 Entrypoint
+     *
+     * This method is intended for internal use only, and should not be called
+     * outside of the context of a Middleware's RequestHandler parameter
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        if (!count($this->psrMiddleware)) {
+            return $this->doDispatch($request);
+        }
+        // Run MW as a queue
+        $mw = array_shift($this->psrMiddleware);
+        return $mw->process($request, $this);
+    }
+
+    /**
      * Execute the request
      *
      * @throws TypeError if both execute and handleException have bad return
@@ -188,6 +213,11 @@ class Dispatcher
 
         $request = $this->request;
 
+        // Delegate to PSR-15 middleware when possible
+        if ($request instanceof ServerRequestInterface) {
+            return $this->handle($request);
+        }
+        // If legacy ResponseInterace only, do not even try
         return $this->doDispatch($request);
     }
 

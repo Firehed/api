@@ -16,6 +16,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Throwable;
 
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
  * @covers ::<protected>
@@ -312,6 +315,57 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             $this->response_hits,
             'Second callback was fired that should have been bypassed'
         );
+    }
+
+    /**
+     * @covers ::addMiddleware
+     * @covers ::dispatch
+     * @covers ::handle
+     */
+    public function testPsr15()
+    {
+        $request = $this->createMock(ServerRequestInterface::class);
+        $modifiedRequest = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $modifiedResponse = $this->createMock(ResponseInterface::class);
+
+        $dispatcher = new Dispatcher();
+
+        $mw1 = $this->createMock(MiddlewareInterface::class);
+        $mw1->expects($this->once())
+            ->method('process')
+            ->willReturnCallback(function ($req, $handler) use ($request, $modifiedRequest, $dispatcher) {
+                $this->assertSame($req, $request, 'Request mismatch');
+                $this->assertSame($dispatcher, $handler, 'Handler mismatch');
+                return $handler->handle($modifiedRequest);
+            });
+        $mw2 = $this->createMock(MiddlewareInterface::class);
+        $mw2->expects($this->once())
+            ->method('process')
+            ->willReturnCallback(function ($req, $handler) use ($modifiedRequest, $response, $modifiedResponse) {
+                $this->assertSame($req, $modifiedRequest, 'Request mismatch');
+                $endpointResponse = $handler->handle($req);
+                $this->assertSame($response, $endpointResponse, 'Response mismatch');
+                return $modifiedResponse;
+            });
+
+
+        $endpoint = $this->getMockEndpoint();
+        $endpoint->expects($this->atLeastOnce())
+            ->method('execute')
+            ->willReturn($response);
+
+        $routes = ['GET' => ['/c' => 'EP']];
+        $res = $dispatcher
+            ->addMiddleware($mw1)
+            ->addMiddleware($mw2)
+            ->setContainer($this->getMockContainer(['EP' => $endpoint]))
+            ->setEndpointList($routes)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($request)
+            ->dispatch();
+
+        $this->assertSame($modifiedResponse, $res, 'Dispatcher returned different response');
     }
 
     /**
