@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.1.0] - (tbd)
 ### Added
 - Overhauled authentication (#43)
-- Overhauled error handling (#37, #38)
+- Overhauled error handling (#37, #38, #63)
 - Added support for PSR-15 Middleware (#59)
 ### Changed
 - Internal refactoring
