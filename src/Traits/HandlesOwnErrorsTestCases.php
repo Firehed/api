@@ -6,7 +6,7 @@ namespace Firehed\API\Traits;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
-trait HandlesOwnErrorTestCases
+trait HandlesOwnErrorsTestCases
 {
     private $handleExceptionMayRethrow = false;
 
