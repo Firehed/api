@@ -31,6 +31,7 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::setAllowHandleExceptionToRethrow
      * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
      * @dataProvider exceptionsToHandle
      */
@@ -39,5 +40,14 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
         $this->setAllowHandleExceptionToRethrow(false);
         $this->expectException(get_class($e));
         $this->testHandleException($e);
+    }
+
+    /**
+     * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
+     */
+    public function testRedundantlyBecauseTraitApplicationIsWierd()
+    {
+        $ex = new \Exception();
+        $this->testHandleException($ex);
     }
 }

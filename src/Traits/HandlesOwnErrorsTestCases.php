@@ -80,7 +80,7 @@ trait HandlesOwnErrorsTestCases
             // PHP7: Add new Error exceptions
             [new \Error()],
                 [new \ArithmeticError()],
-                // [new \AssertionError()],
+                [new \AssertionError()],
                 [new \DivisionByZeroError()],
                 [new \ParseError()],
                 [new \TypeError()],
