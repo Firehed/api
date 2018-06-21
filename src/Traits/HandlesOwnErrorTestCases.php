@@ -4,21 +4,37 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 trait HandlesOwnErrorTestCases
 {
+    private $handleExceptionMayRethrow = false;
+
+    public function setAllowHandleExceptionToRethrow(bool $allowed)
+    {
+        $this->handleExceptionMayRethrow = $allowed;
+    }
+
     /**
      * @covers ::handleException
      * @dataProvider exceptionsToHandle
      */
-    public function testHandleException(\Throwable $e)
+    public function testHandleException(Throwable $e)
     {
         $response = $this->getEndpoint()->handleException($e);
-        $this->assertInstanceOf(
-            ResponseInterface::class,
-            $response,
-            'handleException() did not return a PSR7 response'
-        );
+        try {
+            $this->assertInstanceOf(
+                ResponseInterface::class,
+                $response,
+                'handleException() did not return a PSR7 response'
+            );
+        } catch (Throwable $thrown) {
+            if ($this->handleExceptionMayRethrow) {
+                $this->assertSame($e, $thrown, 'A different exception was thrown');
+            } else {
+                throw $thrown;
+            }
+        }
     }
 
     /**
