@@ -107,6 +107,11 @@ class Dispatcher implements RequestHandlerInterface
             }
         }
 
+        // Auto-detect error handler
+        if (!$this->error_handler && $container->has(ErrorHandlerInterface::class)) {
+            $this->setErrorHandler($container->get(ErrorHandlerInterface::class));
+        }
+
         return $this;
     }
 

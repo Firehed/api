@@ -722,6 +722,43 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @covers ::setContainer
+     * @covers ::setErrorHandler
+     * @covers ::dispatch
+     */
+    public function testErrorHandlerIsAutoDetected()
+    {
+        $ex = new Exception('execute');
+        $eh = $this->createMock(ErrorHandlerInterface::class);
+        $eh->expects($this->once())
+            ->method('handle')
+            ->will($this->returnCallback(function ($sri, $caught) use ($ex) {
+                $this->assertSame($ex, $caught);
+                return $this->createMock(ResponseInterface::class);
+            }));
+        $ep = $this->createMock(EndpointInterface::class);
+        $ep->method('execute')
+            ->will($this->throwException($ex));
+        $ep->method('handleException')
+            ->willReturnCallback(function ($e) {
+                throw $e;
+            });
+
+        $container = $this->getMockContainer([
+            ErrorHandlerInterface::class => $eh,
+            'ClassThatDoesNotExist' => $ep,
+        ]);
+        $req = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
+        $dispatcher = new Dispatcher();
+        $dispatcher->setContainer($container)
+            ->setEndpointList($routes)
+            ->setParserList($this->getDefaultParserList())
+            ->setRequest($req);
+        $dispatcher->dispatch();
+    }
+
+    /**
      * @covers ::setAuthProviders
      * @covers ::setContainer
      * @covers ::dispatch
