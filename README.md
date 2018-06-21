@@ -98,6 +98,7 @@ Other auto-detected container entries:
 | Psr\Log\LoggerInterface | Internal logging | generated front controller |
 | Firehed\API\Authentication\ProviderInterface | Authentication Provider | Always if an AuthorizationProvider is set |
 | Firehed\API\Authorization\ProviderInterface | Authorization Provider | Always if an AuthenticationProvider is set |
+| Firehed\API\Interfaces\ErrorHandlerInterface | Error Handler | Always |
 
 
 ### Example
