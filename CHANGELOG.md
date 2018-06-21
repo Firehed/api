@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.0] - (tbd)
+### Added
+- Overhauled authentication (#43)
+- Overhauled error handling (#37, #38)
+- Added support for PSR-15 Middleware (#59)
+### Changed
+- Internal refactoring
+- Deprecate use of base RequestInterface (#48)
+
+## [3.0.6] - 2018-04-30
+### Changed
+- Fixed incorrect return type
+
+## [3.0.5] - 2018-04-03
+### Changed
+- Removes the use of `fguillot/simplelogger`, since it has been abandoned. This is not treated as a breaking change since it's not safe to _implicitly_ rely on a dependency's dependencies.
+
+## [3.0.4] - 2018-02-23
+### Added
+- OPTIONS requests are now supported
+
 ## [3.0.3] - 2018-01-08
 
 ### Changed
