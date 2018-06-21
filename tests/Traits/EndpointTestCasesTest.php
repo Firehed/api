@@ -15,7 +15,6 @@ use Throwable;
  * @covers Firehed\API\Traits\EndpointTestCases::getValidation
  * @covers Firehed\API\Traits\EndpointTestCases::testGetUri
  * @covers Firehed\API\Traits\EndpointTestCases::testGetMethod
- * @covers Firehed\API\Traits\EndpointTestCases::testHandleException
  */
 class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
 {

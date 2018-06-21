@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace Firehed\API\Traits;
 
+use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 trait HandlesOwnErrorsTestCases
 {
     private $handleExceptionMayRethrow = false;
+
+    abstract protected function getEndpoint(): HandlesOwnErrorsInterface;
 
     public function setAllowHandleExceptionToRethrow(bool $allowed)
     {
@@ -21,8 +24,8 @@ trait HandlesOwnErrorsTestCases
      */
     public function testHandleException(Throwable $e)
     {
-        $response = $this->getEndpoint()->handleException($e);
         try {
+            $response = $this->getEndpoint()->handleException($e);
             $this->assertInstanceOf(
                 ResponseInterface::class,
                 $response,
@@ -77,7 +80,7 @@ trait HandlesOwnErrorsTestCases
             // PHP7: Add new Error exceptions
             [new \Error()],
                 [new \ArithmeticError()],
-                [new \AssertionError()],
+                // [new \AssertionError()],
                 [new \DivisionByZeroError()],
                 [new \ParseError()],
                 [new \TypeError()],

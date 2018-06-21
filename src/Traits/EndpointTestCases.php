@@ -16,7 +16,7 @@ use Firehed\Input\ValidationTestTrait;
  */
 trait EndpointTestCases
 {
-    use HandlesOwnErrorTestCases;
+    use HandlesOwnErrorsTestCases;
     use ValidationTestTrait;
 
     /**
