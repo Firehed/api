@@ -164,3 +164,34 @@ Starting in v3.1.0, error handling can be implemeneted globally by providing a `
 This is functionally identical to `HandlesOwnErrorInterface` described above, with the addition that the PSR `ServerRequestInterface` will also be available (primarily so that the response can be formatted appropriately for the request, e.g. based on the `Accept` header).
 
 Finally, a global fallback handler is configured by default, which will log the exception and return a generic 500 error.
+
+## Compatibility
+
+This framework tries to strictly follow the rules of Semantic Versioning.
+In summary, this means that given a release named `X.Y.Z`:
+
+- Breaking changes will only be introduced when `X` is incremented
+- New features will only be introduced either when `Y` is incremeneted or when `X` is incremented and `Y` is reset to `0`
+- Bugfixes may be introduced in any version increment
+
+The term "breaking changes" should be interpreted to mean:
+
+- Additional required parameters being added to methods
+- Additional methods being added to interfaces
+- Tightening the typehints of a method or function parameter
+- Loosening the return type of a method or function
+- Deletion of any public method (except on classes marked as internal)
+- Additional system requirements (PHP version, extensions, etc.)
+- Substantial, non-optional behavior changes
+
+Breaking changes DO NOT include:
+
+- Removal of a dependency (if you are implicitly relying on a dependency of this framework, you should explicitly add it into your own `composer.json`)
+- Removal of a class or method that is clearly marked internal
+
+Whenever possible, deprecated functionality will be marked as such by `trigger_error(string, E_USER_DEPRECATED)` (in addition to release notes).
+Note that depending on your PHP settings, this may result in an `ErrorException` being thrown.
+Since that is a configurable behavior, it is NOT considered to be a BC break.
+
+Additionally, the entire `Firehed\API` namespace should be considered reserved for the purposes of PSR-11 Container auto-detection.
+That is to say, if you use a key starting with `Firehed\API` in your container, you should expect that key may be retreived and used without explicitly opting-in to the behavior it provides.
