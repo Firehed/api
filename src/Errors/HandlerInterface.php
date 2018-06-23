@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Firehed\API\Interfaces;
+namespace Firehed\API\Errors;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-interface ErrorHandlerInterface
+interface HandlerInterface
 {
     /**
      * Handle an exception for the given request. It is RECOMMENDED that
