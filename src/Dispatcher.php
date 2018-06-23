@@ -230,8 +230,10 @@ class Dispatcher implements RequestHandlerInterface
     {
         $isSRI = $request instanceof ServerRequestInterface;
 
-        $endpoint = $this->getEndpoint($request);
+        /** @var ?EndpointInterface */
+        $endpoint = null;
         try {
+            $endpoint = $this->getEndpoint($request);
             if ($isSRI
                 && $this->authenticationProvider
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
