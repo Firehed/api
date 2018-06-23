@@ -234,21 +234,14 @@ class Dispatcher implements RequestHandlerInterface
         $request = $this->request;
 
         // Delegate to PSR-15 middleware when possible
-        if ($request instanceof ServerRequestInterface) {
-            return $this->handle($request);
-        }
-        // If legacy ResponseInterace only, do not even try
-        return $this->doDispatch($request);
+        return $this->handle($request);
     }
 
-    private function doDispatch(RequestInterface $request)
+    private function doDispatch(ServerRequestInterface $request)
     {
-        $isSRI = $request instanceof ServerRequestInterface;
-
         $endpoint = $this->getEndpoint($request);
         try {
-            if ($isSRI
-                && $this->authenticationProvider
+            if ($this->authenticationProvider
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
             ) {
                 $auth = $this->authenticationProvider->authenticate($request);
@@ -273,7 +266,7 @@ class Dispatcher implements RequestHandlerInterface
                 // If an application-wide handler has been defined, use the
                 // response that it generates. If not, just rethrow the
                 // exception for the system default (if defined) to handle.
-                if ($this->error_handler && $isSRI) {
+                if ($this->error_handler) {
                     $response = $this->error_handler->handle($request, $e);
                 } else {
                     throw $e;
