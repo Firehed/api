@@ -19,7 +19,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
-use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\ServerRequestFactory;
 
 class Dispatcher implements RequestHandlerInterface
 {
@@ -154,15 +154,14 @@ class Dispatcher implements RequestHandlerInterface
 
     private function transformRequestToServerRequest(RequestInterface $request): ServerRequestInterface
     {
-        $sri = new ServerRequest(
-            [],
-            [],
-            $request->getUri(),
-            $request->getMethod(),
-            $request->getBody(),
-            $request->getHeaders()
-        );
-        return $sri;
+        $serverRequest = ServerRequestFactory::fromGlobals()
+            ->withUri($request->getUri())
+            ->withMethod($request->getMethod())
+            ->withBody($request->getBody());
+        foreach ($request->getHeaders() as $name => $values) {
+            $serverRequest = $serverRequest->withHeader($name, $values);
+        }
+        return $serverRequest;
     }
 
     /**

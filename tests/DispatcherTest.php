@@ -96,6 +96,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $req = $this->createMock(RequestInterface::class);
         $req->method('getHeaders')->willReturn([]);
         $req->method('getBody')->willReturn($this->createMock(StreamInterface::class));
+        $req->method('getUri')->willReturn($this->createMock(UriInterface::class));
         $this->assertSame(
             $d,
             $d->setRequest($req),
@@ -283,6 +284,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             })
             ->addResponseMiddleware(function ($response, $next) {
                 // This should never hit
+                $this->fail('should be unreachable');
                 $this->response_hits = 'b';
                 return $next($response);
             })
