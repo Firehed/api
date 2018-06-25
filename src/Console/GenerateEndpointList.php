@@ -9,11 +9,15 @@ use Firehed\Input\Interfaces\ParserInterface;
 use Firehed\Common\ClassMapGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateEndpointList extends Command
 {
+    const OPT_ENDPOINT_LIST = 'endpoint-list';
+    const OPT_PARSER_LIST = 'parser-list';
+
     /** @var Config */
     private $config;
 
@@ -27,6 +31,20 @@ class GenerateEndpointList extends Command
     {
         $this->setName('api:generateEndpointList')
             ->setDescription('Build the static route list')
+            ->addOption(
+                self::OPT_ENDPOINT_LIST,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Where to write the endpoint list',
+                '__endpoint_list__.json'
+            )
+            ->addOption(
+                self::OPT_PARSER_LIST,
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Where to write the parser list',
+                '__parser_list__.json'
+            )
             ;
     }
 
@@ -43,7 +61,7 @@ class GenerateEndpointList extends Command
             ->addCategory('getMethod')
             ->setMethod('getURI')
             ->setNamespace($this->config->get('namespace'))
-            ->setOutputFile('__endpoint_list__.json')
+            ->setOutputFile($input->getOption(self::OPT_ENDPOINT_LIST))
             ->generate();
 
         $output->writeln(
@@ -58,7 +76,7 @@ class GenerateEndpointList extends Command
             ->setInterface(ParserInterface::class)
             ->setMethod('getSupportedMimeTypes')
             ->setNamespace('Firehed\Input\Parsers')
-            ->setOutputFile('__parser_list__.json')
+            ->setOutputFile($input->getOption(self::OPT_PARSER_LIST))
             ->generate();
     }
 }
