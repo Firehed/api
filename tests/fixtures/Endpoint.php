@@ -10,6 +10,7 @@ use Firehed\API\Traits\Request;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 use Zend\Diactoros\Response\EmptyResponse;
 
 class Endpoint implements EndpointInterface
@@ -19,7 +20,7 @@ class Endpoint implements EndpointInterface
     use Input\NoRequired;
     use Request\Options;
 
-    public function handleException($e): ResponseInterface
+    public function handleException(Throwable $e): ResponseInterface
     {
     }
 
