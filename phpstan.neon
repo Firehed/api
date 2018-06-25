@@ -1,6 +1,6 @@
 includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
-paramaters:
+parameters:
     ignoreErrors:
-        - '#Call to method setInterface() on an unknown class Firehed\Common\this#'
+        - '#Call to method setInterface\(\) on an unknown class Firehed\\Common\\this#'
 
