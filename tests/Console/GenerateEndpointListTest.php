@@ -36,7 +36,7 @@ class GenerateEndpointListTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::execute */
-    public function testExecute()
+    public function testGeneratingPhpFiles()
     {
         $el = $this->filePrefix.'endpoint.php';
         $pl = $this->filePrefix.'parser.php';
