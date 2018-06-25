@@ -151,7 +151,7 @@ class GenerateEndpoint extends Command
      * components.
      *
      * @param string $fqcn
-     * @return [namespace, class]
+     * @return array [namespace, class]
      */
     private function parseFQCN(string $fqcn): array
     {
