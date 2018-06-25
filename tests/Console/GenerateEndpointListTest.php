@@ -6,6 +6,7 @@ namespace Firehed\API\Console;
 use Firehed\API\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+
 /**
  * @coversDefaultClass Firehed\API\Console\GenerateEndpointList
  * @covers ::<protected>
@@ -14,6 +15,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class GenerateEndpointListTest extends \PHPUnit\Framework\TestCase
 {
     private $config;
+    private $filePrefix;
 
     public function setUp()
     {
