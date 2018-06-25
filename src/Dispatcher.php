@@ -6,21 +6,30 @@ namespace Firehed\API;
 
 use BadMethodCallException;
 use DomainException;
+use Firehed\API\Interfaces\ErrorHandlerInterface;
+use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
 
-class Dispatcher
+class Dispatcher implements RequestHandlerInterface
 {
 
+    private $authenticationProvider;
+    private $authorizationProvider;
     private $container;
     private $endpoint_list;
     private $error_handler;
     private $parser_list;
+    private $psrMiddleware = [];
     private $response_middleware = [];
     private $request;
     private $uri_data;
@@ -39,12 +48,33 @@ class Dispatcher
      *
      * The callbacks are treated as a queue (FIFO)
      *
-     * @param callable the callback to execute
+     * @param callable $callback the callback to execute
      * @return self
      */
     public function addResponseMiddleware(callable $callback): self
     {
         $this->response_middleware[] = $callback;
+        return $this;
+    }
+
+    public function addMiddleware(MiddlewareInterface $mw): self
+    {
+        $this->psrMiddleware[] = $mw;
+        return $this;
+    }
+
+    /**
+     * Provide the authentication and authorization providers. These will be
+     * run after routing but before the endpoint is executed.
+     *
+     * @return $this
+     */
+    public function setAuthProviders(
+        Authentication\ProviderInterface $authn,
+        Authorization\ProviderInterface $authz
+    ): self {
+        $this->authenticationProvider = $authn;
+        $this->authorizationProvider = $authz;
         return $this;
     }
 
@@ -55,23 +85,67 @@ class Dispatcher
      * key, it will be used during execution; if not, the default behavior is
      * to automatically instanciate it.
      *
-     * @param ContainerInterface Container
+     * @param ContainerInterface $container Container
      * @return self
      */
     public function setContainer(ContainerInterface $container = null): self
     {
         $this->container = $container;
+
+        if (!$container) {
+            return $this;
+        }
+        // Auto-detect auth components
+        if (!$this->authenticationProvider && !$this->authorizationProvider) {
+            if ($container->has(Authentication\ProviderInterface::class)
+                && $container->has(Authorization\ProviderInterface::class)
+            ) {
+                $this->setAuthProviders(
+                    $container->get(Authentication\ProviderInterface::class),
+                    $container->get(Authorization\ProviderInterface::class)
+                );
+            }
+        }
+
+        // Auto-detect error handler
+        if (!$this->error_handler && $container->has(ErrorHandlerInterface::class)) {
+            $this->setErrorHandler($container->get(ErrorHandlerInterface::class));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Provide a default error handler. This will be used in the event that an
+     * endpoint does not define its own handler.
+     *
+     * @param ErrorHandlerInterface $handler
+     * @return self
+     */
+    public function setErrorHandler(ErrorHandlerInterface $handler): self
+    {
+        $this->error_handler = $handler;
         return $this;
     }
 
     /**
      * Inject the request
      *
-     * @param RequestInterface The request
+     * @param RequestInterface $request The request
      * @return self
      */
     public function setRequest(RequestInterface $request): self
     {
+        if (!$request instanceof ServerRequestInterface) {
+            trigger_error(
+                sprintf(
+                    'Providing %s is deprecated. Use %s instead',
+                    RequestInterface::class,
+                    ServerRequestInterface::class
+                ),
+                E_USER_DEPRECATED
+            );
+        }
         $this->request = $request;
         return $this;
     }
@@ -81,7 +155,7 @@ class Dispatcher
      * a string representing a file parsable by same. The list must map
      * MIME-types to Firehed\Input\ParserInterface class names.
      *
-     * @param array|string The parser list or its path
+     * @param array|string $parser_list The parser list or its path
      * @return self
      */
     public function setParserList($parser_list): self
@@ -96,13 +170,29 @@ class Dispatcher
      * filterable by HTTP method and map absolute URI path components to
      * controller methods.
      *
-     * @param array|string The endpoint list or its path
+     * @param array|string $endpoint_list The endpoint list or its path
      * @return self
      */
     public function setEndpointList($endpoint_list): self
     {
         $this->endpoint_list = $endpoint_list;
         return $this;
+    }
+
+    /**
+     * PSR-15 Entrypoint
+     *
+     * This method is intended for internal use only, and should not be called
+     * outside of the context of a Middleware's RequestHandler parameter
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        if (!count($this->psrMiddleware)) {
+            return $this->doDispatch($request);
+        }
+        // Run MW as a queue
+        $mw = array_shift($this->psrMiddleware);
+        return $mw->process($request, $this);
     }
 
     /**
@@ -126,17 +216,56 @@ class Dispatcher
             );
         }
 
-        $endpoint = $this->getEndpoint();
+        $request = $this->request;
+
+        // Delegate to PSR-15 middleware when possible
+        if ($request instanceof ServerRequestInterface) {
+            return $this->handle($request);
+        }
+        // If legacy ResponseInterace only, do not even try
+        return $this->doDispatch($request);
+    }
+
+    private function doDispatch(RequestInterface $request)
+    {
+        $isSRI = $request instanceof ServerRequestInterface;
+
+        /** @var ?EndpointInterface */
+        $endpoint = null;
         try {
-            $endpoint->authenticate($this->request);
-            $safe_input = $this->parseInput()
+            $endpoint = $this->getEndpoint($request);
+            if ($isSRI
+                && $this->authenticationProvider
+                && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
+            ) {
+                $auth = $this->authenticationProvider->authenticate($request);
+                $endpoint->setAuthentication($auth);
+                $this->authorizationProvider->authorize($endpoint, $auth);
+            }
+            $endpoint->authenticate($request);
+            $safe_input = $this->parseInput($request)
                 ->addData($this->getUriData())
-                ->addData($this->getQueryStringData())
+                ->addData($this->getQueryStringData($request))
                 ->validate($endpoint);
 
             $response = $endpoint->execute($safe_input);
-        } catch (\Throwable $e) {
-            $response = $endpoint->handleException($e);
+        } catch (Throwable $e) {
+            try {
+                if ($endpoint instanceof HandlesOwnErrorsInterface) {
+                    $response = $endpoint->handleException($e);
+                } else {
+                    throw $e;
+                }
+            } catch (Throwable $e) {
+                // If an application-wide handler has been defined, use the
+                // response that it generates. If not, just rethrow the
+                // exception for the system default (if defined) to handle.
+                if ($this->error_handler && $isSRI) {
+                    $response = $this->error_handler->handle($request, $e);
+                } else {
+                    throw $e;
+                }
+            }
         }
         return $this->executeResponseMiddleware($response);
     }
@@ -148,7 +277,7 @@ class Dispatcher
      * short-circuit all remaining callbacks, but still must return
      * a ResponseInterface object
      *
-     * @param ResponseInterface the response so far
+     * @param ResponseInterface $response the response so far
      * @return ResponseInterface the response after any additional processing
      */
     private function executeResponseMiddleware(
@@ -168,20 +297,21 @@ class Dispatcher
     /**
      * Parse the raw input body based on the content type
      *
+     * @param RequestInterface $request
      * @return ParsedInput the parsed input data
      */
-    private function parseInput(): ParsedInput
+    private function parseInput(RequestInterface $request): ParsedInput
     {
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
         // don't use $_POST because additional content types are supported.
         // Since PSR-7 doesn't specify parsing the body of most MIME-types,
         // we'll hand off to our own set of parsers.
-        $header = $this->request->getHeader('Content-type');
+        $header = $request->getHeader('Content-type');
         if ($header) {
             $directives = explode(';', $header[0]);
             if (!count($directives)) {
-                throw new OutOfBoundsException('Invalid Content-type header', 400);
+                throw new OutOfBoundsException('Invalid Content-type header', 415);
             }
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
@@ -189,10 +319,10 @@ class Dispatcher
             list($parser_class) = (new ClassMapper($this->parser_list))
                 ->search($mediaType);
             if (!$parser_class) {
-                throw new OutOfBoundsException('Unsupported Content-type', 400);
+                throw new OutOfBoundsException('Unsupported Content-type', 415);
             }
             $parser = new $parser_class;
-            $data = $parser->parse((string)$this->request->getBody());
+            $data = $parser->parse((string)$request->getBody());
         }
         return new ParsedInput($data);
     }
@@ -202,11 +332,11 @@ class Dispatcher
      *
      * @return Interfaces\EndpointInterface the routed endpoint
      */
-    private function getEndpoint(): Interfaces\EndpointInterface
+    private function getEndpoint(RequestInterface $request): Interfaces\EndpointInterface
     {
         list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
-            ->filter(strtoupper($this->request->getMethod()))
-            ->search($this->request->getUri()->getPath());
+            ->filter(strtoupper($request->getMethod()))
+            ->search($request->getUri()->getPath());
         if (!$class) {
             throw new OutOfBoundsException('Endpoint not found', 404);
         }
@@ -231,9 +361,9 @@ class Dispatcher
         return $this->uri_data;
     }
 
-    private function getQueryStringData(): ParsedInput
+    private function getQueryStringData(RequestInterface $request): ParsedInput
     {
-        $uri = $this->request->getUri();
+        $uri = $request->getUri();
         $query = $uri->getQuery();
         $data = [];
         parse_str($query, $data);

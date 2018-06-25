@@ -7,6 +7,11 @@ use ErrorException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
+/**
+ * This will be deprecated in the next minor release and removed in the next
+ * major release. Instead, prefer to provide an ErrorHandlerInterface to the
+ * Dispatcher.
+ */
 class ErrorHandler
 {
     /** @var LoggerInterface */

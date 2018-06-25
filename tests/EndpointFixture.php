@@ -67,6 +67,7 @@ class EndpointFixture implements Interfaces\EndpointInterface
         // Use PHPUnit mocks outside of the TestCase... the DSL isn't quite as
         // pretty here :)
         $mockgen = new Generator();
+        /** @var Response | \PHPUnit\Framework\MockObject\MockObject */
         $mock = $mockgen->getMock(Response::class);
         $mock->expects(new InvokedAtLeastOnce())
             ->method('getStatusCode')
@@ -79,10 +80,17 @@ class EndpointFixture implements Interfaces\EndpointInterface
 
     public function handleException(Throwable $e): Response
     {
+        /** @var Response | \PHPUnit\Framework\MockObject\MockObject */
         $mock = (new Generator())
             ->getMock(Response::class);
+        $code = $e->getCode();
+        if ($code < 200 || $code > 599) {
+            $code = self::STATUS_ERROR; // Artificial test value
+        }
         $mock->method('getStatusCode')
-            ->will(new ReturnStub(self::STATUS_ERROR)); // Artificial test value
+            ->will(new ReturnStub($code));
+        $mock->method('getBody')
+            ->will(new ReturnStub($e)); // This is incorrect, but makes debugging tests easier
         return $mock;
     }
 }
