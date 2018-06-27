@@ -42,16 +42,6 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         $output = $tester->getDisplay();
 
         $lines = explode("\n", $output);
-        print_r($lines);
-
-        $this->assertTrue(
-            in_array('namespace Firehed\API\Foo;', $lines),
-            'Output did not contain namespace'
-        );
-
-        $this->assertTrue(
-            in_array('class Bar implements FrontControllerInterface', $lines),
-            'Output did not contain class definition'
-        );
+        $this->assertSame('<?php', $lines[0], 'Output didn\'t start with a PHP tag');
     }
 }
