@@ -10,19 +10,17 @@ use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Interfaces\ErrorHandlerInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use Throwable;
-
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
+use Throwable;
 use Zend\Diactoros\Request;
-use Zend\Diactoros\Stream;
 use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Stream;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -161,9 +159,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             'GET',
             ['shortstring' => 'aBcD']
         );
-        // $body = $req->getBody();
-        // $body->write('shortstring=aBcD');
-        // $req = $req->withBody($body);
 
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
