@@ -238,8 +238,10 @@ class Dispatcher implements RequestHandlerInterface
 
     private function doDispatch(ServerRequestInterface $request)
     {
-        $endpoint = $this->getEndpoint($request);
+        /** @var ?EndpointInterface */
+        $endpoint = null;
         try {
+            $endpoint = $this->getEndpoint($request);
             if ($this->authenticationProvider
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
             ) {
