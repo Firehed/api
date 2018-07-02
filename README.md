@@ -64,13 +64,15 @@ class CreateTest extends \PHPUnit\Framework\TestCase
 
 ## Configuration
 
-Place a file named `.apiconfig` in your project root. It uses JSON for the format.
+Place a file named `.apiconfig` in your project root.
+It uses JSON for the format.
 
 ### Options
 
 `source`: **required** *string*
 
-The source code directory to scan for API endpoints. Most commonly `src`.
+The source code directory to scan for API endpoints.
+Most commonly `src`.
 
 `namespace`: **required** *string*
 
@@ -78,7 +80,8 @@ A namespace to filter on when searching for endpoints.
 
 `webroot`: **required** *string*
 
-The directory to place a generated front controller. The value should be relative to the prohect root.
+The directory to place a generated front controller.
+The value should be relative to the project root.
 
 `container`: **optional** *string*
 
@@ -89,7 +92,7 @@ The path to a file which returns a `PSR-11`-compliant container for config value
 If you set a `container` value in `.apiconfig`, the API will be made aware of the container (if you do not use the generated front controller, you may also do this manually).
 This is how to configure API endpoints at runtime.
 By convention, if the container `has()` an endpoint's fully-qualified class name, the dispatcher will `get()` and use that value when the route is dispatched.
-If no container is configured, or the container does not have a configuration for the routed endpoint, the routed endpoint will simply be instanciated via `new $routedEndpointClassName`.
+If no container is configured, or the container does not have a configuration for the routed endpoint, the routed endpoint will simply be instantiated via `new $routedEndpointClassName`.
 
 Other auto-detected container entries:
 
@@ -160,7 +163,7 @@ The API framework is responsible for catching all exceptions thrown during an En
 All endpoints that implement `Firehed\API\Interfaces\HandlesOwnErrorsInterface` (which is a part of `EndpointInterface` prior to v4.0.0) will have their `handleException()` method called with the thrown exception.
 This method _may_ choose to ignore certain exception classes (by rethrowing them), but must return a PSR `ResponseInterface` when opting to handle an exception.
 
-Starting in v3.1.0, error handling can be implemeneted globally by providing a `Firehed\API\Errors\HandlerInterface` to the Dispatcher via `setErrorHandler()`.
+Starting in v3.1.0, error handling can be implemented globally by providing a `Firehed\API\Errors\HandlerInterface` to the Dispatcher via `setErrorHandler()`.
 This is functionally identical to `HandlesOwnErrorInterface` described above, with the addition that the PSR `ServerRequestInterface` will also be available (primarily so that the response can be formatted appropriately for the request, e.g. based on the `Accept` header).
 
 Finally, a global fallback handler is configured by default, which will log the exception and return a generic 500 error.
@@ -171,7 +174,7 @@ This framework tries to strictly follow the rules of Semantic Versioning.
 In summary, this means that given a release named `X.Y.Z`:
 
 - Breaking changes will only be introduced when `X` is incremented
-- New features will only be introduced either when `Y` is incremeneted or when `X` is incremented and `Y` is reset to `0`
+- New features will only be introduced either when `Y` is incremented or when `X` is incremented and `Y` is reset to `0`
 - Bugfixes may be introduced in any version increment
 
 The term "breaking changes" should be interpreted to mean:
@@ -194,4 +197,4 @@ Note that depending on your PHP settings, this may result in an `ErrorException`
 Since that is a configurable behavior, it is NOT considered to be a BC break.
 
 Additionally, the entire `Firehed\API` namespace should be considered reserved for the purposes of PSR-11 Container auto-detection.
-That is to say, if you use a key starting with `Firehed\API` in your container, you should expect that key may be retreived and used without explicitly opting-in to the behavior it provides.
+That is to say, if you use a key starting with `Firehed\API` in your container, you should expect that key may be retrieved and used without explicitly opting-in to the behavior it provides.
