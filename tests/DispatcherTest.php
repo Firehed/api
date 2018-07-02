@@ -8,7 +8,7 @@ use Exception;
 use Firehed\API\Authentication;
 use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
-use Firehed\API\Interfaces\ErrorHandlerInterface;
+use Firehed\API\Errors\HandlerInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -567,7 +567,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             return $res;
         };
 
-        $handler = $this->createMock(ErrorHandlerInterface::class);
+        $handler = $this->createMock(HandlerInterface::class);
         $handler->expects($this->once())
             ->method('handle')
             ->will($this->returnCallback($cb));
@@ -687,7 +687,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testErrorHandlerIsAutoDetected()
     {
         $ex = new Exception('execute');
-        $eh = $this->createMock(ErrorHandlerInterface::class);
+        $eh = $this->createMock(HandlerInterface::class);
         $eh->expects($this->once())
             ->method('handle')
             ->will($this->returnCallback(function ($sri, $caught) use ($ex) {
@@ -703,7 +703,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             });
 
         $container = $this->getMockContainer([
-            ErrorHandlerInterface::class => $eh,
+            HandlerInterface::class => $eh,
             'ClassThatDoesNotExist' => $ep,
         ]);
         $req = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);

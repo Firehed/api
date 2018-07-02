@@ -6,7 +6,7 @@ namespace Firehed\API;
 
 use BadMethodCallException;
 use DomainException;
-use Firehed\API\Interfaces\ErrorHandlerInterface;
+use Firehed\API\Errors\HandlerInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
@@ -109,8 +109,8 @@ class Dispatcher implements RequestHandlerInterface
         }
 
         // Auto-detect error handler
-        if (!$this->error_handler && $container->has(ErrorHandlerInterface::class)) {
-            $this->setErrorHandler($container->get(ErrorHandlerInterface::class));
+        if (!$this->error_handler && $container->has(HandlerInterface::class)) {
+            $this->setErrorHandler($container->get(HandlerInterface::class));
         }
 
         return $this;
@@ -120,10 +120,10 @@ class Dispatcher implements RequestHandlerInterface
      * Provide a default error handler. This will be used in the event that an
      * endpoint does not define its own handler.
      *
-     * @param ErrorHandlerInterface $handler
+     * @param HandlerInterface $handler
      * @return self
      */
-    public function setErrorHandler(ErrorHandlerInterface $handler): self
+    public function setErrorHandler(HandlerInterface $handler): self
     {
         $this->error_handler = $handler;
         return $this;
