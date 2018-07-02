@@ -21,6 +21,19 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
     private $calledWithEndpoint;
     private $calledWithToken;
 
+    private $reporting;
+
+    public function setUp()
+    {
+        $this->reporting = error_reporting();
+        error_reporting($this->reporting & ~E_USER_DEPRECATED);
+    }
+
+    public function tearDown()
+    {
+        error_reporting($this->reporting);
+    }
+
     /**
      * @covers ::authenticate
      * @covers ::setHandleBearerTokenCallback
