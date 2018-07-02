@@ -2,6 +2,8 @@
 <?php
 declare(strict_types=1);
 
+use Firehed\API\Config;
+
 $config = require 'load_config.php';
 
 if ($argc < 2) {
@@ -64,23 +66,10 @@ php;
 
 $class = sprintf(
     $template,
-    $config['namespace'],
+    $config->get(Config::KEY_NAMESPACE),
     $namespace ? '\\' . implode('\\', array_map('ucfirst', $namespace)) : '',
     ucfirst($className),
     implode('/', $defaultUrl)
 );
 
 echo $class;
-
-// For now, just echo the class skeleton and allow the user to handle it as
-// they want. A future version of this should intelligently resolve paths and
-// write the file directly.
-/*
-$targetFile = sprintf(
-    '%s/%s/%s/%s.php',
-    $config['source'],
-    strtr($config['namespace'], '\\', '/'),
-    implode('/', $namespace),
-    $className
-);
- */
