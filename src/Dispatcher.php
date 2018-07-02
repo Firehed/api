@@ -31,33 +31,16 @@ class Dispatcher implements RequestHandlerInterface
     private $error_handler;
     private $parser_list;
     private $psrMiddleware = [];
-    private $response_middleware = [];
     private $request;
     private $uri_data;
 
     /**
-     * Add a callback to run on the response after controller executation (or
-     * error handling) has finished.
+     * Provide PSR-15 middleware to run. This is treated as a queue (FIFO), and
+     * starts before routing and other internal processes.
      *
-     * This must be a callable with the following signature:
-     *
-     * function(ResponseInterface $response, callable $next): ResponseInterface
-     *
-     * The callback may modify the response, and either pass it off to the next
-     * handler (by using `return $next($response)`) or return it immediately,
-     * bypassing all future callbacks.
-     *
-     * The callbacks are treated as a queue (FIFO)
-     *
-     * @param callable $callback the callback to execute
+     * @param MiddlewareInterface $mw
      * @return self
      */
-    public function addResponseMiddleware(callable $callback): self
-    {
-        $this->response_middleware[] = $callback;
-        return $this;
-    }
-
     public function addMiddleware(MiddlewareInterface $mw): self
     {
         $this->psrMiddleware[] = $mw;
@@ -274,31 +257,7 @@ class Dispatcher implements RequestHandlerInterface
                 }
             }
         }
-        return $this->executeResponseMiddleware($response);
-    }
-
-    /**
-     * Executes any provided response middleware callbacks previously added
-     * with `addResponseMiddleware()`. This wraps itself in a callback so that
-     * each successive callback may be executed. Each middleware may
-     * short-circuit all remaining callbacks, but still must return
-     * a ResponseInterface object
-     *
-     * @param ResponseInterface $response the response so far
-     * @return ResponseInterface the response after any additional processing
-     */
-    private function executeResponseMiddleware(
-        ResponseInterface $response
-    ): ResponseInterface {
-        // Out of middlewares to run
-        if (!$this->response_middleware) {
-            return $response;
-        }
-        // Get the next in line and dispatch
-        $middleware = array_shift($this->response_middleware);
-        return $middleware($response, function (ResponseInterface $response) {
-            return $this->executeResponseMiddleware($response);
-        });
+        return $response;
     }
 
     /**
