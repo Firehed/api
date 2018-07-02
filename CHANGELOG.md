@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Deleted
+- `Traits\Authentication\BearerToken`
+- `Traits\DeleteRequest`
+- `Traits\GetRequest`
+- `Traits\NoOptionalInputs`
+- `Traits\NoRequiredInputs`
+- `Traits\PostRequest`
+- `Traits\PutRequest`
+
 ## [3.1.0] - 2018-07-01
 ### Summary
 - Overhauled authentication (#43)
