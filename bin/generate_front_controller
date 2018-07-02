@@ -52,7 +52,6 @@ $response = (new Dispatcher())
     ->setEndpointList('__endpoint_list__.json')
     ->setParserList('__parser_list__.json')
     ->setRequest(ServerRequestFactory::fromGlobals())
-    // ->addResponseMiddleware(function(){}) ...
     ->dispatch();
 
 Firehed\API\ResponseRenderer::render($response);
