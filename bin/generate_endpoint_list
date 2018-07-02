@@ -2,15 +2,17 @@
 <?php
 declare(strict_types=1);
 
+use Firehed\API\Config;
+
 $config = require 'load_config.php';
 
 // Build out the endpoint map
 (new Firehed\Common\ClassMapGenerator())
-    ->setPath(getcwd().DIRECTORY_SEPARATOR.$config['source'])
+    ->setPath(getcwd().DIRECTORY_SEPARATOR.$config->get(Config::KEY_SOURCE))
     ->setInterface('Firehed\API\Interfaces\EndpointInterface')
     ->addCategory('getMethod')
     ->setMethod('getURI')
-    ->setNamespace($config['namespace'])
+    ->setNamespace($config->get(Config::KEY_NAMESPACE))
     ->setOutputFile(getcwd().'/__endpoint_list__.json')
     ->generate();
 

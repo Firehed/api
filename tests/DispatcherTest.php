@@ -10,14 +10,17 @@ use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Errors\HandlerInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use Throwable;
-
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
+use Zend\Diactoros\Request;
+use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Stream;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -89,6 +92,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $d = new Dispatcher();
         $req = $this->createMock(RequestInterface::class);
+        $req->method('getHeaders')->willReturn([]);
+        $req->method('getBody')->willReturn($this->createMock(StreamInterface::class));
+        $req->method('getUri')->willReturn($this->createMock(UriInterface::class));
         $this->assertSame(
             $d,
             $d->setRequest($req),
@@ -116,13 +122,11 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         // See tests/EndpointFixture
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
-        $req->expects($this->any())
-            ->method('getBody')
-            ->will($this->returnValue('shortstring=aBcD'));
-        $req->expects($this->any())
-            ->method('getHeader')
-            ->with('Content-type')
-            ->will($this->returnValue(['application/x-www-form-urlencoded']));
+        $body = $req->getBody();
+        $body->write('shortstring=aBcD');
+        $req = $req->withBody($body);
+        $req = $req->withHeader('Content-type', 'application/x-www-form-urlencoded');
+
 
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
@@ -155,8 +159,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             'GET',
             ['shortstring' => 'aBcD']
         );
-        $req->method('getBody')
-            ->will($this->returnValue('shortstring=aBcD'));
 
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
@@ -277,6 +279,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             })
             ->addResponseMiddleware(function ($response, $next) {
                 // This should never hit
+                $this->fail('should be unreachable');
                 $this->response_hits = 'b';
                 return $next($response);
             })
@@ -451,13 +454,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         // See tests/EndpointFixture
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
-        $req->expects($this->any())
-            ->method('getBody')
-            ->will($this->returnValue('shortstring=thisistoolong'));
-        $req->expects($this->any())
-            ->method('getHeader')
-            ->with('Content-type')
-            ->will($this->returnValue(['application/x-www-form-urlencoded']));
+        $body = $req->getBody();
+        $body->write('shortstring=thisistoolong');
+        $req = $req->withBody($body);
+        $req = $req->withHeader('Content-type', 'application/x-www-form-urlencoded');
 
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
@@ -474,10 +474,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testUnsupportedContentTypeReachesErrorHandler()
     {
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
-        $req->expects($this->any())
-            ->method('getHeader')
-            ->with('Content-type')
-            ->will($this->returnValue(['application/x-test-failure']));
+        $req = $req->withHeader('Content-type', 'application/x-test-failure');
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
             ->setParserList($this->getDefaultParserList())
@@ -496,10 +493,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $contentType = 'application/json; charset=utf-8';
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
-        $req->expects($this->any())
-            ->method('getHeader')
-            ->with('Content-type')
-            ->will($this->returnValue([$contentType]));
+        $req = $req->withHeader('Content-type', $contentType);
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
             ->setParserList($this->getDefaultParserList())
@@ -593,42 +587,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->with($e)
             ->will($this->throwException($e));
         $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
-    }
-
-    /**
-     * This is a sort of BC-prevention test: in v4, the Dispatcher will only
-     * accept a ServerRequestInterface instead of the base-level
-     * RequestInterface. The new error handler is typehinted as such. This
-     * checks that if the base class was provided to the dispatcher, it
-     * shouldn't attempt to use the error handler since it would just result in
-     * a TypeError. This will be removed in v4.
-     *
-     * @covers ::dispatch
-     */
-    public function testExceptionsLeakWhenRequestIsBaseClass()
-    {
-        $e = new Exception('This should reach the top level');
-
-        $handler = $this->createMock(HandlerInterface::class);
-        $handler->expects($this->never())
-            ->method('handle');
-
-        $dispatcher = new Dispatcher();
-        $dispatcher->setErrorHandler($handler);
-
-        $endpoint = $this->getMockEndpoint();
-        $endpoint->method('execute')
-            ->will($this->throwException($e));
-        $endpoint->expects($this->once())
-            ->method('handleException')
-            ->with($e)
-            ->will($this->throwException($e));
-        try {
-            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
-            $this->fail('An exception should have been thrown');
-        } catch (Throwable $t) {
-            $this->assertSame($e, $t);
-        }
     }
 
     /** @covers ::dispatch */
@@ -925,7 +883,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * @param string $method optional HTTP method
      * @param array $query_data optional raw, unescaped query string data
      * @param string $requestClass What RequestInterface to mock
-     * @return RequestInterface | \PHPUnit\Framework\MockObject\MockObject
+     * @return RequestInterface
      */
     private function getMockRequestWithUriPath(
         string $uri,
@@ -933,6 +891,22 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         array $query_data = [],
         string $requestClass = RequestInterface::class
     ): RequestInterface {
+        if ($requestClass === RequestInterface::class) {
+            $request = new Request(
+                $uri.'?'.http_build_query($query_data),
+                $method
+            );
+        } elseif ($requestClass === ServerRequestInterface::class) {
+            $request = new ServerRequest(
+                [],
+                [],
+                $uri,
+                $method
+            );
+        } else {
+            throw new \Exception('Invalid request class');
+        }
+        return $request;
         $mock_uri = $this->createMock(UriInterface::class);
         $mock_uri->expects($this->any())
             ->method('getPath')
