@@ -10,7 +10,6 @@ use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Errors\HandlerInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -91,7 +90,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testSetRequestReturnsSelf()
     {
         $d = new Dispatcher();
-        $req = $this->createMock(RequestInterface::class);
+        $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeaders')->willReturn([]);
         $req->method('getBody')->willReturn($this->createMock(StreamInterface::class));
         $req->method('getUri')->willReturn($this->createMock(UriInterface::class));
@@ -102,14 +101,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /** @covers ::addResponseMiddleware */
-    public function testAddResponseMiddlewareReturnsSelf()
-    {
-        $d = new Dispatcher();
-        $this->assertSame($d, $d->addResponseMiddleware(function ($r, $n) {
-            return $n($r);
-        }), 'addResponseMiddleware did not return $this');
-    }
     // ----(Success case)-------------------------------------------------------
 
     /**
@@ -197,129 +188,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($endpoint);
     }
 
-    // Value to be set by a callback if it is run as desired
-    private $response_hits = 0;
-    public function testAllResponseMiddlewaresAreReachable()
-    {
-        $endpoint = $this->getMockEndpoint();
-        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
-        $list = [
-            'GET' => [
-                '/cb' => 'CBClass',
-            ],
-        ];
-        (new Dispatcher())
-            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
-            ->setEndpointList($list)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->addResponseMiddleware(function ($response, $next) {
-                $this->response_hits++;
-                return $next($response);
-            })
-            ->addResponseMiddleware(function ($response, $next) {
-                $this->response_hits++;
-                return $next($response);
-            })
-            ->dispatch();
-        $this->assertSame(
-            2,
-            $this->response_hits,
-            'Not all response callbacks were fired'
-        );
-    }
-
-    public function testAllResponseMiddlewaresAreFIFO()
-    {
-        $endpoint = $this->getMockEndpoint();
-        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
-        $list = [
-            'GET' => [
-                '/cb' => 'CBClass',
-            ],
-        ];
-        (new Dispatcher())
-            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
-            ->setEndpointList($list)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->addResponseMiddleware(function ($response, $next) {
-                $this->response_hits = 'a';
-                return $next($response);
-            })
-            ->addResponseMiddleware(function ($response, $next) {
-                $this->response_hits = 'b';
-                return $next($response);
-            })
-            ->dispatch();
-        $this->assertSame(
-            'b',
-            $this->response_hits,
-            'Last provided response middleware wasn\'t fired last'
-        );
-    }
-
-    public function testResponseMiddlewaresAreShortCircuitable()
-    {
-        $endpoint = $this->getMockEndpoint();
-        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
-        $list = [
-            'GET' => [
-                '/cb' => 'CBClass',
-            ],
-        ];
-        (new Dispatcher())
-            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
-            ->setEndpointList($list)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->addResponseMiddleware(function ($response, $next) {
-                $this->response_hits = 'a';
-                return $response;
-            })
-            ->addResponseMiddleware(function ($response, $next) {
-                // This should never hit
-                $this->fail('should be unreachable');
-                $this->response_hits = 'b';
-                return $next($response);
-            })
-            ->dispatch();
-        $this->assertSame(
-            'a',
-            $this->response_hits,
-            'Second callback was fired that should have been bypassed'
-        );
-    }
-
-    public function testResponseMiddlewaresAreRunOnError()
-    {
-        $endpoint = $this->getMockEndpoint();
-        $endpoint->expects($this->atLeastOnce())
-            ->method('execute')
-            ->will($this->throwException(new Exception('dummy')));
-        $req = $this->getMockRequestWithUriPath('/cb', 'GET');
-        $list = [
-            'GET' => [
-                '/cb' => 'CBClass',
-            ],
-        ];
-        (new Dispatcher())
-            ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
-            ->setEndpointList($list)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->addResponseMiddleware(function ($response, $next) {
-                $this->response_hits = 1;
-                return $next($response);
-            })
-            ->dispatch();
-        $this->assertSame(
-            1,
-            $this->response_hits,
-            'Second callback was fired that should have been bypassed'
-        );
-    }
-
     /**
      * @covers ::addMiddleware
      * @covers ::dispatch
@@ -328,7 +196,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testPsr15()
     {
         $request = $this->createMock(ServerRequestInterface::class);
-        $modifiedRequest = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $modifiedRequest = $this->getMockRequestWithUriPath('/c', 'GET', []);
         $response = $this->createMock(ResponseInterface::class);
         $modifiedResponse = $this->createMock(ResponseInterface::class);
 
@@ -503,19 +371,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::dispatch */
-    public function testFailedAuthenticationReachesErrorHandler()
-    {
-        $e = new Exception('This should reach the error handler');
-        $endpoint = $this->getMockEndpoint();
-        $endpoint->method('authenticate')
-            ->will($this->throwException($e));
-        $endpoint->expects($this->once())
-            ->method('handleException')
-            ->with($e);
-        $this->executeMockRequestOnEndpoint($endpoint);
-    }
-
-    /** @covers ::dispatch */
     public function testFailedEndpointExecutionReachesEndpointErrorHandler()
     {
         $e = new Exception('This should reach the error handler');
@@ -586,7 +441,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('handleException')
             ->with($e)
             ->will($this->throwException($e));
-        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
     }
 
     /** @covers ::dispatch */
@@ -611,24 +466,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         } catch (Throwable $t) {
             $this->assertSame($e, $t, 'A different exception was thrown');
         }
-    }
-
-    /** @covers ::setRequest */
-    public function testDeprecationWarningIsIssuedWithBaseRequest()
-    {
-        error_reporting($this->reporting); // Turn standard reporting back on
-        $dispatcher = new Dispatcher();
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
-        $dispatcher->setRequest($this->createMock(RequestInterface::class));
-    }
-
-    /** @covers ::setRequest */
-    public function testDeprecationWarningIsNotIssuedWithServerRequest()
-    {
-        error_reporting($this->reporting); // Turn standard reporting back on
-        $dispatcher = new Dispatcher();
-        $dispatcher->setRequest($this->createMock(ServerRequestInterface::class));
-        $this->assertTrue(true, 'No error should have been raised');
     }
 
     /** @covers ::setAuthProviders */
@@ -661,7 +498,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('authorize')
             ->willReturn(new Authorization\Ok());
 
-        $req = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $req = $this->getMockRequestWithUriPath('/c', 'GET', []);
         $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
         $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
 
@@ -706,7 +543,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             HandlerInterface::class => $eh,
             'ClassThatDoesNotExist' => $ep,
         ]);
-        $req = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $req = $this->getMockRequestWithUriPath('/c', 'GET', []);
         $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
         $dispatcher = new Dispatcher();
         $dispatcher->setContainer($container)
@@ -741,7 +578,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $authz2->expects($this->never())
             ->method('authorize');
 
-        $req = $this->getMockRequestWithUriPath('/c', 'GET', [], ServerRequestInterface::class);
+        $req = $this->getMockRequestWithUriPath('/c', 'GET', []);
         $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
         $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
 
@@ -789,7 +626,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
         $dispatcher = new Dispatcher();
         $dispatcher->setAuthProviders($authn, $authz);
-        $res = $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+        $res = $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
         $this->assertSame($response, $res);
     }
 
@@ -821,7 +658,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $dispatcher = new Dispatcher();
         $dispatcher->setAuthProviders($authn, $authz);
         try {
-            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
             $this->fail('An authorization exception should have been thrown');
         } catch (Authorization\Exception $e) {
             $this->assertSame($authzEx, $e);
@@ -852,7 +689,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $dispatcher = new Dispatcher();
         $dispatcher->setAuthProviders($authn, $authz);
         try {
-            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher, ServerRequestInterface::class);
+            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
             $this->fail('An exception should have been thrown');
         } catch (Authentication\Exception $e) {
             $this->assertSame($authnEx, $e);
@@ -882,48 +719,22 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * @param string $uri path component of URI
      * @param string $method optional HTTP method
      * @param array $query_data optional raw, unescaped query string data
-     * @param string $requestClass What RequestInterface to mock
-     * @return RequestInterface
+     * @return ServerRequestInterface
      */
     private function getMockRequestWithUriPath(
         string $uri,
         string $method = 'GET',
-        array $query_data = [],
-        string $requestClass = RequestInterface::class
-    ): RequestInterface {
-        if ($requestClass === RequestInterface::class) {
-            $request = new Request(
-                $uri.'?'.http_build_query($query_data),
-                $method
-            );
-        } elseif ($requestClass === ServerRequestInterface::class) {
-            $request = new ServerRequest(
-                [],
-                [],
-                $uri,
-                $method
-            );
-        } else {
-            throw new \Exception('Invalid request class');
-        }
+        array $query_data = []
+    ): ServerRequestInterface {
+        $uri .= '?' . http_build_query($query_data);
+        $request = new ServerRequest(
+            [],
+            [],
+            $uri,
+            $method,
+            'php://memory'
+        );
         return $request;
-        $mock_uri = $this->createMock(UriInterface::class);
-        $mock_uri->expects($this->any())
-            ->method('getPath')
-            ->will($this->returnValue($uri));
-        $mock_uri->method('getQuery')
-            ->will($this->returnValue(http_build_query($query_data)));
-
-        /** @var RequestInterface | \PHPUnit\Framework\MockObject\MockObject */
-        $req = $this->createMock($requestClass);
-
-        $req->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue($mock_uri));
-
-        $req->method('getMethod')
-            ->will($this->returnValue($method));
-        return $req;
     }
 
     /**
@@ -953,10 +764,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      */
     private function executeMockRequestOnEndpoint(
         EndpointInterface $endpoint,
-        Dispatcher $dispatcher = null,
-        string $requestClass = RequestInterface::class
+        Dispatcher $dispatcher = null
     ): ResponseInterface {
-        $req = $this->getMockRequestWithUriPath('/container', 'GET', [], $requestClass);
+        $req = $this->getMockRequestWithUriPath('/container', 'GET', []);
         $list = [
             'GET' => [
                 '/container' => 'ClassThatDoesNotExist',

@@ -11,7 +11,6 @@ use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -19,7 +18,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
-use Zend\Diactoros\ServerRequestFactory;
 
 class Dispatcher implements RequestHandlerInterface
 {
@@ -31,33 +29,16 @@ class Dispatcher implements RequestHandlerInterface
     private $error_handler;
     private $parser_list;
     private $psrMiddleware = [];
-    private $response_middleware = [];
     private $request;
     private $uri_data;
 
     /**
-     * Add a callback to run on the response after controller executation (or
-     * error handling) has finished.
+     * Provide PSR-15 middleware to run. This is treated as a queue (FIFO), and
+     * starts before routing and other internal processes.
      *
-     * This must be a callable with the following signature:
-     *
-     * function(ResponseInterface $response, callable $next): ResponseInterface
-     *
-     * The callback may modify the response, and either pass it off to the next
-     * handler (by using `return $next($response)`) or return it immediately,
-     * bypassing all future callbacks.
-     *
-     * The callbacks are treated as a queue (FIFO)
-     *
-     * @param callable $callback the callback to execute
+     * @param MiddlewareInterface $mw
      * @return self
      */
-    public function addResponseMiddleware(callable $callback): self
-    {
-        $this->response_middleware[] = $callback;
-        return $this;
-    }
-
     public function addMiddleware(MiddlewareInterface $mw): self
     {
         $this->psrMiddleware[] = $mw;
@@ -132,36 +113,13 @@ class Dispatcher implements RequestHandlerInterface
     /**
      * Inject the request
      *
-     * @param RequestInterface $request The request
+     * @param ServerRequestInterface $request The request
      * @return self
      */
-    public function setRequest(RequestInterface $request): self
+    public function setRequest(ServerRequestInterface $request): self
     {
-        if (!$request instanceof ServerRequestInterface) {
-            trigger_error(
-                sprintf(
-                    'Providing %s is deprecated. Use %s instead',
-                    RequestInterface::class,
-                    ServerRequestInterface::class
-                ),
-                E_USER_DEPRECATED
-            );
-            $request = $this->transformRequestToServerRequest($request);
-        }
         $this->request = $request;
         return $this;
-    }
-
-    private function transformRequestToServerRequest(RequestInterface $request): ServerRequestInterface
-    {
-        $serverRequest = ServerRequestFactory::fromGlobals()
-            ->withUri($request->getUri())
-            ->withMethod($request->getMethod())
-            ->withBody($request->getBody());
-        foreach ($request->getHeaders() as $name => $values) {
-            $serverRequest = $serverRequest->withHeader($name, $values);
-        }
-        return $serverRequest;
     }
 
     /**
@@ -249,7 +207,6 @@ class Dispatcher implements RequestHandlerInterface
                 $endpoint->setAuthentication($auth);
                 $this->authorizationProvider->authorize($endpoint, $auth);
             }
-            $endpoint->authenticate($request);
             $safe_input = $this->parseInput($request)
                 ->addData($this->getUriData())
                 ->addData($this->getQueryStringData($request))
@@ -274,40 +231,16 @@ class Dispatcher implements RequestHandlerInterface
                 }
             }
         }
-        return $this->executeResponseMiddleware($response);
-    }
-
-    /**
-     * Executes any provided response middleware callbacks previously added
-     * with `addResponseMiddleware()`. This wraps itself in a callback so that
-     * each successive callback may be executed. Each middleware may
-     * short-circuit all remaining callbacks, but still must return
-     * a ResponseInterface object
-     *
-     * @param ResponseInterface $response the response so far
-     * @return ResponseInterface the response after any additional processing
-     */
-    private function executeResponseMiddleware(
-        ResponseInterface $response
-    ): ResponseInterface {
-        // Out of middlewares to run
-        if (!$this->response_middleware) {
-            return $response;
-        }
-        // Get the next in line and dispatch
-        $middleware = array_shift($this->response_middleware);
-        return $middleware($response, function (ResponseInterface $response) {
-            return $this->executeResponseMiddleware($response);
-        });
+        return $response;
     }
 
     /**
      * Parse the raw input body based on the content type
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      * @return ParsedInput the parsed input data
      */
-    private function parseInput(RequestInterface $request): ParsedInput
+    private function parseInput(ServerRequestInterface $request): ParsedInput
     {
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
@@ -339,7 +272,7 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @return Interfaces\EndpointInterface the routed endpoint
      */
-    private function getEndpoint(RequestInterface $request): Interfaces\EndpointInterface
+    private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
     {
         list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
             ->filter(strtoupper($request->getMethod()))
@@ -368,7 +301,7 @@ class Dispatcher implements RequestHandlerInterface
         return $this->uri_data;
     }
 
-    private function getQueryStringData(RequestInterface $request): ParsedInput
+    private function getQueryStringData(ServerRequestInterface $request): ParsedInput
     {
         $uri = $request->getUri();
         $query = $uri->getQuery();

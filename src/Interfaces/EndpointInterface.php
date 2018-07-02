@@ -67,26 +67,4 @@ interface EndpointInterface extends ValidationInterface
      * @return HTTPMethod
      */
     public function getMethod(): HTTPMethod;
-
-    /**
-     * Authenticate the request. This method SHOULD copy any relevant
-     * authentication information (user or application ID, etc) to local
-     * properties, since the raw request will not be made available at any
-     * other time. Additional processing MUST NOT be performed as this will be
-     * called before even input validation. Logging and other metric gathering
-     * MAY be performed during authentication if desired.
-     *
-     * This method SHOULD throw a `RuntimeException` upon failure (incorrect
-     * credentials, etc), and MUST return `$this` when successful. An
-     * implementation MAY choose to defer handling the failed authenticaton
-     * until `::execute()`, although it is NOT RECOMMENDED.
-     *
-     * It is RECOMMENDED to implement this method in a trait, since most
-     * Endpoints will share authentication logic.
-     *
-     * @param RequestInterface $request Inbound PSR-7 HTTP Request
-     * @return self
-     * @throws \RuntimeException if authentication fails
-     */
-    public function authenticate(RequestInterface $request): self;
 }
