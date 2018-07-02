@@ -17,6 +17,9 @@ use RuntimeException;
  * itself, since it's unaware of the application at large. This just parses the
  * HTTP request and extracts the bearer token, handling invalid or missing
  * values. Provide said handler with `setHandleBearerTokenCallback()`.
+ *
+ * @deprecated - this will be removed in 4.0.0, in favor of the new
+ * authenticaton and authorization tools.
  */
 trait BearerToken
 {
@@ -25,6 +28,10 @@ trait BearerToken
 
     public function authenticate(RequestInterface $request): EndpointInterface
     {
+        trigger_error(
+            'BearerToken will be removed in 4.0.0. Use the new authentication tools instead.',
+            \E_USER_DEPRECATED
+        );
         if (!$this->handleBearerTokenCallback) {
             throw new BadMethodCallException(
                 'There is no callback to handle the Bearer token. Call '.
