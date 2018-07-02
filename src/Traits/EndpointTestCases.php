@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\Input\Containers;
 use Firehed\Input\Interfaces\ValidationInterface;
+use Firehed\Input\SafeInputTestTrait;
 use Firehed\Input\ValidationTestTrait;
 
 /**
@@ -17,6 +19,7 @@ use Firehed\Input\ValidationTestTrait;
 trait EndpointTestCases
 {
     use HandlesOwnErrorsTestCases;
+    use SafeInputTestTrait;
     use ValidationTestTrait;
 
     /**
@@ -36,6 +39,23 @@ trait EndpointTestCases
         return $this->getEndpoint();
     }
 
+    /**
+     * Takes a "request body" and runs it through the actual endpoint
+     * validation process, returning a SafeInput that can be passed directly to
+     * `execute()` during a test case. This helps ensure that any data
+     * transformations that take place during request validation are applied,
+     * and can additionally help when writing tests to assert that input
+     * validation is defined correctly.
+     *
+     * @param array $parsedInput The parsed request input (e.g. $_POST + $_GET,
+     *                           or json_decode(php://input)
+     * @return Containers\SafeInput
+     */
+    protected function getSafeInput(array $parsedRequest): Containers\SafeInput
+    {
+        return (new Containers\ParsedInput($parsedRequest))
+            ->validate($this->getEndpoint());
+    }
     /**
      * @covers ::getUri
      * @dataProvider uris
