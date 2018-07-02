@@ -9,9 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Overhauled authentication (#43)
 - Overhauled error handling (#37, #38, #63)
 - Added support for PSR-15 Middleware (#59)
+
 ### Changed
 - Internal refactoring
 - Deprecate use of base RequestInterface (#48)
+- If a RequestInterface object is provided to the dispatcher, it will be internally converted to a ServerRequestInterface to ensure compatibility with Middleware and error handling.
+  Relying on this functionality is deprecated from the start, **highly** discouraged, and may be imperfect.
 
 ## [3.0.6] - 2018-04-30
 ### Changed
