@@ -7,6 +7,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+/**
+ * Implementations of this interface are for application-wide error handling.
+ * See the section on error handling in the README for additional information.
+ */
 interface HandlerInterface
 {
     /**

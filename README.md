@@ -98,7 +98,7 @@ Other auto-detected container entries:
 | Psr\Log\LoggerInterface | Internal logging | generated front controller |
 | Firehed\API\Authentication\ProviderInterface | Authentication Provider | Always if an AuthorizationProvider is set |
 | Firehed\API\Authorization\ProviderInterface | Authorization Provider | Always if an AuthenticationProvider is set |
-| Firehed\API\Interfaces\ErrorHandlerInterface | Error Handler | Always |
+| Firehed\API\Errors\HandlerInterface | Error Handler | Always |
 
 
 ### Example
@@ -160,7 +160,7 @@ The API framework is responsible for catching all exceptions thrown during an En
 All endpoints that implement `Firehed\API\Interfaces\HandlesOwnErrorsInterface` (which is a part of `EndpointInterface` prior to v4.0.0) will have their `handleException()` method called with the thrown exception.
 This method _may_ choose to ignore certain exception classes (by rethrowing them), but must return a PSR `ResponseInterface` when opting to handle an exception.
 
-Starting in v3.1.0, error handling can be implemeneted globally by providing a `Firehed\API\Interfaces\ErrorHandlerInterface` to the Dispatcher via `setErrorHandler()`.
+Starting in v3.1.0, error handling can be implemeneted globally by providing a `Firehed\API\Errors\HandlerInterface` to the Dispatcher via `setErrorHandler()`.
 This is functionally identical to `HandlesOwnErrorInterface` described above, with the addition that the PSR `ServerRequestInterface` will also be available (primarily so that the response can be formatted appropriately for the request, e.g. based on the `Accept` header).
 
 Finally, a global fallback handler is configured by default, which will log the exception and return a generic 500 error.
