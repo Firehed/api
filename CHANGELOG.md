@@ -1,23 +1,30 @@
-# Change Log
+# Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.1.0] - (tbd)
-### Added
+
+### Summary
 - Overhauled authentication (#43)
 - Overhauled error handling (#37, #38, #63)
 - Added support for PSR-15 Middleware (#59)
 
+### Added
+- `Authentication\ProviderInterface`
+- `Authorization\ProviderInterface`
+- `Errors\HandlerInterface`
+- `Interfaces\AuthenticatedEndpointInterface`
+- `Interfaces\HandlesOwnErrorsInterface`
+
 ### Changed
 - Internal refactoring
+- If a RequestInterface object is provided to the dispatcher, it will be internally converted to a ServerRequestInterface to ensure compatibility with Middleware and error handling.
+  Relying on this functionality is deprecated from the start, **highly** discouraged, and may be imperfect.
 
 ### Deprecated
 - Deprecate use of base RequestInterface (#48)
-- If a RequestInterface object is provided to the dispatcher, it will be internally converted to a ServerRequestInterface to ensure compatibility with Middleware and error handling.
-  Relying on this functionality is deprecated from the start, **highly** discouraged, and may be imperfect.
-- Deprecated the `BearerToken` authentication trait
+- Deprecated the `BearerToken` authentication trait (#73)
 
 ## [3.0.6] - 2018-04-30
 ### Changed
