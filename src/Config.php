@@ -8,6 +8,9 @@ use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 use TypeError;
 
+/**
+ * @internal
+ */
 class Config implements ContainerInterface
 {
     const KEY_CONTAINER = 'container';
