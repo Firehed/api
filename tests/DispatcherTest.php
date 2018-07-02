@@ -734,7 +734,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     private function getMockEndpoint(string ...$additionalInterfaces): EndpointInterface
     {
         if ($additionalInterfaces) {
-            // $interfaces = [EndpointInterface::class];
+            /** @var EndpointInterface | \PHPUnit\Framework\MockObject\MockObject */
             $endpoint = $this->createMock(array_merge([EndpointInterface::class], $additionalInterfaces));
         } else {
             $endpoint = $this->createMock(EndpointInterface::class);
