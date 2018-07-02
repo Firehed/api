@@ -18,11 +18,6 @@ class EndpointFixture implements Interfaces\EndpointInterface
 
     const STATUS_ERROR = 999;
 
-    public function authenticate(Request $request): Interfaces\EndpointInterface
-    {
-        return $this;
-    }
-
     public function getUri(): string
     {
         return '/user/(?P<id>[1-9]\d*)';

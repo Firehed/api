@@ -207,7 +207,6 @@ class Dispatcher implements RequestHandlerInterface
                 $endpoint->setAuthentication($auth);
                 $this->authorizationProvider->authorize($endpoint, $auth);
             }
-            $endpoint->authenticate($request);
             $safe_input = $this->parseInput($request)
                 ->addData($this->getUriData())
                 ->addData($this->getQueryStringData($request))

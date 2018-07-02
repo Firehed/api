@@ -371,19 +371,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::dispatch */
-    public function testFailedAuthenticationReachesErrorHandler()
-    {
-        $e = new Exception('This should reach the error handler');
-        $endpoint = $this->getMockEndpoint();
-        $endpoint->method('authenticate')
-            ->will($this->throwException($e));
-        $endpoint->expects($this->once())
-            ->method('handleException')
-            ->with($e);
-        $this->executeMockRequestOnEndpoint($endpoint);
-    }
-
-    /** @covers ::dispatch */
     public function testFailedEndpointExecutionReachesEndpointErrorHandler()
     {
         $e = new Exception('This should reach the error handler');

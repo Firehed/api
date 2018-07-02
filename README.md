@@ -152,6 +152,69 @@ If you have e.g. a `UserGet` endpoint which is _not_ in the container, the dispa
 If that endpoint has no constructor arguments, this will be fine.
 However, this means your application will crash at runtime if it does - so any endpoints with required constructors **must** be configured in the container.
 
+## Authentication and Authorization
+
+There are two interfaces defined for the processes of authentication (who is performing the request) and authorization (whether they are allowed to perform the request), respectively named `Authentication\ProviderInterface` and `Authorization\ProviderInterface`.
+Both interfaces will be autodetected in a container or can be explicitly provided via `Dispatcher::setAuthProviders()`.
+If these are not provided, **no authentication or authorization will ever be performed using the application-wide handlers**.
+
+Any endpoint that implements `Interfaces\AuthenticatedEndpointInterface` will have these processes performed prior to execution, and the container returned by the Authentication provider will be made available to it.
+If an endpoint does not implement `Interfaces\AuthenticatedEndpointInterface` (i.e. it only implements `Interfaces\EndpointInterface`), **application-wide auth will be skipped**.
+Endpoints may, of course, choose to implement their own auth protocols in their `execute()` method, but this is discouraged, with the exception of login-type pages (see below).
+
+Generally speaking, implementations for the above interfaces should be looking for authentication data present in (almost) every request: cookies, OAuth Bearer tokens, HTTP basic auth, etc., and validating their authenticity.
+Endpoints that are used to obtain auth data (e.g. OAuth grant) typically will NOT be authenticated themselves, but will set or return the data to be used to authenticate other requests.
+
+Example provider, which implements both interfaces:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Your\Project;
+
+use Firehed\API\Authentication\ProviderInterface as AuthnProvider;
+use Firehed\API\Authorization\Exception as AuthException;
+use Firehed\API\Authorization\ProviderInterface as AuthzProvider;
+use Firehed\API\Authorization\Ok;
+use Firehed\API\Container;
+use Firehed\API\Interfaces\AuthenticatedEndpointInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+// This elides a lot of details and error handling for simplicity
+class AuthProvider implements AuthnProvider, AuthzProvider
+{
+    public function authenticate(ServerRequestInterface $request): ContainerInterface
+    {
+        list($_, $token) = explode(' ', $request->getHeaderLine('Authorization'), 2);
+        // Find a user, app, etc. from the token string
+        return new Container([
+            App::class => $app,
+            User::class => $user,
+            // ...
+            'oauth_scopes' => $scopes,
+        ]);
+    }
+
+    public function authorize(AuthenticatedEndpointInterface $endpoint, ContainerInterface $container): Ok
+    {
+        $scopes = $container->get('oauth_scopes');
+        if (!$endpoint instanceof YourInternalScopeInterface) {
+            throw new \LogicException('Endpoint is invalid');
+        }
+        // This is a method in YourInternalScopeInterface
+        $neededScopes = $endpoint->getRequiredScopes();
+        foreach ($neededScopes as $scope) {
+            if (!in_array($scope, $scopes)) {
+                throw new AuthException(sprintf('Missing scope %s', $scope));
+            }
+        }
+        return new Ok();
+    }
+}
+```
+
 ## Error Handling
 
 It is strongly discouraged to handle most exceptions that are thrown in an Endpoint's `execute()` method.
