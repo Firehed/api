@@ -11,7 +11,6 @@ use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -19,7 +18,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
-use Zend\Diactoros\ServerRequestFactory;
 
 class Dispatcher implements RequestHandlerInterface
 {
@@ -115,36 +113,13 @@ class Dispatcher implements RequestHandlerInterface
     /**
      * Inject the request
      *
-     * @param RequestInterface $request The request
+     * @param ServerRequestInterface $request The request
      * @return self
      */
-    public function setRequest(RequestInterface $request): self
+    public function setRequest(ServerRequestInterface $request): self
     {
-        if (!$request instanceof ServerRequestInterface) {
-            trigger_error(
-                sprintf(
-                    'Providing %s is deprecated. Use %s instead',
-                    RequestInterface::class,
-                    ServerRequestInterface::class
-                ),
-                E_USER_DEPRECATED
-            );
-            $request = $this->transformRequestToServerRequest($request);
-        }
         $this->request = $request;
         return $this;
-    }
-
-    private function transformRequestToServerRequest(RequestInterface $request): ServerRequestInterface
-    {
-        $serverRequest = ServerRequestFactory::fromGlobals()
-            ->withUri($request->getUri())
-            ->withMethod($request->getMethod())
-            ->withBody($request->getBody());
-        foreach ($request->getHeaders() as $name => $values) {
-            $serverRequest = $serverRequest->withHeader($name, $values);
-        }
-        return $serverRequest;
     }
 
     /**
@@ -263,10 +238,10 @@ class Dispatcher implements RequestHandlerInterface
     /**
      * Parse the raw input body based on the content type
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      * @return ParsedInput the parsed input data
      */
-    private function parseInput(RequestInterface $request): ParsedInput
+    private function parseInput(ServerRequestInterface $request): ParsedInput
     {
         $data = [];
         // Presence of Content-type header indicates PUT/POST; parse it. We
@@ -298,7 +273,7 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @return Interfaces\EndpointInterface the routed endpoint
      */
-    private function getEndpoint(RequestInterface $request): Interfaces\EndpointInterface
+    private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
     {
         list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
             ->filter(strtoupper($request->getMethod()))
@@ -327,7 +302,7 @@ class Dispatcher implements RequestHandlerInterface
         return $this->uri_data;
     }
 
-    private function getQueryStringData(RequestInterface $request): ParsedInput
+    private function getQueryStringData(ServerRequestInterface $request): ParsedInput
     {
         $uri = $request->getUri();
         $query = $uri->getQuery();
