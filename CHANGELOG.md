@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 
 ### Deleted
+- Disallowed using `RequestInterface` in `Dispatcher`.
+  `ServerRequestInterface` is now required.
 - `Dispatcher::addResponseMiddleware()`
 - `Traits\Authentication\BearerToken`
 - `Traits\DeleteRequest`
