@@ -6,6 +6,7 @@ namespace Firehed\API\Traits;
 
 use Firehed\API\EndpointFixture;
 use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\Input\Containers\SafeInput;
 use Throwable;
 
 /**
@@ -40,6 +41,20 @@ class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
             list($testParam) = $testCase;
             $this->assertInstanceOf(Throwable::class, $testParam);
         }
+    }
+
+    /**
+     * @covers Firehed\API\Traits\EndpointTestCases::getSafeInput
+     */
+    public function testGetSafeInput()
+    {
+        $data = $this->getSafeInput([
+            'id' => '123',
+            'shortstring' => 'short',
+        ]);
+        $this->assertInstanceOf(SafeInput::class, $data);
+        $this->assertSame(123, $data['id'], 'id should have been int from validation cast');
+        $this->assertSame('short', $data['shortstring'], 'shortstring was wrong');
     }
 
     /**
