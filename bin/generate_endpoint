@@ -21,21 +21,23 @@ declare(strict_types=1);
 
 namespace %s%s;
 
-use Firehed\API\Interfaces\EndpointInterface;
-use Firehed\API\Traits\Authentication;
+use Firehed\API\Interfaces\AuthenticatedEndpointInterface;
 use Firehed\API\Traits\Input;
 use Firehed\API\Traits\Request;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
-class %s implements EndpointInterface
+class %s implements AuthenticatedEndpointInterface
 {
-    // use Authentication\None;
     // use Input\NoOptional;
     // use Input\NoRequired;
     // use Request\Get;
+
+    /** @var ContainerInterface */
+    private $auth;
 
     public function getUri(): string
     {
@@ -55,6 +57,11 @@ class %s implements EndpointInterface
     public function execute(SafeInput $input): ResponseInterface
     {
         // Implement this
+    }
+
+    public function setAuthentication(ContainerInterface $auth)
+    {
+        $this->auth = $auth;
     }
 
     public function handleException(Throwable $t): ResponseInterface
