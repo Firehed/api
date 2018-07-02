@@ -19,6 +19,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
+use Zend\Diactoros\ServerRequestFactory;
 
 class Dispatcher implements RequestHandlerInterface
 {
@@ -145,9 +146,22 @@ class Dispatcher implements RequestHandlerInterface
                 ),
                 E_USER_DEPRECATED
             );
+            $request = $this->transformRequestToServerRequest($request);
         }
         $this->request = $request;
         return $this;
+    }
+
+    private function transformRequestToServerRequest(RequestInterface $request): ServerRequestInterface
+    {
+        $serverRequest = ServerRequestFactory::fromGlobals()
+            ->withUri($request->getUri())
+            ->withMethod($request->getMethod())
+            ->withBody($request->getBody());
+        foreach ($request->getHeaders() as $name => $values) {
+            $serverRequest = $serverRequest->withHeader($name, $values);
+        }
+        return $serverRequest;
     }
 
     /**
@@ -219,23 +233,16 @@ class Dispatcher implements RequestHandlerInterface
         $request = $this->request;
 
         // Delegate to PSR-15 middleware when possible
-        if ($request instanceof ServerRequestInterface) {
-            return $this->handle($request);
-        }
-        // If legacy ResponseInterace only, do not even try
-        return $this->doDispatch($request);
+        return $this->handle($request);
     }
 
-    private function doDispatch(RequestInterface $request)
+    private function doDispatch(ServerRequestInterface $request)
     {
-        $isSRI = $request instanceof ServerRequestInterface;
-
         /** @var ?EndpointInterface */
         $endpoint = null;
         try {
             $endpoint = $this->getEndpoint($request);
-            if ($isSRI
-                && $this->authenticationProvider
+            if ($this->authenticationProvider
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
             ) {
                 $auth = $this->authenticationProvider->authenticate($request);
@@ -260,7 +267,7 @@ class Dispatcher implements RequestHandlerInterface
                 // If an application-wide handler has been defined, use the
                 // response that it generates. If not, just rethrow the
                 // exception for the system default (if defined) to handle.
-                if ($this->error_handler && $isSRI) {
+                if ($this->error_handler) {
                     $response = $this->error_handler->handle($request, $e);
                 } else {
                     throw $e;
