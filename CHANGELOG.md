@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Disallowed using `RequestInterface` in `Dispatcher`.
   `ServerRequestInterface` is now required.
 - `Dispatcher::addResponseMiddleware()`
+- `Interfaces\EndpointInterface::authenticate()` - this drops legacy authenticion support entirely
 - `Traits\Authentication\BearerToken`
 - `Traits\DeleteRequest`
 - `Traits\GetRequest`
