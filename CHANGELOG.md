@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Deprecate use of base RequestInterface (#48)
 - If a RequestInterface object is provided to the dispatcher, it will be internally converted to a ServerRequestInterface to ensure compatibility with Middleware and error handling.
   Relying on this functionality is deprecated from the start, **highly** discouraged, and may be imperfect.
+- Deprecated the `BearerToken` authentication trait
 
 ## [3.0.6] - 2018-04-30
 ### Changed
