@@ -10,6 +10,7 @@ use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\API\Errors\HandlerInterface;
+use Firehed\Input\Exceptions\InputException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,6 +18,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 use Throwable;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\ServerRequest;
@@ -319,7 +321,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::dispatch */
-    public function testFailedInputValidationReachesErrorHandler()
+    public function testFailedInputValidationCanReachErrorHandlers()
     {
         // See tests/EndpointFixture
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
@@ -328,31 +330,34 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $req = $req->withBody($body);
         $req = $req->withHeader('Content-type', 'application/x-www-form-urlencoded');
 
-        $response = (new Dispatcher())
-            ->setEndpointList($this->getEndpointListForFixture())
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
-        $this->assertSame(
-            EndpointFixture::STATUS_ERROR,
-            $response->getStatusCode()
-        );
+        try {
+            $response = (new Dispatcher())
+                ->setEndpointList($this->getEndpointListForFixture())
+                ->setParserList($this->getDefaultParserList())
+                ->setRequest($req)
+                ->dispatch();
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $e) {
+            $this->assertInstanceOf(InputException::class, $e);
+        }
     }
 
     /** @covers ::dispatch */
-    public function testUnsupportedContentTypeReachesErrorHandler()
+    public function testUnsupportedContentTypeCanReachErrorHandlers()
     {
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
         $req = $req->withHeader('Content-type', 'application/x-test-failure');
-        $response = (new Dispatcher())
-            ->setEndpointList($this->getEndpointListForFixture())
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
-        $this->assertSame(
-            415,
-            $response->getStatusCode()
-        );
+        try {
+            $response = (new Dispatcher())
+                ->setEndpointList($this->getEndpointListForFixture())
+                ->setParserList($this->getDefaultParserList())
+                ->setRequest($req)
+                ->dispatch();
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $e) {
+            $this->assertInstanceOf(RuntimeException::class, $e);
+            $this->assertSame(415, $e->getCode());
+        }
     }
 
     /**
