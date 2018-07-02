@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### Added
+- `Traits\EndpointTestCases::getSafeInput()`
+- `Traits\EndpointTestCases` now also `use`s `Firehed\Input\SafeInputTestTrait`. This adds `::getSafeInputFromData()` but will result in an import conflict for test cases that have already opted to use the same trait
+
 ### Deleted
 - Disallowed using `RequestInterface` in `Dispatcher`.
   `ServerRequestInterface` is now required.
