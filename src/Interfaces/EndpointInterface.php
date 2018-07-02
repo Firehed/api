@@ -20,13 +20,8 @@ use Throwable;
  * be configuired with a container injected into the Dispatcher. If there are
  * no paramters on the constructor (or there is no constructor), that is
  * optional.
- *
- * In the next major version of this framework, this interface will no longer
- * extend HandlesOwnErrorsInterface; endpoints that actually have special error
- * handling logic must explictly implement that interface upon migrating to
- * that version.
  */
-interface EndpointInterface extends ValidationInterface, HandlesOwnErrorsInterface
+interface EndpointInterface extends ValidationInterface
 {
 
     /**

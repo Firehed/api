@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 /**
- * @coversDefaultClass Firehed\API\EndpointFixture
+ * @coversDefaultClass Firehed\API\HandlesOwnErrorsFixture
  * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::<protected>
  * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::<private>
  */
@@ -15,9 +16,12 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
 {
     use HandlesOwnErrorsTestCases;
 
+    private $endpointShouldThrow = true;
+
     public function setUp()
     {
         $this->setAllowHandleExceptionToRethrow(true);
+        $this->endpointShouldThrow = true;
     }
 
     protected function getEndpoint(): HandlesOwnErrorsInterface
@@ -25,9 +29,25 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
         $mock = $this->createMock(HandlesOwnErrorsInterface::class);
         $mock->method('handleException')
             ->willReturnCallback(function ($e) {
-                throw $e;
+                if ($this->endpointShouldThrow) {
+                    throw $e;
+                } else {
+                    return $this->createMock(ResponseInterface::class);
+                }
             });
         return $mock;
+    }
+
+    /**
+     * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::exceptionsToHandle
+     */
+    public function testExceptionsToHandle()
+    {
+        $data = $this->exceptionsToHandle();
+        foreach ($data as $testCase) {
+            list($testParam) = $testCase;
+            $this->assertInstanceOf(Throwable::class, $testParam);
+        }
     }
 
     /**
@@ -45,9 +65,20 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
      */
-    public function testRedundantlyBecauseTraitApplicationIsWierd()
+    public function testSuccessfullyHandlingException()
     {
+        $this->endpointShouldThrow = false;
         $ex = new \Exception();
         $this->testHandleException($ex);
+    }
+
+    /**
+     * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
+     */
+    public function testHandlingRethrownException()
+    {
+        $this->endpointShouldThrow = true;
+        $this->setAllowHandleExceptionToRethrow(true);
+        $this->testHandleException(new \Exception());
     }
 }

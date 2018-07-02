@@ -16,7 +16,6 @@ use Throwable;
  * @covers Firehed\API\Traits\EndpointTestCases::getValidation
  * @covers Firehed\API\Traits\EndpointTestCases::testGetUri
  * @covers Firehed\API\Traits\EndpointTestCases::testGetMethod
- * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
  */
 class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
 {
@@ -29,18 +28,6 @@ class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
     protected function getEndpoint(): EndpointInterface
     {
         return new EndpointFixture();
-    }
-
-    /**
-     * @covers Firehed\API\Traits\EndpointTestCases::exceptionsToHandle
-     */
-    public function testExceptionsToHandle()
-    {
-        $data = $this->exceptionsToHandle();
-        foreach ($data as $testCase) {
-            list($testParam) = $testCase;
-            $this->assertInstanceOf(Throwable::class, $testParam);
-        }
     }
 
     /**

@@ -8,7 +8,9 @@ use Exception;
 use Firehed\API\Authentication;
 use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\API\Errors\HandlerInterface;
+use Firehed\Input\Exceptions\InputException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,6 +18,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 use Throwable;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\ServerRequest;
@@ -252,7 +255,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $execute = new Exception('Execute error');
         $error = new Exception('Exception handler error');
-        $endpoint = $this->getMockEndpoint();
+        $endpoint = $this->getMockEndpoint(HandlesOwnErrorsInterface::class);
         $endpoint->expects($this->once())
             ->method('execute')
             ->will($this->throwException($execute));
@@ -318,7 +321,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::dispatch */
-    public function testFailedInputValidationReachesErrorHandler()
+    public function testFailedInputValidationCanReachErrorHandlers()
     {
         // See tests/EndpointFixture
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
@@ -327,31 +330,34 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $req = $req->withBody($body);
         $req = $req->withHeader('Content-type', 'application/x-www-form-urlencoded');
 
-        $response = (new Dispatcher())
-            ->setEndpointList($this->getEndpointListForFixture())
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
-        $this->assertSame(
-            EndpointFixture::STATUS_ERROR,
-            $response->getStatusCode()
-        );
+        try {
+            $response = (new Dispatcher())
+                ->setEndpointList($this->getEndpointListForFixture())
+                ->setParserList($this->getDefaultParserList())
+                ->setRequest($req)
+                ->dispatch();
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $e) {
+            $this->assertInstanceOf(InputException::class, $e);
+        }
     }
 
     /** @covers ::dispatch */
-    public function testUnsupportedContentTypeReachesErrorHandler()
+    public function testUnsupportedContentTypeCanReachErrorHandlers()
     {
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
         $req = $req->withHeader('Content-type', 'application/x-test-failure');
-        $response = (new Dispatcher())
-            ->setEndpointList($this->getEndpointListForFixture())
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
-        $this->assertSame(
-            415,
-            $response->getStatusCode()
-        );
+        try {
+            $response = (new Dispatcher())
+                ->setEndpointList($this->getEndpointListForFixture())
+                ->setParserList($this->getDefaultParserList())
+                ->setRequest($req)
+                ->dispatch();
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $e) {
+            $this->assertInstanceOf(RuntimeException::class, $e);
+            $this->assertSame(415, $e->getCode());
+        }
     }
 
     /**
@@ -374,7 +380,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testFailedEndpointExecutionReachesEndpointErrorHandler()
     {
         $e = new Exception('This should reach the error handler');
-        $endpoint = $this->getMockEndpoint();
+        $endpoint = $this->getMockEndpoint(HandlesOwnErrorsInterface::class);
         $endpoint->method('execute')
             ->will($this->throwException($e));
         $endpoint->expects($this->once())
@@ -387,7 +393,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     /** @covers ::dispatch */
     public function testScalarResponseFromEndpointReachesErrorHandler()
     {
-        $endpoint = $this->getMockEndpoint();
+        $endpoint = $this->getMockEndpoint(HandlesOwnErrorsInterface::class);
         $endpoint->expects($this->atLeastOnce())
             ->method('execute')
             ->will($this->returnValue(false)); // Trigger a bad return value
@@ -399,7 +405,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     /** @covers ::dispatch */
     public function testInvalidTypeResponseFromEndpointReachesErrorHandler()
     {
-        $endpoint = $this->getMockEndpoint();
+        $endpoint = $this->getMockEndpoint(HandlesOwnErrorsInterface::class);
         $endpoint->expects($this->atLeastOnce())
             ->method('execute')
             ->will($this->returnValue(new \DateTime())); // Trigger a bad return value
@@ -414,10 +420,11 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      */
     public function testExceptionsReachDefaultErrorHandlerWhenSet()
     {
-        $e = new Exception('This should reach the main error handler');
+        $first = new Exception('This is the initially thrown exception');
+        $second = new Exception('This should reach the main error handler');
         $res = $this->createMock(ResponseInterface::class);
-        $cb = function ($req, $ex) use ($e, $res) {
-            $this->assertSame($e, $ex, 'A different exception reached the handler');
+        $cb = function ($req, $ex) use ($second, $res) {
+            $this->assertSame($second, $ex, 'A different exception reached the handler');
 
             return $res;
         };
@@ -434,13 +441,13 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             'setErrorHandler should return $this'
         );
 
-        $endpoint = $this->getMockEndpoint();
+        $endpoint = $this->getMockEndpoint(HandlesOwnErrorsInterface::class);
         $endpoint->method('execute')
-            ->will($this->throwException($e));
+            ->will($this->throwException($first));
         $endpoint->expects($this->once())
             ->method('handleException')
-            ->with($e)
-            ->will($this->throwException($e));
+            ->with($first)
+            ->will($this->throwException($second));
         $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
     }
 
@@ -451,13 +458,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
         $endpoint = $this->getMockEndpoint();
         $endpoint->method('execute')
-            ->will($this->throwException($e));
-        // This is a quasi-v4 endpoint: one where the endpoint's exception
-        // handler just rethrows the exception. This should be the same as not
-        // choosing to have an endpoint handle exeptions directly in v4.
-        $endpoint->expects($this->once())
-            ->method('handleException')
-            ->with($e)
             ->will($this->throwException($e));
 
         try {
@@ -534,10 +534,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $ep = $this->createMock(EndpointInterface::class);
         $ep->method('execute')
             ->will($this->throwException($ex));
-        $ep->method('handleException')
-            ->willReturnCallback(function ($e) {
-                throw $e;
-            });
 
         $container = $this->getMockContainer([
             HandlerInterface::class => $eh,
@@ -644,10 +640,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
         $endpoint->expects($this->never())
             ->method('execute');
-        $endpoint->expects($this->once())
-            ->method('handleException')
-            ->with($authzEx)
-            ->will($this->throwException($authzEx));
 
         $authz = $this->createMock(Authorization\ProviderInterface::class);
         $authz->expects($this->once())
@@ -677,10 +669,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
         $endpoint->expects($this->never())
             ->method('execute');
-        $endpoint->expects($this->once())
-            ->method('handleException')
-            ->with($authnEx)
-            ->will($this->throwException($authnEx));
 
         $authz = $this->createMock(Authorization\ProviderInterface::class);
         $authz->expects($this->never())
@@ -743,15 +731,18 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      *
      * @return EndpointInterface | \PHPUnit\Framework\MockObject\MockObject
      */
-    private function getMockEndpoint(): EndpointInterface
+    private function getMockEndpoint(string ...$additionalInterfaces): EndpointInterface
     {
-        $endpoint = $this->createMock(EndpointInterface::class);
+        if ($additionalInterfaces) {
+            /** @var EndpointInterface | \PHPUnit\Framework\MockObject\MockObject */
+            $endpoint = $this->createMock(array_merge([EndpointInterface::class], $additionalInterfaces));
+        } else {
+            $endpoint = $this->createMock(EndpointInterface::class);
+        }
         $endpoint->method('getRequiredInputs')
             ->will($this->returnValue([]));
         $endpoint->method('getOptionalInputs')
             ->will($this->returnValue([]));
-        $endpoint->method('handleException')
-            ->will($this->returnValue($this->createMock(ResponseInterface::class)));
         return $endpoint;
     }
 
