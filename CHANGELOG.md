@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Summary of Breaking Changes
+- Traits deprecated in 3.0.0 have been deleted (renamed equivalents were added in the same release).
+- `renderResponse` has been deleted (replaced by `ResponseRenderer`)
 
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`
@@ -16,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Deleted
 - Disallowed using `RequestInterface` in `Dispatcher`.
   `ServerRequestInterface` is now required.
+- `renderResponse()` function
 - `Dispatcher::addResponseMiddleware()`
 - `Dispatcher::setEndpointList()`
 - `Dispatcher::setParserList()`
