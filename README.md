@@ -19,12 +19,13 @@ Generate a default front-controller:
 
 `./vendor/bin/generate_front_controller`
 
-After creating, modifying, or deleting endpoints, (re-)run the endpoint mapper:
+After creating, modifying, or deleting endpoints, run the compiler:
 
-`./vendor/bin/generate_endpoint_list`
+`vendor/bin/api compile:all`
 
-If you have an automated build/deployment process, you should `gitignore` the generated files and run this script during that process.
-Otherwise you must run it manually and check in the changes.
+This step is _not_ optional: the framework depends on the generated files, rather than ever attempting to perform the same step at runtime.
+It is expected that you will rebuild the files on every build/deployment with the above command.
+See the section on best practices below.
 
 ## Testing
 
@@ -231,6 +232,37 @@ This is functionally identical to `HandlesOwnErrorInterface` described above, wi
 
 Finally, a global fallback handler is configured by default, which will log the exception and return a generic 500 error.
 
+## Best Practices
+
+### Source Control
+
+Use source control, of course.
+
+The following patterns should be added to your SCM's ignored files:
+
+- `__*__.*`
+
+### Build Automation
+
+It is highly recommended (for any modern PHP application) to use automated builds.
+
+This framework relies on compilation in order to improve performance.
+You **must** run the compilation process prior to deployment, and **should** do so during your automated build:
+
+`vendor/bin/api compile:all`.
+
+### Docker
+
+There are no special requirements to run in Docker, beyond what is noted in the above build automation section.
+
+This means you should have the following line in your Dockerfile at any point after installing dependencies with Composer:
+
+```Dockerfile
+RUN vendor/bin/api compile:all
+```
+
+You **should** also add all of the source control ignore files to your `.dockerignore`.
+
 ## Compatibility
 
 This framework tries to strictly follow the rules of Semantic Versioning.
@@ -249,11 +281,13 @@ The term "breaking changes" should be interpreted to mean:
 - Deletion of any public method (except on classes marked as internal)
 - Additional system requirements (PHP version, extensions, etc.)
 - Substantial, non-optional behavior changes
+- Required modifications to documented build steps (e.g. `vendor/bin/api compile:all`)
 
 Breaking changes DO NOT include:
 
 - Removal of a dependency (if you are implicitly relying on a dependency of this framework, you should explicitly add it into your own `composer.json`)
 - Removal of a class or method that is clearly marked internal
+- Format or content changes to any files that are intended to be generated during the compilation process, including adding or removing files entirely
 
 Whenever possible, deprecated functionality will be marked as such by `trigger_error(string, E_USER_DEPRECATED)` (in addition to release notes).
 Note that depending on your PHP settings, this may result in an `ErrorException` being thrown.

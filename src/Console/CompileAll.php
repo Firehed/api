@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Compile extends Command
+class CompileAll extends Command
 {
     // const OPT_ENDPOINT_LIST = 'endpoint-list';
     // const OPT_PARSER_LIST = 'parser-list';
@@ -30,7 +30,7 @@ class Compile extends Command
 
     protected function configure()
     {
-        $this->setName('compile')
+        $this->setName('compile:all')
             ->setDescription('Build required static resources');
     }
 

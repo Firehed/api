@@ -16,5 +16,5 @@ require_once 'vendor/autoload.php';
 
 $config = Config::load('.apiconfig');
 $application = new Application();
-$application->add(new Console\Compile($config));
+$application->add(new Console\CompileAll($config));
 $application->run();
