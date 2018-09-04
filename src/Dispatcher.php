@@ -21,13 +21,13 @@ use UnexpectedValueException;
 
 class Dispatcher implements RequestHandlerInterface
 {
+    const ENDPOINT_LIST = '__endpoint_list__.php';
+    const PARSER_LIST = '__parser_list__.php';
 
     private $authenticationProvider;
     private $authorizationProvider;
     private $container;
-    private $endpoint_list;
     private $error_handler;
-    private $parser_list;
     private $psrMiddleware = [];
     private $request;
     private $uri_data;
@@ -123,35 +123,6 @@ class Dispatcher implements RequestHandlerInterface
     }
 
     /**
-     * Set the parser list. Can be an array consumable by ClassMapper or
-     * a string representing a file parsable by same. The list must map
-     * MIME-types to Firehed\Input\ParserInterface class names.
-     *
-     * @param array|string $parser_list The parser list or its path
-     * @return self
-     */
-    public function setParserList($parser_list): self
-    {
-        $this->parser_list = $parser_list;
-        return $this;
-    }
-
-    /**
-     * Set the endpoint list. Can be an array consumable by ClassMapper or
-     * a string representing a file parsable by same. The list must be
-     * filterable by HTTP method and map absolute URI path components to
-     * controller methods.
-     *
-     * @param array|string $endpoint_list The endpoint list or its path
-     * @return self
-     */
-    public function setEndpointList($endpoint_list): self
-    {
-        $this->endpoint_list = $endpoint_list;
-        return $this;
-    }
-
-    /**
      * PSR-15 Entrypoint
      *
      * This method is intended for internal use only, and should not be called
@@ -178,9 +149,7 @@ class Dispatcher implements RequestHandlerInterface
      */
     public function dispatch(): ResponseInterface
     {
-        if (null === $this->request ||
-            null === $this->parser_list ||
-            null === $this->endpoint_list) {
+        if (null === $this->request) {
             throw new BadMethodCallException(
                 'Set the request, parser list, and endpoint list before '.
                 'calling dispatch()',
@@ -256,7 +225,7 @@ class Dispatcher implements RequestHandlerInterface
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
             // ['charset' => 'utf-8']
-            list($parser_class) = (new ClassMapper($this->parser_list))
+            list($parser_class) = (new ClassMapper(self::PARSER_LIST))
                 ->search($mediaType);
             if (!$parser_class) {
                 throw new OutOfBoundsException('Unsupported Content-type', 415);
@@ -274,7 +243,7 @@ class Dispatcher implements RequestHandlerInterface
      */
     private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
     {
-        list($class, $uri_data) = (new ClassMapper($this->endpoint_list))
+        list($class, $uri_data) = (new ClassMapper(self::ENDPOINT_LIST))
             ->filter(strtoupper($request->getMethod()))
             ->search($request->getUri()->getPath());
         if (!$class) {
