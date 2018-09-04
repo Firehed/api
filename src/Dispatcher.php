@@ -27,7 +27,9 @@ class Dispatcher implements RequestHandlerInterface
     private $authenticationProvider;
     private $authorizationProvider;
     private $container;
+    private $endpointList = self::ENDPOINT_LIST;
     private $error_handler;
+    private $parserList = self::PARSER_LIST;
     private $psrMiddleware = [];
     private $request;
     private $uri_data;
@@ -119,6 +121,39 @@ class Dispatcher implements RequestHandlerInterface
     public function setRequest(ServerRequestInterface $request): self
     {
         $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * Set the parser list. Can be an array consumable by ClassMapper or
+     * a string representing a file parsable by same. The list must map
+     * MIME-types to Firehed\Input\ParserInterface class names.
+     *
+     * @internal Overrides the standard parser list. Used primarily for unit
+     * testing.
+     * @param array|string $parserList The parser list or its path
+     * @return self
+     */
+    public function setParserList($parserList): self
+    {
+        $this->parserList = $parserList;
+        return $this;
+    }
+
+    /**
+     * Set the endpoint list. Can be an array consumable by ClassMapper or
+     * a string representing a file parsable by same. The list must be
+     * filterable by HTTP method and map absolute URI path components to
+     * controller methods.
+     *
+     * @internal Overrides the standard endpoint list. Used primarily for unit
+     * testing.
+     * @param array|string $endpointList The endpoint list or its path
+     * @return self
+     */
+    public function setEndpointList($endpointList): self
+    {
+        $this->endpointList = $endpointList;
         return $this;
     }
 
@@ -225,7 +260,7 @@ class Dispatcher implements RequestHandlerInterface
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
             // ['charset' => 'utf-8']
-            list($parser_class) = (new ClassMapper(self::PARSER_LIST))
+            list($parser_class) = (new ClassMapper($this->parserList))
                 ->search($mediaType);
             if (!$parser_class) {
                 throw new OutOfBoundsException('Unsupported Content-type', 415);
@@ -243,7 +278,7 @@ class Dispatcher implements RequestHandlerInterface
      */
     private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
     {
-        list($class, $uri_data) = (new ClassMapper(self::ENDPOINT_LIST))
+        list($class, $uri_data) = (new ClassMapper($this->endpointList))
             ->filter(strtoupper($request->getMethod()))
             ->search($request->getUri()->getPath());
         if (!$class) {
