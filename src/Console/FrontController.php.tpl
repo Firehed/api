@@ -33,9 +33,9 @@ set_exception_handler([$handler, 'handleThrowable']);
 
 
 $response = (new Dispatcher())
+    // ->addMiddleware(new YourPsr11Middleware())
     ->setContainer($config)
     ->setRequest(ServerRequestFactory::fromGlobals())
-    // ->addResponseMiddleware(function(){}) ...
     ->dispatch();
 
 Firehed\API\ResponseRenderer::render($response);
