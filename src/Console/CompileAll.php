@@ -16,9 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CompileAll extends Command
 {
-    // const OPT_ENDPOINT_LIST = 'endpoint-list';
-    // const OPT_PARSER_LIST = 'parser-list';
-
     /** @var Config */
     private $config;
 
