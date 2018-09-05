@@ -48,7 +48,7 @@ namespace MyApp\API\Endpoints\User;
 use Firehed\API\Traits\EndpointTestCases;
 
 /**
- * @coversDefaultClass MyApp\API\Endpoints\User\GetUserEndpoint
+ * @coversDefaultClass MyApp\API\Endpoints\User\Create
  * @covers ::<protected>
  * @covers ::<private>
  */
@@ -57,8 +57,9 @@ class CreateTest extends \PHPUnit\Framework\TestCase
 
     use EndpointTestCases;
 
-    protected function getEndpoint() {
-        return new GetUserEndpoint();
+    protected function getEndpoint()
+    {
+        return new Create();
     }
 }
 ```
