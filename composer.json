@@ -16,8 +16,8 @@
         "firehed/inputobjects": "Pre-made Input components for validation"
     },
     "bin": [
+        "bin/api",
         "bin/generate_endpoint",
-        "bin/generate_endpoint_list",
         "bin/generate_front_controller"
     ],
     "config": {
