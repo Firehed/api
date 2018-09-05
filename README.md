@@ -238,7 +238,7 @@ Finally, a global fallback handler is configured by default, which will log the 
 
 Use source control, of course.
 
-The following patterns should be added to your SCM's ignored files:
+The following patterns should be added to your source control's ignored files, to exclude generated files:
 
 - `__*__.*`
 
