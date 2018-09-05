@@ -3,16 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.0.0] - Unreleased
 ### Summary of Breaking Changes
-- Traits deprecated in 3.0.0 have been deleted (renamed equivalents were added in the same release).
-- `renderResponse` has been deleted (replaced by `ResponseRenderer`)
+- Traits deprecated in 3.0.0 have been removed (renamed equivalents were added in the same release).
+- `renderResponse` has been removed (replaced by `ResponseRenderer`)
 
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`
 - `Traits\EndpointTestCases` now also `use`s `Firehed\Input\SafeInputTestTrait`. This adds `::getSafeInputFromData()` but will result in an import conflict for test cases that have already opted to use the same trait
 
-### Deleted
+### Changed
+- Files generated during compilation are now expected to be excluded from version control and generated during automated build processes (#84)
+- Framework-generated files are now auto-detected thanks to the above compile requirement (#84)
+- `Dispatcher::setEndpointList()` and `Dispatcher::setParserList()` are now internal use only, and are no longer called in the generated front controller (#84)
+
+### Removed
 - Disallowed using `RequestInterface` in `Dispatcher`.
   `ServerRequestInterface` is now required.
 - `renderResponse()` function
