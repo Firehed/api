@@ -34,8 +34,6 @@ set_exception_handler([$handler, 'handleThrowable']);
 
 $response = (new Dispatcher())
     ->setContainer($config)
-    ->setEndpointList('__endpoint_list__.json')
-    ->setParserList('__parser_list__.json')
     ->setRequest(ServerRequestFactory::fromGlobals())
     // ->addResponseMiddleware(function(){}) ...
     ->dispatch();
