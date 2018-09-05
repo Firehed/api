@@ -40,5 +40,4 @@ $response = (new Dispatcher())
     // ->addResponseMiddleware(function(){}) ...
     ->dispatch();
 
-Firehed\API\renderResponse($response);
-
+Firehed\API\ResponseRenderer::render($response);

@@ -104,6 +104,9 @@ class GenerateEndpoint extends Command
         // would be expected for a class that doesn't yet exist. This is probably
         // due at least in part to the fact that autoload definitions could
         // yield multiple locations for a given class.
+        if (!file_exists('composer.json') || !is_readable('composer.json')) {
+            throw new RuntimeException('composer.json not found or not readable');
+        }
         $composerJson = file_get_contents('composer.json');
         $composerConfig = json_decode($composerJson, true);
         if (!isset($composerConfig['autoload']['psr-4'])) {
@@ -148,7 +151,7 @@ class GenerateEndpoint extends Command
      * components.
      *
      * @param string $fqcn
-     * @return [namespace, class]
+     * @return array [namespace, class]
      */
     private function parseFQCN(string $fqcn): array
     {

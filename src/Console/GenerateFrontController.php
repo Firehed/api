@@ -8,11 +8,13 @@ use Firehed\Common\ClassMapGenerator;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateFrontController extends Command
 {
+    const OPT_DRY_RUN = 'dry-run';
     const TEMPLATE_FILE = 'FrontController.php.tpl';
 
     /** @var Config */
@@ -28,6 +30,12 @@ class GenerateFrontController extends Command
     {
         $this->setName('api:generateFrontController')
             ->setDescription('Generate the default front-contoller')
+            ->addOption(
+                self::OPT_DRY_RUN,
+                null,
+                InputOption::VALUE_NONE,
+                'Only print the generated file to the console, do not write to disk'
+            )
             ;
     }
 
@@ -55,6 +63,11 @@ class GenerateFrontController extends Command
             $this->resolveRelativeProjectRoot($webroot),
             $container
         );
+
+        if ($input->getOption(self::OPT_DRY_RUN)) {
+            $output->writeln($frontController);
+            return;
+        }
 
         if (!file_exists($webroot)) {
             $logger->notice('Webroot directory does not exist, creating');
