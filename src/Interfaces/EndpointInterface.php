@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Firehed\API\Interfaces;
 
-use Throwable;
 use Firehed\API\Enums\HTTPMethod;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\Input\Interfaces\ValidationInterface;
-use Psr\Http\Message\RequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 /**
  * Interface for implementing an endpoint in your application's API. All
@@ -35,10 +35,10 @@ interface EndpointInterface extends ValidationInterface
      * RECOMMENDED to handle all errors in `handleException()` rather than
      * catching and handling them in this method when possible.
      *
-     * @param SafeInput the parsed and validated input
+     * @param SafeInput $input the parsed and validated input
      * @return ResponseInterface
      */
-    public function execute(SafeInput $input): Response;
+    public function execute(SafeInput $input): ResponseInterface;
 
     /**
      * Indiate the request URI path that must be used for the inbound requests
@@ -67,41 +67,4 @@ interface EndpointInterface extends ValidationInterface
      * @return HTTPMethod
      */
     public function getMethod(): HTTPMethod;
-
-    /**
-     * Authenticate the request. This method SHOULD copy any relevant
-     * authentication information (user or application ID, etc) to local
-     * properties, since the raw request will not be made available at any
-     * other time. Additional processing MUST NOT be performed as this will be
-     * called before even input validation. Logging and other metric gathering
-     * MAY be performed during authentication if desired.
-     *
-     * This method SHOULD throw a `RuntimeException` upon failure (incorrect
-     * credentials, etc), and MUST return `$this` when successful. An
-     * implementation MAY choose to defer handling the failed authenticaton
-     * until `::execute()`, although it is NOT RECOMMENDED.
-     *
-     * It is RECOMMENDED to implement this method in a trait, since most
-     * Endpoints will share authentication logic.
-     *
-     * @param Request Inbound PSR-7 HTTP Request
-     * @return self
-     * @throws \RuntimeException if authentication fails
-     */
-    public function authenticate(Request $request): self;
-
-    /**
-     * Handle uncaught exceptions
-     *
-     * This method MUST accept any type of Exception and return a PSR-7
-     * ResponseInterface object.
-     *
-     * It is RECOMMENDED to implement this method in a trait, since most
-     * Endpoints will share error handling logic. In most cases, one trait per
-     * supported MIME-type will probably suffice.
-     *
-     * @param Exception The uncaught exception
-     * @return ResponseInterface The response to render
-     */
-    public function handleException(Throwable $e): Response;
 }

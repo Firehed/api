@@ -1,19 +1,25 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Firehed\API;
 
 use Psr\Http\Message\ResponseInterface;
 
-class RenderResponseTest extends \PHPUnit\Framework\TestCase
+/**
+ * @coversDefaultClass Firehed\API\ResponseRenderer
+ * @covers ::<protected>
+ * @covers ::<private>
+ */
+class ResponseRendererTest extends \PHPUnit\Framework\TestCase
 {
-
     /**
      * The function should just blindly render the data, assuming everything is
      * reasonably well-formed and spec-compliant.
      *
-     * @covers Firehed\API\renderResponse
+     * @covers ::__construct
+     * @covers ::render
+     * @covers ::sendHeaders
+     * @covers ::sendBody
      * @runInSeparateProcess
      */
     public function testResponseRendering()
@@ -47,7 +53,7 @@ class RenderResponseTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($body));
 
         ob_start();
-        renderResponse($response);
+        ResponseRenderer::render($response);
         $data = ob_get_clean();
 
         $this->assertSame($code, http_response_code(), 'Wrong HTTP code');

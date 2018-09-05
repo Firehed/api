@@ -1,6 +1,5 @@
 #!/usr/bin/env php
 <?php
-
 declare(strict_types=1);
 
 use Firehed\API\Config;
@@ -8,22 +7,16 @@ use Firehed\API\Console;
 use Symfony\Component\Console\Application;
 
 error_reporting(-1);
-
 $root = __DIR__;
 while (!file_exists($root.'/vendor/autoload.php') && $root != DIRECTORY_SEPARATOR) {
     $root = dirname($root);
 }
-
 chdir($root);
-
 require_once 'vendor/autoload.php';
 
 $config = Config::load('.apiconfig');
-
 $application = new Application();
-
+$application->add(new Console\CompileAll($config));
 $application->add(new Console\GenerateEndpoint($config));
-$application->add(new Console\GenerateEndpointList($config));
 $application->add(new Console\GenerateFrontController($config));
-
 $application->run();

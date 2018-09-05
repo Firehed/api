@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
->&2 echo "$_ is deprecated; use 'bin/api api:generateEndpointList instead'"
-
-echo $(dirname "$0")/api api:generateEndpointList
-$(dirname "$0")/api api:generateEndpointList

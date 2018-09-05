@@ -1,8 +1,71 @@
-# Change Log
+# Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [4.0.0] - Unreleased
+### Summary of Breaking Changes
+- Traits deprecated in 3.0.0 have been removed (renamed equivalents were added in the same release).
+- `renderResponse` has been removed (replaced by `ResponseRenderer`)
+
+### Added
+- `Traits\EndpointTestCases::getSafeInput()`
+- `Traits\EndpointTestCases` now also `use`s `Firehed\Input\SafeInputTestTrait`. This adds `::getSafeInputFromData()` but will result in an import conflict for test cases that have already opted to use the same trait
+
+### Changed
+- Files generated during compilation are now expected to be excluded from version control and generated during automated build processes (#84)
+- Framework-generated files are now auto-detected thanks to the above compile requirement (#84)
+- `Dispatcher::setEndpointList()` and `Dispatcher::setParserList()` are now internal use only, and are no longer called in the generated front controller (#84)
+
+### Removed
+- Disallowed using `RequestInterface` in `Dispatcher`.
+  `ServerRequestInterface` is now required.
+- `renderResponse()` function
+- `Dispatcher::addResponseMiddleware()`
+- `Interfaces\EndpointInterface::authenticate()` - this drops legacy authentication support entirely, and will no longer be used even if still defined in implementing classes
+- `Traits\Authentication\BearerToken`
+- `Traits\DeleteRequest`
+- `Traits\GetRequest`
+- `Traits\NoOptionalInputs`
+- `Traits\NoRequiredInputs`
+- `Traits\PostRequest`
+- `Traits\PutRequest`
+
+## [3.1.0] - 2018-07-01
+### Summary
+- Overhauled authentication (#43)
+- Overhauled error handling (#37, #38, #63)
+- Added support for PSR-15 Middleware (#59)
+- Added additional documentation in the README (#66)
+
+### Added
+- `Authentication\ProviderInterface`
+- `Authorization\ProviderInterface`
+- `Errors\HandlerInterface`
+- `Interfaces\AuthenticatedEndpointInterface`
+- `Interfaces\HandlesOwnErrorsInterface`
+
+### Changed
+- Internal refactoring
+- If a RequestInterface object is provided to the dispatcher, it will be internally converted to a ServerRequestInterface to ensure compatibility with Middleware and error handling.
+  Relying on this functionality is deprecated from the start, **highly** discouraged, and may be imperfect.
+
+### Deprecated
+- Deprecated `ErrorHandler` (#37)
+- Deprecated use of base RequestInterface (#48)
+- Deprecated the `BearerToken` authentication trait (#73)
+
+## [3.0.6] - 2018-04-30
+### Changed
+- Fixed incorrect return type
+
+## [3.0.5] - 2018-04-03
+### Changed
+- Removes the use of `fguillot/simplelogger`, since it has been abandoned. This is not treated as a breaking change since it's not safe to _implicitly_ rely on a dependency's dependencies.
+
+## [3.0.4] - 2018-02-23
+### Added
+- OPTIONS requests are now supported
 
 ## [3.0.3] - 2018-01-08
 

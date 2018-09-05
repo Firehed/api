@@ -3,4 +3,3 @@
 
 echo $(dirname "$0")/api api:generateEndpoint $1
 $(dirname "$0")/api api:generateEndpoint $1
-

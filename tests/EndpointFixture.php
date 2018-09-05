@@ -18,11 +18,6 @@ class EndpointFixture implements Interfaces\EndpointInterface
 
     const STATUS_ERROR = 999;
 
-    public function authenticate(Request $request): Interfaces\EndpointInterface
-    {
-        return $this;
-    }
-
     public function getUri(): string
     {
         return '/user/(?P<id>[1-9]\d*)';
@@ -67,6 +62,7 @@ class EndpointFixture implements Interfaces\EndpointInterface
         // Use PHPUnit mocks outside of the TestCase... the DSL isn't quite as
         // pretty here :)
         $mockgen = new Generator();
+        /** @var Response | \PHPUnit\Framework\MockObject\MockObject */
         $mock = $mockgen->getMock(Response::class);
         $mock->expects(new InvokedAtLeastOnce())
             ->method('getStatusCode')
@@ -74,15 +70,6 @@ class EndpointFixture implements Interfaces\EndpointInterface
         $mock->expects(new InvokedAtLeastOnce())
             ->method('getBody')
             ->will(new ReturnStub(json_encode($input->asArray())));
-        return $mock;
-    }
-
-    public function handleException(Throwable $e): Response
-    {
-        $mock = (new Generator())
-            ->getMock(Response::class);
-        $mock->method('getStatusCode')
-            ->will(new ReturnStub(self::STATUS_ERROR)); // Artificial test value
         return $mock;
     }
 }
