@@ -20,7 +20,6 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $tmp = sys_get_temp_dir() . '/';
         $this->config = new Config([
             'namespace' => 'Firehed\API',
             'source' => 'tests',
@@ -44,10 +43,8 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
             $tester->execute([]);
             $this->assertFileExists(Dispatcher::ENDPOINT_LIST, 'Endpoint list not generated');
             $this->assertFileExists(Dispatcher::PARSER_LIST, 'Parser list not generated');
-            ob_start();
             $endpoints = include Dispatcher::ENDPOINT_LIST;
             $parsers = include Dispatcher::PARSER_LIST;
-            ob_end_clean();
             $this->validateEndpointList($endpoints);
             $this->validateParserList($parsers);
         } finally {
