@@ -2,14 +2,16 @@
 <?php
 declare(strict_types=1);
 
+use Firehed\API\Config;
+
 $config = require 'load_config.php';
 
 // Returns a series of '/..'s to get from the directory of the webroot to that
 // of the project root
-function resolveProjectRoot(string $webroot): string {
+$resolveProjectRoot = function (string $webroot): string {
     $dirs = explode('/', $webroot);
     return str_repeat('/..', count($dirs));
-}
+};
 
 $template = <<<'php'
 <?php
@@ -47,33 +49,32 @@ set_exception_handler([$handler, 'handleThrowable']);
 
 $response = (new Dispatcher())
     ->setContainer($config)
-    ->setEndpointList('__endpoint_list__.json')
-    ->setParserList('__parser_list__.json')
     ->setRequest(ServerRequestFactory::fromGlobals())
-    // ->addResponseMiddleware(function(){}) ...
     ->dispatch();
 
 Firehed\API\ResponseRenderer::render($response);
 php;
 
-$container = array_key_exists('container', $config)
-    ? sprintf(
+if ($config->has(Config::KEY_CONTAINER)) {
+    $container = sprintf(
         'require \'%s\'',
         $config['container']
-    )
-    : 'null';
+    );
+} else {
+    $container = 'null';
+}
 
 // TODO: write to file
 $fc = sprintf(
     $template,
-    resolveProjectRoot($config['webroot']),
+    $resolveProjectRoot($config->get(Config::KEY_WEBROOT)),
     $container
 );
 
-$dir = $config['local_project_root'].'/'.$config['webroot'];
+$dir = $config->get(Config::KEY_WEBROOT);
 if (!file_exists($dir)) {
-    fwrite(STDOUT, "Making '$dir' with 0755 permissions");
+    fwrite(STDOUT, "Making '$dir' with 0755 permissions\n");
     mkdir($dir, 0755, true);
 }
 file_put_contents($dir.'/index.php', $fc);
-fwrite(STDOUT, "Wrote front controller to $dir/index.php");
+fwrite(STDOUT, "Wrote front controller to $dir/index.php\n");

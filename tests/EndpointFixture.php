@@ -18,11 +18,6 @@ class EndpointFixture implements Interfaces\EndpointInterface
 
     const STATUS_ERROR = 999;
 
-    public function authenticate(Request $request): Interfaces\EndpointInterface
-    {
-        return $this;
-    }
-
     public function getUri(): string
     {
         return '/user/(?P<id>[1-9]\d*)';
@@ -75,22 +70,6 @@ class EndpointFixture implements Interfaces\EndpointInterface
         $mock->expects(new InvokedAtLeastOnce())
             ->method('getBody')
             ->will(new ReturnStub(json_encode($input->asArray())));
-        return $mock;
-    }
-
-    public function handleException(Throwable $e): Response
-    {
-        /** @var Response | \PHPUnit\Framework\MockObject\MockObject */
-        $mock = (new Generator())
-            ->getMock(Response::class);
-        $code = $e->getCode();
-        if ($code < 200 || $code > 599) {
-            $code = self::STATUS_ERROR; // Artificial test value
-        }
-        $mock->method('getStatusCode')
-            ->will(new ReturnStub($code));
-        $mock->method('getBody')
-            ->will(new ReturnStub($e)); // This is incorrect, but makes debugging tests easier
         return $mock;
     }
 }

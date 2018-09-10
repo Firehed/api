@@ -2,6 +2,8 @@
 <?php
 declare(strict_types=1);
 
+use Firehed\API\Config;
+
 $config = require 'load_config.php';
 
 if ($argc < 2) {
@@ -19,21 +21,23 @@ declare(strict_types=1);
 
 namespace %s%s;
 
-use Firehed\API\Interfaces\EndpointInterface;
-use Firehed\API\Traits\Authentication;
+use Firehed\API\Interfaces\AuthenticatedEndpointInterface;
 use Firehed\API\Traits\Input;
 use Firehed\API\Traits\Request;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
-class %s implements EndpointInterface
+class %s implements AuthenticatedEndpointInterface
 {
-    // use Authentication\None;
     // use Input\NoOptional;
     // use Input\NoRequired;
     // use Request\Get;
+
+    /** @var ContainerInterface */
+    private $auth;
 
     public function getUri(): string
     {
@@ -55,6 +59,11 @@ class %s implements EndpointInterface
         // Implement this
     }
 
+    public function setAuthentication(ContainerInterface $auth)
+    {
+        $this->auth = $auth;
+    }
+
     public function handleException(Throwable $t): ResponseInterface
     {
         // Implememt this
@@ -64,23 +73,10 @@ php;
 
 $class = sprintf(
     $template,
-    $config['namespace'],
+    $config->get(Config::KEY_NAMESPACE),
     $namespace ? '\\' . implode('\\', array_map('ucfirst', $namespace)) : '',
     ucfirst($className),
     implode('/', $defaultUrl)
 );
 
 echo $class;
-
-// For now, just echo the class skeleton and allow the user to handle it as
-// they want. A future version of this should intelligently resolve paths and
-// write the file directly.
-/*
-$targetFile = sprintf(
-    '%s/%s/%s/%s.php',
-    $config['source'],
-    strtr($config['namespace'], '\\', '/'),
-    implode('/', $namespace),
-    $className
-);
- */

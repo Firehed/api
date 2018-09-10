@@ -1,4 +1,5 @@
 /vendor/
 /build/
+__*__.*
 # Ignored since this is a library
 composer.lock
