@@ -289,10 +289,8 @@ class Dispatcher implements RequestHandlerInterface
             unset($data['@gener'.'ated']);
             $pattern = '#\(\?P?<(\w+)>(.*)\)#U';
             foreach ($data as $method => $routes) {
-                // var_dump($routes);
                 foreach ($routes as $regex => $fqcn) {
                     $frUri = preg_replace($pattern, '{\1:\2}', $regex);
-                    // var_dump($frUri);
                     $rc->addRoute($method, $frUri, $fqcn);
                 }
             }
