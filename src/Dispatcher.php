@@ -313,6 +313,10 @@ class Dispatcher implements RequestHandlerInterface
                     return $this->container->get($fqcn);
                 }
                 return new $fqcn;
+            default:
+                // @codeCoverageIgnoreStart
+                throw new \DomainException('Unexpected Dispatcher route info');
+                // @codeCoverageIgnoreEnd
         }
     }
 
