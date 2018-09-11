@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Firehed\API\Console;
 
+use function FastRoute\cachedDispatcher;
 use Firehed\API\Config;
 use Firehed\API\Dispatcher;
 use Firehed\API\Interfaces\EndpointInterface;
@@ -38,14 +39,34 @@ class CompileAll extends Command
         $logger->debug('Current directory: {cwd}', ['cwd' => getcwd()]);
         $logger->debug('Building classmap');
         // Build out the endpoint map
-        (new ClassMapGenerator())
+        $endpoints = (new ClassMapGenerator())
             ->setPath(getcwd().'/'.$this->config->get('source'))
             ->setInterface(EndpointInterface::class)
             ->addCategory('getMethod')
             ->setMethod('getURI')
             ->setNamespace($this->config->get(Config::KEY_NAMESPACE))
-            ->setOutputFile(Dispatcher::ENDPOINT_LIST)
+            // ->setOutputFile(Dispatcher::ENDPOINT_LIST)
             ->generate();
+        unset($endpoints['@gener'.'ated']);
+        // Regex-parsing regex: grab named captures
+        $pattern = '#\(\?P?<(\w+)>(.*)\)#';
+
+        if (file_exists(Dispatcher::ENDPOINT_LIST)) {
+            unlink(Dispatcher::ENDPOINT_LIST);
+        }
+        $dispatcher = cachedDispatcher(function ($routeCollector) use ($endpoints, $pattern) {
+            foreach ($endpoints as $method => $routes) {
+                foreach ($routes as $regex => $fqcn) {
+                    $frUri = preg_replace($pattern, '{\1:\2}', $regex);
+                    $stripped = strtr($frUri, ['(' => '', ')' => '']);
+                    echo "$regex => $frUri => $stripped\n";
+                    $routeCollector->addRoute($method, $stripped, $fqcn);
+                    // $routeCollector->addRoute($method, $regex, $fqcn);
+                }
+            }
+        }, [
+            'cacheFile' => Dispatcher::ENDPOINT_LIST,
+        ]);
 
         $output->writeln(sprintf(
             'Wrote endpoint map to %s',

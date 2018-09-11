@@ -280,21 +280,7 @@ class Dispatcher implements RequestHandlerInterface
      */
     private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
     {
-        $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rc) {
-            if (is_array($this->endpointList)) {
-                $data = $this->endpointList;
-            } else {
-                $data = include $this->endpointList;
-            }
-            unset($data['@gener'.'ated']);
-            $pattern = '#\(\?P?<(\w+)>(.*)\)#U';
-            foreach ($data as $method => $routes) {
-                foreach ($routes as $regex => $fqcn) {
-                    $frUri = preg_replace($pattern, '{\1:\2}', $regex);
-                    $rc->addRoute($method, $frUri, $fqcn);
-                }
-            }
-        });
+        $dispatcher = new \FastRoute\Dispatcher\GroupCountBased($this->getRouteData());
         $info = $dispatcher->dispatch(
             $request->getMethod(),
             $request->getUri()->getPath()
@@ -318,6 +304,14 @@ class Dispatcher implements RequestHandlerInterface
                 throw new \DomainException('Unexpected Dispatcher route info');
                 // @codeCoverageIgnoreEnd
         }
+    }
+
+    private function getRouteData(): array
+    {
+        if (is_string($this->endpointList)) {
+            return include $this->endpointList;
+        }
+        // TODO: handle explicit routing table provided
     }
 
     private function setUriData(ParsedInput $uri_data): self
