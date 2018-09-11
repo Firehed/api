@@ -22,13 +22,12 @@ use UnexpectedValueException;
 
 class Dispatcher implements RequestHandlerInterface
 {
-    const ENDPOINT_LIST = '__endpoint_list__.php';
     const PARSER_LIST = '__parser_list__.php';
 
     private $authenticationProvider;
     private $authorizationProvider;
     private $container;
-    private $endpointList = self::ENDPOINT_LIST;
+    private $endpointList;
     private $error_handler;
     private $parserList = self::PARSER_LIST;
     private $psrMiddleware = [];
@@ -150,10 +149,10 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @internal Overrides the standard endpoint list. Used primarily for unit
      * testing.
-     * @param array|string $endpointList The endpoint list or its path
+     * @param array $endpointList The endpoint list
      * @return self
      */
-    public function setEndpointList($endpointList): self
+    public function setEndpointList(array $endpointList): self
     {
         $this->endpointList = $endpointList;
         return $this;
@@ -280,38 +279,16 @@ class Dispatcher implements RequestHandlerInterface
      */
     private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
     {
-        $dispatcher = new \FastRoute\Dispatcher\GroupCountBased($this->getRouteData());
-        $info = $dispatcher->dispatch(
-            $request->getMethod(),
-            $request->getUri()->getPath()
-        );
-        switch ($info[0]) {
-            case FastRoute\Dispatcher::NOT_FOUND:
-                throw new OutOfBoundsException('Endpoint not found', 404);
-            case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-                // allowed methods = $info[1]
-                throw new OutOfBoundsException('Method not allowed', 405);
-            case FastRoute\Dispatcher::FOUND:
-                $fqcn = $info[1];
-                $uriData = $info[2];
-                $this->setUriData(new ParsedInput($uriData));
-                if ($this->container && $this->container->has($fqcn)) {
-                    return $this->container->get($fqcn);
-                }
-                return new $fqcn;
-            default:
-                // @codeCoverageIgnoreStart
-                throw new \DomainException('Unexpected Dispatcher route info');
-                // @codeCoverageIgnoreEnd
+        $router = new Router();
+        if ($this->endpointList !== null) {
+            $router->setData($this->endpointList);
         }
-    }
-
-    private function getRouteData(): array
-    {
-        if (is_string($this->endpointList)) {
-            return include $this->endpointList;
+        list($fqcn, $uriData) = $router->route($request);
+        $this->setUriData($uriData);
+        if ($this->container && $this->container->has($fqcn)) {
+            return $this->container->get($fqcn);
         }
-        // TODO: handle explicit routing table provided
+        return new $fqcn;
     }
 
     private function setUriData(ParsedInput $uri_data): self
