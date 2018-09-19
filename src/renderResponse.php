@@ -12,7 +12,9 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @deprecated 3.1.0 Use ResponseRenderer instead
  */
-function renderResponse(ResponseInterface $response)
-{
-    ResponseRenderer::render($response);
+if (!function_exists(__NAMESPACE__.'\renderResponse')) {
+    function renderResponse(ResponseInterface $response)
+    {
+        ResponseRenderer::render($response);
+    }
 }
