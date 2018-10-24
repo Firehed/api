@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.1] - 2018-10-24
+### Summary
+- Widen range of supported Zend Diactoros version
+
 ## [3.2.0] - 2018-09-19
 ### Summary
 - Added support for `PATCH` HTTP method
