@@ -92,6 +92,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $d = new Dispatcher();
         $req = $this->createMock(RequestInterface::class);
+        $req->method('getMethod')->willReturn('GET');
         $req->method('getHeaders')->willReturn([]);
         $req->method('getBody')->willReturn($this->createMock(StreamInterface::class));
         $req->method('getUri')->willReturn($this->createMock(UriInterface::class));
