@@ -161,6 +161,8 @@ class Dispatcher implements RequestHandlerInterface
         foreach ($request->getHeaders() as $name => $values) {
             $serverRequest = $serverRequest->withHeader($name, $values);
         }
+        // ZD2 hints the return type of withHeader to MessageInterface not SRI
+        assert($serverRequest instanceof ServerRequestInterface);
         return $serverRequest;
     }
 
