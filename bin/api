@@ -14,7 +14,7 @@ while (!file_exists($root.'/vendor/autoload.php') && $root != DIRECTORY_SEPARATO
 chdir($root);
 require_once 'vendor/autoload.php';
 
-$config = Config::load('.apiconfig');
+$config = Config::load(Config::FILENAME);
 $application = new Application();
 $application->add(new Console\CompileAll($config));
 $application->run();

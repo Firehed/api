@@ -13,4 +13,4 @@ chdir($root);
 
 require_once 'vendor/autoload.php';
 
-return Config::load('.apiconfig');
+return Config::load(Config::FILENAME);
