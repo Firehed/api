@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class CreateApiConfig extends Command
+class GenerateConfig extends Command
 {
     private $questionHelper;
 

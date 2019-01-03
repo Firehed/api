@@ -7,13 +7,13 @@ use Firehed\API\Config;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass Firehed\API\Console\CreateApiConfig
+ * @coversDefaultClass Firehed\API\Console\GenerateConfig
  * @covers ::<protected>
  * @covers ::<private>
  *
  * @see https://github.com/symfony/symfony/pull/29754 for trailing \n in args
  */
-class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
+class GenerateConfigTest extends \PHPUnit\Framework\TestCase
 {
     private $existingConfig;
 
@@ -38,7 +38,7 @@ class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
     {
         // Sanity check that setUp moved any existing local file
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
-        $command = new CreateApiConfig();
+        $command = new GenerateConfig();
         $tester = new CommandTester($command);
         $tester->setInputs([
             '',
@@ -63,7 +63,7 @@ class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
         touch(Config::FILENAME);
-        $command = new CreateApiConfig();
+        $command = new GenerateConfig();
         $tester = new CommandTester($command);
         $tester->setInputs(["\n"]); // Command should default to "no"
         $tester->execute([]);
@@ -75,7 +75,7 @@ class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
         touch(Config::FILENAME);
-        $command = new CreateApiConfig();
+        $command = new GenerateConfig();
         $tester = new CommandTester($command);
         $tester->setInputs(['y', 'publicdir', 'sourcedir', 'Some\\Namespace', "config.php"]);
         $tester->execute([]);
