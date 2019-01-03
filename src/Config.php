@@ -13,6 +13,8 @@ use TypeError;
  */
 class Config implements ContainerInterface
 {
+    const FILENAME = '.apiconfig';
+
     const KEY_CONTAINER = 'container';
     const KEY_NAMESPACE = 'namespace';
     const KEY_SOURCE = 'source';
