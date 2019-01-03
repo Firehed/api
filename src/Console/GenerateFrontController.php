@@ -27,7 +27,7 @@ class GenerateFrontController extends Command
 
     protected function configure()
     {
-        $this->setName('api:generateFrontController')
+        $this->setName('generate:frontController')
             ->setDescription('Generate the default front-contoller')
             ;
     }

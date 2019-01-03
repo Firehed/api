@@ -33,7 +33,7 @@ class GenerateEndpoint extends Command
 
     protected function configure()
     {
-        $this->setName('api:generateEndpoint')
+        $this->setName('generate:endpoint')
             ->setDescription('Generate skeleton code for a new endpoint')
             ->addArgument(self::ARGUMENT_PATH, InputArgument::REQUIRED, 'Where?')
             ;
