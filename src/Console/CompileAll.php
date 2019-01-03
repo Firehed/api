@@ -6,6 +6,7 @@ namespace Firehed\API\Console;
 use Firehed\API\Config;
 use Firehed\API\Dispatcher;
 use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\API\Router;
 use Firehed\Input\Interfaces\ParserInterface;
 use Firehed\Common\ClassMapGenerator;
 use Symfony\Component\Console\Command\Command;
@@ -38,18 +39,22 @@ class CompileAll extends Command
         $logger->debug('Current directory: {cwd}', ['cwd' => getcwd()]);
         $logger->debug('Building classmap');
         // Build out the endpoint map
-        (new ClassMapGenerator())
+        $endpoints = (new ClassMapGenerator())
             ->setPath(getcwd().'/'.$this->config->get('source'))
             ->setInterface(EndpointInterface::class)
             ->addCategory('getMethod')
             ->setMethod('getURI')
             ->setNamespace($this->config->get(Config::KEY_NAMESPACE))
-            ->setOutputFile(Dispatcher::ENDPOINT_LIST)
+            // ->setOutputFile(Dispatcher::ENDPOINT_LIST)
             ->generate();
+        unset($endpoints['@gener'.'ated']);
+
+        $router = new Router();
+        $router->setData($endpoints);
+        $router->writeCache();
 
         $output->writeln(sprintf(
-            'Wrote endpoint map to %s',
-            Dispatcher::ENDPOINT_LIST
+            'Wrote endpoint map'
         ));
 
         $logger->debug('Building parser map');

@@ -360,6 +360,23 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /** @covers ::dispatch */
+    public function testMethodNotAllowed()
+    {
+        $req = $this->getMockRequestWithUriPath('/user/1', 'PUT');
+        try {
+            $response = (new Dispatcher())
+                ->setEndpointList($this->getEndpointListForFixture())
+                ->setParserList($this->getDefaultParserList())
+                ->setRequest($req)
+                ->dispatch();
+            $this->fail('An exception should have been thrown');
+        } catch (Throwable $e) {
+            $this->assertInstanceOf(RuntimeException::class, $e);
+            $this->assertSame(405, $e->getCode());
+        }
+    }
+
     /**
      * @covers ::dispatch
      */

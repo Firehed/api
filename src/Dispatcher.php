@@ -6,6 +6,7 @@ namespace Firehed\API;
 
 use BadMethodCallException;
 use DomainException;
+use FastRoute;
 use Firehed\API\Errors\HandlerInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
@@ -21,16 +22,16 @@ use UnexpectedValueException;
 
 class Dispatcher implements RequestHandlerInterface
 {
-    const ENDPOINT_LIST = '__endpoint_list__.php';
     const PARSER_LIST = '__parser_list__.php';
 
     private $authenticationProvider;
     private $authorizationProvider;
     private $container;
-    private $endpointList = self::ENDPOINT_LIST;
+    private $endpointList;
     private $error_handler;
     private $parserList = self::PARSER_LIST;
     private $psrMiddleware = [];
+    /** @var ServerRequestInterface */
     private $request;
     private $uri_data;
 
@@ -148,10 +149,10 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @internal Overrides the standard endpoint list. Used primarily for unit
      * testing.
-     * @param array|string $endpointList The endpoint list or its path
+     * @param array $endpointList The endpoint list
      * @return self
      */
-    public function setEndpointList($endpointList): self
+    public function setEndpointList(array $endpointList): self
     {
         $this->endpointList = $endpointList;
         return $this;
@@ -278,20 +279,16 @@ class Dispatcher implements RequestHandlerInterface
      */
     private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
     {
-        list($class, $uri_data) = (new ClassMapper($this->endpointList))
-            ->filter(strtoupper($request->getMethod()))
-            ->search($request->getUri()->getPath());
-        if (!$class) {
-            throw new OutOfBoundsException('Endpoint not found', 404);
+        $router = new Router();
+        if ($this->endpointList !== null) {
+            $router->setData($this->endpointList);
         }
-        // Conceivably, we could use reflection to ensure the found class
-        // adheres to the interface; in practice, the built route is already
-        // doing the filtering so this should be redundant.
-        $this->setUriData(new ParsedInput($uri_data));
-        if ($this->container && $this->container->has($class)) {
-            return $this->container->get($class);
+        list($fqcn, $uriData) = $router->route($request);
+        $this->setUriData($uriData);
+        if ($this->container && $this->container->has($fqcn)) {
+            return $this->container->get($fqcn);
         }
-        return new $class;
+        return new $fqcn;
     }
 
     private function setUriData(ParsedInput $uri_data): self
