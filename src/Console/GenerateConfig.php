@@ -13,14 +13,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class CreateApiConfig extends Command
+class GenerateConfig extends Command
 {
     private $questionHelper;
 
     protected function configure()
     {
-        $this->setName('config:create')
-            ->setDescription('Create an api config file');
+        $this->setName('generate:config')
+            ->setDescription('Generate an api config file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
