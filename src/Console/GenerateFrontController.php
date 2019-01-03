@@ -14,7 +14,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateFrontController extends Command
 {
-    const OPT_DRY_RUN = 'dry-run';
     const TEMPLATE_FILE = 'FrontController.php.tpl';
 
     /** @var Config */
@@ -30,12 +29,6 @@ class GenerateFrontController extends Command
     {
         $this->setName('api:generateFrontController')
             ->setDescription('Generate the default front-contoller')
-            ->addOption(
-                self::OPT_DRY_RUN,
-                null,
-                InputOption::VALUE_NONE,
-                'Only print the generated file to the console, do not write to disk'
-            )
             ;
     }
 
@@ -64,14 +57,9 @@ class GenerateFrontController extends Command
             $container
         );
 
-        if ($input->getOption(self::OPT_DRY_RUN)) {
-            $output->writeln($frontController);
-            return;
-        }
-
         if (!file_exists($webroot)) {
             $logger->notice('Webroot directory does not exist, creating');
-            mkdir(getcwd().'/'.$webroot, 0755, true);
+            mkdir($webroot, 0755, true);
         }
         $path = $webroot . '/index.php';
         file_put_contents($path, $frontController);
