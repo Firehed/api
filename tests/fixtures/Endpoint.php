@@ -31,10 +31,12 @@ class Endpoint implements EndpointInterface
 
     public function execute(SafeInput $input): ResponseInterface
     {
-        return (new EmptyResponse())
+        /** @var ResponseInterface */
+        $response = (new EmptyResponse())
             ->withHeader(
                 'Access-Control-Allow-Headers',
                 'Authorization, Content-type'
             );
+        return $response;
     }
 }
