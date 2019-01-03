@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`
 - `Traits\EndpointTestCases` now also `use`s `Firehed\Input\SafeInputTestTrait`. This adds `::getSafeInputFromData()` but will result in an import conflict for test cases that have already opted to use the same trait
+- Console command: `vendor/bin/api compile:all`
+- Console command: `vendor/bin/api config:create`
 
 ### Changed
 - Files generated during compilation are now expected to be excluded from version control and generated during automated build processes (#84)
@@ -30,6 +32,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `Traits\NoRequiredInputs`
 - `Traits\PostRequest`
 - `Traits\PutRequest`
+
+## [3.2.1] - 2018-10-24
+### Summary
+- Widen range of supported Zend Diactoros version
+
+## [3.2.0] - 2018-09-19
+### Summary
+- Added support for `PATCH` HTTP method
+
+### Added
+- `Traits\Request\Patch`
 
 ## [3.1.0] - 2018-07-01
 ### Summary

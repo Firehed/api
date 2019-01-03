@@ -1,5 +1,6 @@
 /vendor/
 /build/
 __*__.*
+.apiconfig
 # Ignored since this is a library
 composer.lock

@@ -13,6 +13,7 @@ API is available via composer:
 ## Usage
 
 Set up an `.apiconfig` file, which contains JSON-formatted settings for the framework.
+You may run `vendor/bin/api config:create` to do this.
 See configuration below for additional information.
 
 Generate a default front-controller:
@@ -68,6 +69,7 @@ class CreateTest extends \PHPUnit\Framework\TestCase
 
 Place a file named `.apiconfig` in your project root.
 It uses JSON for the format.
+There is a console command included to walk you through configuration, which can be invoked by running `vendor/bin/api config:create`.
 
 ### Options
 
