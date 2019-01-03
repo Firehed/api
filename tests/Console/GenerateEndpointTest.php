@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Firehed\API\Console;
 
 use Firehed\API\Config;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -62,6 +63,35 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
             'Output did not contain class definition'
         );
     }
+
+    public function testExecuteWithExistingFile()
+    {
+        $command = new GenerateEndpoint($this->config);
+        $tester = new CommandTester($command);
+        $tester->setInputs(['y']);
+        $tester->execute([
+            GenerateEndpoint::ARGUMENT_PATH => 'Foo\Bar',
+        ]);
+
+        $tester->setInputs(["\n"]);
+        $this->expectException(RuntimeException::class);
+        $tester->execute([
+            GenerateEndpoint::ARGUMENT_PATH => 'Foo\Bar',
+        ]);
+    }
+
+    public function testExecuteWithoutCreatingDirectory()
+    {
+        $command = new GenerateEndpoint($this->config);
+        $tester = new CommandTester($command);
+
+        $tester->setInputs(["\n"]);
+        $this->expectException(RuntimeException::class);
+        $tester->execute([
+            GenerateEndpoint::ARGUMENT_PATH => 'Foo\Bar',
+        ]);
+    }
+
 
     /**
      * Simple `rm -r` equivalent
