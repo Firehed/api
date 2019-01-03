@@ -12,7 +12,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `Traits\EndpointTestCases::getSafeInput()`
 - `Traits\EndpointTestCases` now also `use`s `Firehed\Input\SafeInputTestTrait`. This adds `::getSafeInputFromData()` but will result in an import conflict for test cases that have already opted to use the same trait
 - Console command: `vendor/bin/api compile:all`
-- Console command: `vendor/bin/api config:create`
+- Console command: `vendor/bin/api generate:config`
+- Console command: `vendor/bin/api generate:endpoint`
+- Console command: `vendor/bin/api generate:frontController`
 
 ### Changed
 - Files generated during compilation are now expected to be excluded from version control and generated during automated build processes (#84)
