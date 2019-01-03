@@ -7,7 +7,7 @@ use Firehed\API\Config;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass Firehed\APIConsole\CreateApiConfig
+ * @coversDefaultClass Firehed\API\Console\CreateApiConfig
  * @covers ::<protected>
  * @covers ::<private>
  *
@@ -20,9 +20,7 @@ class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         if (file_exists(Config::FILENAME)) {
-            // echo 'move';
             $this->existingConfig = tempnam(sys_get_temp_dir(), 'phpunit_apiconfig_');
-            // var_dump($this->existingConfig);
             rename(Config::FILENAME, $this->existingConfig);
         }
     }
@@ -32,7 +30,6 @@ class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
         unlink(Config::FILENAME);
         if ($this->existingConfig !== null) {
             rename($this->existingConfig, Config::FILENAME);
-            // echo 'reset';
         }
     }
 
@@ -53,6 +50,8 @@ class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(file_exists(Config::FILENAME), 'Config not written');
         $json = file_get_contents(Config::FILENAME);
         $data = json_decode($json, true);
+        // These are the defaults inferred from Composer and the directory
+        // structure
         $this->assertSame($data[Config::KEY_NAMESPACE], 'Firehed\\API', 'Namespace wrong');
         $this->assertSame($data[Config::KEY_SOURCE], 'src', 'Source wrong');
         $this->assertSame($data[Config::KEY_WEBROOT], 'public', 'Public wrong');
@@ -66,7 +65,7 @@ class CreateApiConfigTest extends \PHPUnit\Framework\TestCase
         touch(Config::FILENAME);
         $command = new CreateApiConfig();
         $tester = new CommandTester($command);
-        $tester->setInputs(["\n"]);
+        $tester->setInputs(["\n"]); // Command should default to "no"
         $tester->execute([]);
         $this->assertSame('', file_get_contents(Config::FILENAME));
     }
