@@ -27,7 +27,6 @@ class CreateApiConfig extends Command
     {
         $this->questionHelper = new QuestionHelper();
 
-        $output->writeln('Hello');
         if (file_exists(Config::FILENAME)) {
             $overwriteQ = new ConfirmationQuestion(
                 sprintf(
