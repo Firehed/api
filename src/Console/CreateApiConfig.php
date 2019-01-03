@@ -5,6 +5,7 @@ namespace Firehed\API\Console;
 
 use Firehed\API\Config;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -14,6 +15,8 @@ use Symfony\Component\Console\Question\Question;
 
 class CreateApiConfig extends Command
 {
+    private $questionHelper;
+
     protected function configure()
     {
         $this->setName('config:create')
@@ -22,6 +25,8 @@ class CreateApiConfig extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->questionHelper = new QuestionHelper();
+
         $output->writeln('Hello');
         if (file_exists(Config::FILENAME)) {
             $overwriteQ = new ConfirmationQuestion(
@@ -31,8 +36,7 @@ class CreateApiConfig extends Command
                 ),
                 false
             );
-            $helper = $this->getHelper('question');
-            if (!$helper->ask($input, $output, $overwriteQ)) {
+            if (!$this->questionHelper->ask($input, $output, $overwriteQ)) {
                 $output->writeln('Exiting.');
                 return;
             }
@@ -86,12 +90,11 @@ class CreateApiConfig extends Command
         InputInterface $input,
         OutputInterface $output
     ): string {
-        $helper = $this->getHelper('question');
         $question = new Question(
             sprintf('%s [<info>%s</info>] ', $question, $default),
             $default
         );
-        return $helper->ask($input, $output, $question);
+        return $this->questionHelper->ask($input, $output, $question);
     }
 
     private function guessSourceDirectory(): string
