@@ -19,8 +19,8 @@ class CreateApiConfig extends Command
 
     protected function configure()
     {
-        $this->setName('config:create')
-            ->setDescription('Create an api config file');
+        $this->setName('generate:config')
+            ->setDescription('Generate an api config file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
