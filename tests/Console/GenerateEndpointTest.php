@@ -19,10 +19,17 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->config = new Config([
-            'namespace' => 'Firehed\API',
-            'source' => 'src',
-            'webroot' => 'public',
+            Config::KEY_NAMESPACE => 'Firehed\API\TestGen',
+            Config::KEY_SOURCE => 'src/TestGen',
+            Config::KEY_WEBROOT => 'public',
         ]);
+    }
+
+    public function tearDown()
+    {
+        if (file_exists('src/TestGen')) {
+            $this->rm('src/TestGen');
+        }
     }
 
     /** @covers ::__construct */
@@ -36,16 +43,17 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
     {
         $command = new GenerateEndpoint($this->config);
         $tester = new CommandTester($command);
+        $tester->setInputs(['y']);
         $tester->execute([
             GenerateEndpoint::ARGUMENT_PATH => 'Foo\Bar',
-            '--'.GenerateEndpoint::OPT_DRY_RUN => true,
         ]);
-        $output = $tester->getDisplay();
+        $this->assertTrue(file_exists('src/TestGen/Foo/Bar.php'));
+        $output = file_get_contents('src/TestGen/Foo/Bar.php');
 
         $lines = explode("\n", $output);
 
         $this->assertTrue(
-            in_array('namespace Firehed\API\Foo;', $lines),
+            in_array('namespace Firehed\API\TestGen\Foo;', $lines),
             'Output did not contain namespace'
         );
 
@@ -53,5 +61,27 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
             in_array('class Bar implements EndpointInterface', $lines),
             'Output did not contain class definition'
         );
+    }
+
+    /**
+     * Simple `rm -r` equivalent
+     */
+    private function rm(string $dir): bool
+    {
+        if (!file_exists($dir)) {
+            return true;
+        }
+        if (!is_dir($dir)) {
+            return unlink($dir);
+        }
+        foreach (scandir($dir) as $content) {
+            if ($content === '.' || $content === '..') {
+                continue;
+            }
+            if (!$this->rm($dir . DIRECTORY_SEPARATOR . $content)) {
+                return false;
+            }
+        }
+        return rmdir($dir);
     }
 }

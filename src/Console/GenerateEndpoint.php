@@ -8,6 +8,7 @@ use Firehed\Common\ClassMapGenerator;
 use Psr\Log\LogLevel;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,8 +19,6 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 class GenerateEndpoint extends Command
 {
     const ARGUMENT_PATH = 'relative_path';
-
-    const OPT_DRY_RUN = 'dry-run';
 
     const TEMPLATE_FILE = 'Endpoint.php.tpl';
 
@@ -37,12 +36,6 @@ class GenerateEndpoint extends Command
         $this->setName('api:generateEndpoint')
             ->setDescription('Generate skeleton code for a new endpoint')
             ->addArgument(self::ARGUMENT_PATH, InputArgument::REQUIRED, 'Where?')
-            ->addOption(
-                self::OPT_DRY_RUN,
-                null,
-                InputOption::VALUE_NONE,
-                'Only print the generated file to the console, do not write to disk'
-            )
             ;
     }
 
@@ -90,11 +83,7 @@ class GenerateEndpoint extends Command
             'dest' => $destination,
         ]);
 
-        if ($input->getOption(self::OPT_DRY_RUN)) {
-            $output->writeln($rendered);
-        } else {
-            $this->writeFile($destination, $rendered, $input, $output);
-        }
+        $this->writeFile($destination, $rendered, $input, $output);
     }
 
     private function getPathForFQCN(string $fqcn, string $sourceDir): string
@@ -130,7 +119,7 @@ class GenerateEndpoint extends Command
                 // this because the file went to an unexpected location, your
                 // best bet is to add a level of specificity to your
                 // .apiconfig's source and namespace values.
-                if (0 === strpos($path, $sourceDir)) {
+                if (0 === strpos($sourceDir, $path)) {
                     $relative = substr($fqcn, strlen($prefix));
                     $dest = sprintf('%s/%s.php', $path, $relative);
                     // This is a bit of path munging
@@ -172,7 +161,7 @@ class GenerateEndpoint extends Command
             throw new RuntimeException('File already exists');
         }
         if (!file_exists(dirname($filename))) {
-            $helper = $this->getHelper('question');
+            $helper = new QuestionHelper();
             $question = new ConfirmationQuestion(sprintf(
                 'Directory %s%s does not exist. Create it? [y/N] ',
                 dirname($filename),
