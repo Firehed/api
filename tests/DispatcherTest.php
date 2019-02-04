@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Firehed\API;
 
+use BadMethodCallException;
 use Exception;
 use Firehed\API\Authentication;
 use Firehed\API\Authorization;
 use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Errors\HandlerInterface;
+use OutOfBoundsException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -425,24 +427,24 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers ::dispatch
-     * @expectedException BadMethodCallException
-     * @expectedExceptionCode 500
      */
     public function testDispatchThrowsWhenMissingData()
     {
         $d = new Dispatcher();
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionCode(500);
         $ret = $d->dispatch();
     }
 
     /**
      * @covers ::dispatch
-     * @expectedException OutOfBoundsException
-     * @expectedExceptionCode 404
      */
     public function testNoRouteMatchReturns404()
     {
         $req = $this->getMockRequestWithUriPath('/');
 
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionCode(400);
         $ret = (new Dispatcher())
             ->setRequest($req)
             ->setEndpointList([]) // No routes
