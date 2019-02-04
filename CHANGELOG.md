@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [4.0.0] - Unreleased
 ### Summary of Breaking Changes
+- The minimum required version of PHP is now 7.2, which is the oldest version receiving active support at this time
 - Traits deprecated in 3.0.0 have been removed (renamed equivalents were added in the same release).
 - `renderResponse` has been removed (replaced by `ResponseRenderer`)
 
@@ -34,6 +35,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `Traits\NoRequiredInputs`
 - `Traits\PostRequest`
 - `Traits\PutRequest`
+
+### Fixed
+- Improved PHPUnit 8 compatibility
 
 ## [3.2.1] - 2018-10-24
 ### Summary

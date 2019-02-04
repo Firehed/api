@@ -66,8 +66,7 @@ trait EndpointTestCases
     public function testGetUri(string $uri, bool $match, array $expectedMatches)
     {
         $endpoint = $this->getEndpoint();
-        $this->assertInternalType(
-            'string',
+        $this->assertIsString(
             $endpoint->getUri(),
             'getUri did not return a string'
         );
