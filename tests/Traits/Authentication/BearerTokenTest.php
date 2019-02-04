@@ -116,13 +116,13 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
             use Traits\Request\Get;
             use Traits\Input\NoRequired;
             use Traits\Input\NoOptional;
-            function getUri(): string
+            public function getUri(): string
             {
             }
-            function handleException(\Throwable $e): Message\ResponseInterface
+            public function handleException(\Throwable $e): Message\ResponseInterface
             {
             }
-            function execute(SafeInput $input): Message\ResponseInterface
+            public function execute(SafeInput $input): Message\ResponseInterface
             {
             }
         };
