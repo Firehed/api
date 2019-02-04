@@ -444,7 +444,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $req = $this->getMockRequestWithUriPath('/');
 
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionCode(400);
+        $this->expectExceptionCode(404);
         $ret = (new Dispatcher())
             ->setRequest($req)
             ->setEndpointList([]) // No routes
