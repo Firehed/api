@@ -50,9 +50,9 @@ class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
         $data = $this->uris();
         foreach ($data as $testCase) {
             list($uri, $shouldMatch, $matches) = $testCase;
-            $this->assertInternalType('string', $uri);
-            $this->assertInternalType('bool', $shouldMatch);
-            $this->assertInternalType('array', $matches);
+            $this->assertIsString($uri);
+            $this->assertIsBool($shouldMatch);
+            $this->assertIsArray($matches);
         }
     }
 
