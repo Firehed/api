@@ -17,6 +17,7 @@ use Firehed\Input\ValidationTestTrait;
 trait EndpointTestCases
 {
     use HandlesOwnErrorsTestCases;
+    use Testing\PHPUnit8Shim;
     use ValidationTestTrait;
 
     /**
