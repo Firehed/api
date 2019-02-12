@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [4.0.0] - Unreleased
 ### Summary of Breaking Changes
-- Traits deprecated in 3.0.0 have been removed (renamed equivalents were added in the same release).
+- PHP 7.2 or later is now required in Composer. This is in line with PHP's own currently supported versions
+- Traits deprecated in 3.0.0 have been removed (renamed equivalents were added in the same release)
 - `renderResponse` has been removed (replaced by `ResponseRenderer`)
 
 ### Added
