@@ -1,12 +1,25 @@
 language: php
-php:
-  - '7.0'
-  - '7.1'
-  - '7.2'
 
-# From PHPUnit's config
+sudo: false
+
+php:
+  - 7.2
+  - 7.3
+  - 7.4snapshot
+
+matrix:
+  fast_finish: true
+
+env:
+  matrix:
+    - DEPENDENCIES="high"
+    - DEPENDENCIES="low"
+  global:
+    - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-ansi --no-progress --no-suggest"
+
 install:
-  - travis_retry composer install --no-interaction --no-progress --no-suggest --prefer-dist
+  - if [[ "$DEPENDENCIES" = 'high' ]]; then travis_retry composer update $DEFAULT_COMPOSER_FLAGS; fi
+  - if [[ "$DEPENDENCIES" = 'low' ]]; then travis_retry composer update $DEFAULT_COMPOSER_FLAGS --prefer-lowest; fi
 
 script:
   - composer phpunit
@@ -16,6 +29,3 @@ script:
 after_success:
     - bash <(curl -s https://codecov.io/bash)
 
-notifications:
-  slack:
-    secure: z0WWo1Rlf14EGdQXCGvn955BVtjLUsN9tfKPTWtxyzxGbbcMS6JMCb5JLaPMDJX/iKfJzYKGSgFpWBlZM4YfPAemU7Ige2xRUKl18UvZZNqI6e06qDnRb6pUyRfEoZ1MsWTgO2hE3dBzQTP6c1C3Xyv2eudl240pL5IcNkP9osfBOdfIcCLiNVhhTpeRAD9a852ShluBA9/0LRY6sWe52no4SgeCkq3GlWQuIh++jolJp2z6mdeOdYYuTLkKJ7Qc9WhZS/WP/Dcw6Av+A9Z5jOpsVomhquc/oXs6veN5GDI4gUvGvTy6V99JpUroFyyoFSRvvNcE/Eu5598RDlKakWuVy5RmYuROOMQZJT60JwvYj0bBwqepOV9YZcJIq3yVGNXc1IXMIknTTKt11z57y4/z1+gxMejeCj+JpE7ze+3Ku/bTXy7tKrijkXCEdpWlOli78hOlJ2WqyJHM71TNRxSimuTEeAZwX9x2KwWSJT8rbAo2fbe8okHQ+Bp856c0Mv8bVEf8r5uCqZvFoZgnvOOMxU4qqUvh2eTGdrbAb7R9V2x2Q6zMDS+e+5Jq3qTnxF8b++VMOwg0BTFQSbeqIMwK9opQWO9sjvThuKAdSh27EW6EVKiqS4UKDAp/XlRgw1MClVxwwFTrb5sG3FfA/Wl5D3Jh50R4hNco2SrNybg=
