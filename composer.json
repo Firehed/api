@@ -1,8 +1,8 @@
 {
     "name": "firehed/api",
     "require": {
-        "php": "^7.0",
-        "firehed/common": "^1.0",
+        "php": "^7.2",
+        "firehed/common": "^1.0.5",
         "firehed/input": "^2.0",
         "psr/container": "^1.0",
         "psr/http-message": "^1.0",
@@ -10,7 +10,7 @@
         "psr/http-server-middleware": "^1.0",
         "psr/log": "^1.0",
         "symfony/console": "^3 || ^4",
-        "zendframework/zend-diactoros": "^1.3 || ^2.0"
+        "zendframework/zend-diactoros": "^1.3.4 || ^2.0"
     },
     "suggest": {
         "firehed/inputobjects": "Pre-made Input components for validation"
@@ -26,7 +26,7 @@
     "require-dev": {
         "phpstan/phpstan": "^0.9.2",
         "phpstan/phpstan-phpunit": "^0.9.4",
-        "phpunit/phpunit": "^6.0 | ^7.0",
+        "phpunit/phpunit": "^7.0",
         "squizlabs/php_codesniffer": "^3.1"
     },
     "autoload": {
