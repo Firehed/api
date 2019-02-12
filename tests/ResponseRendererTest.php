@@ -70,7 +70,8 @@ class ResponseRendererTest extends \PHPUnit\Framework\TestCase
         // otherwise.
         //
         // https://bugs.php.net/bug.php?id=39872
-        if (!function_exists('xdebug_get_headers')) {
+        $udf = get_defined_functions()['user'];
+        if (in_array('xdebug_get_headers', $udf)) {
             $this->markTestIncomplete(
                 'headers_list does not work in CLI mode to test response '.
                 'rendering. Install xdebug to complete the test which uses '.

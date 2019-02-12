@@ -119,8 +119,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $body = $req->getBody();
         $body->write('shortstring=aBcD');
         $req = $req->withBody($body);
+        /** @var ServerRequestInterface */
         $req = $req->withHeader('Content-type', 'application/x-www-form-urlencoded');
-
 
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
@@ -328,6 +328,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $body = $req->getBody();
         $body->write('shortstring=thisistoolong');
         $req = $req->withBody($body);
+        /** @var ServerRequestInterface */
         $req = $req->withHeader('Content-type', 'application/x-www-form-urlencoded');
 
         try {
@@ -346,6 +347,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testUnsupportedContentTypeCanReachErrorHandlers()
     {
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
+        /** @var ServerRequestInterface */
         $req = $req->withHeader('Content-type', 'application/x-test-failure');
         try {
             $response = (new Dispatcher())
@@ -367,6 +369,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $contentType = 'application/json; charset=utf-8';
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
+        /** @var ServerRequestInterface */
         $req = $req->withHeader('Content-type', $contentType);
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
