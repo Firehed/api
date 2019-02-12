@@ -17,6 +17,7 @@ use Firehed\Input\ValidationTestTrait;
 trait EndpointTestCases
 {
     use HandlesOwnErrorsTestCases;
+    use Testing\PHPUnit8Shim;
     use ValidationTestTrait;
 
     /**
@@ -47,8 +48,7 @@ trait EndpointTestCases
     public function testGetUri(string $uri, bool $match, array $expectedMatches)
     {
         $endpoint = $this->getEndpoint();
-        $this->assertInternalType(
-            'string',
+        $this->assertIsString(
             $endpoint->getUri(),
             'getUri did not return a string'
         );
