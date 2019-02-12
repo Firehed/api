@@ -3,5 +3,5 @@ includes:
 
 parameters:
     ignoreErrors:
-        - message: Call to an undefined static method PHPUnit\Framework\TestCase::assertIs(Array|Bool|String)\(\)
+        - message: '#Call to an undefined static method PHPUnit\Framework\TestCase::assertIs(Array|Bool|String)\(\)#'
           path: src/Traits/Testing/PHPUnit8ShimPHPGTE71.php
