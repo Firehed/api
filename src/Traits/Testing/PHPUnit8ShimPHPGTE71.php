@@ -5,7 +5,7 @@ namespace Firehed\API\Traits\Testing;
 
 use PHPUnit\Framework\TestCase;
 
-trait PHPUnit8Shim
+trait PHPUnit8ShimPHPGTE71
 {
     public static function assertIsArray($actual, string $message = ''): void
     {
