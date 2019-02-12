@@ -5,6 +5,12 @@ namespace Firehed\API\Traits\Testing;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Create assertIsFoo static methods introduced in PHPUnit 7.5 for users with
+ * earlier versions
+ *
+ * @internal
+ */
 trait PHPUnit8ShimPHPGTE71
 {
     public static function assertIsArray($actual, string $message = ''): void

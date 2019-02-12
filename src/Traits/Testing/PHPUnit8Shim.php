@@ -8,6 +8,7 @@ namespace Firehed\API\Traits\Testing;
  *
  * Implement some horrible hacks to allow PHP7.0 users to use assertIsString
  * which natively has a void return type.
+ *
  * @internal
  */
 if (version_compare(PHP_VERSION, '7.1.0', '>=')) {
