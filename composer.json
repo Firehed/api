@@ -35,6 +35,9 @@
         }
     },
     "autoload-dev": {
+        "files": [
+          "tests/xdebug_get_headers.php"
+        ],
         "psr-4": {
             "Firehed\\API\\": ["tests/"]
         }
