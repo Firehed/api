@@ -340,9 +340,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $mw1 = $this->createMock(MiddlewareInterface::class);
         $mw1->expects($this->once())
             ->method('process')
-            ->willReturnCallback(function ($req, $handler) use ($request, $modifiedRequest, $dispatcher) {
+            ->willReturnCallback(function ($req, $handler) use ($request, $modifiedRequest) {
                 $this->assertSame($req, $request, 'Request mismatch');
-                $this->assertSame($dispatcher, $handler, 'Handler mismatch');
                 return $handler->handle($modifiedRequest);
             });
         $mw2 = $this->createMock(MiddlewareInterface::class);
