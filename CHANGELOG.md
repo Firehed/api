@@ -5,9 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [4.0.0] - Unreleased
 ### Summary of Breaking Changes
-- PHP 7.2 or later is now required in Composer. This is in line with PHP's own currently supported versions
+- PHP 7.2 or later is now required in Composer. This is in line with PHP's own currently supported versions (#33)
 - Traits deprecated in 3.0.0 have been removed (renamed equivalents were added in the same release)
 - `renderResponse` has been removed (replaced by `ResponseRenderer`)
+- Legacy "response" middleware support has been removed. Only PSR-15 middleware is supported.
 
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`

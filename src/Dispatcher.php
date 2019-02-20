@@ -162,15 +162,11 @@ class Dispatcher implements RequestHandlerInterface
      *
      * This method is intended for internal use only, and should not be called
      * outside of the context of a Middleware's RequestHandler parameter
+     * @internal
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if (!count($this->psrMiddleware)) {
-            return $this->doDispatch($request);
-        }
-        // Run MW as a queue
-        $mw = array_shift($this->psrMiddleware);
-        return $mw->process($request, $this);
+        return $this->doDispatch($request);
     }
 
     /**
@@ -195,7 +191,8 @@ class Dispatcher implements RequestHandlerInterface
         $request = $this->request;
 
         // Delegate to PSR-15 middleware when possible
-        return $this->handle($request);
+        $mwDispatcher = new MiddlewareDispatcher($this, $this->psrMiddleware);
+        return $mwDispatcher->handle($request);
     }
 
     private function doDispatch(ServerRequestInterface $request)
