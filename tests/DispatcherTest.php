@@ -340,9 +340,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $mw1 = $this->createMock(MiddlewareInterface::class);
         $mw1->expects($this->once())
             ->method('process')
-            ->willReturnCallback(function ($req, $handler) use ($request, $modifiedRequest, $dispatcher) {
+            ->willReturnCallback(function ($req, $handler) use ($request, $modifiedRequest) {
                 $this->assertSame($req, $request, 'Request mismatch');
-                $this->assertSame($dispatcher, $handler, 'Handler mismatch');
                 return $handler->handle($modifiedRequest);
             });
         $mw2 = $this->createMock(MiddlewareInterface::class);
@@ -860,6 +859,30 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         } catch (Authentication\Exception $e) {
             $this->assertSame($authnEx, $e);
         }
+    }
+
+    /** @covers ::dispatch */
+    public function testDispatchRunsMiddlewareOnSubsequentRequests()
+    {
+        $called = 0;
+        $mw = $this->createMock(MiddlewareInterface::class);
+        $mw->expects($this->exactly(2))
+            ->method('process')
+            ->willReturnCallback(function ($req, $handler) use (&$called) {
+                $called++;
+                return $handler->handle($req);
+            });
+
+        $ep = $this->getMockEndpoint();
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->addMiddleware($mw);
+
+        $this->assertSame(0, $called, 'MW should not be called yet');
+        $this->executeMockRequestOnEndpoint($ep, $dispatcher);
+        $this->assertSame(1, $called, 'MW should be called once');
+        $this->executeMockRequestOnEndpoint($ep, $dispatcher);
+        $this->assertSame(2, $called, 'MW should be called twice');
     }
 
     // ----(Helper methods)----------------------------------------------------
