@@ -862,6 +862,30 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /** @covers ::dispatch */
+    public function testDispatchRunsMiddlewareOnSubsequentRequests()
+    {
+        $called = 0;
+        $mw = $this->createMock(MiddlewareInterface::class);
+        $mw->expects($this->exactly(2))
+            ->method('process')
+            ->willReturnCallback(function ($req, $handler) use (&$called) {
+                $called++;
+                return $handler->handle($req);
+            });
+
+        $ep = $this->getMockEndpoint();
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->addMiddleware($mw);
+
+        $this->assertSame(0, $called, 'MW should not be called yet');
+        $this->executeMockRequestOnEndpoint($ep, $dispatcher);
+        $this->assertSame(1, $called, 'MW should be called once');
+        $this->executeMockRequestOnEndpoint($ep, $dispatcher);
+        $this->assertSame(2, $called, 'MW should be called twice');
+    }
+
     // ----(Helper methods)----------------------------------------------------
 
     /**
