@@ -418,9 +418,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers ::setContainer
-     * @covers ::setErrorHandler
      * @covers ::dispatch
+     * @covers ::setContainer
      */
     public function testErrorHandlerIsAutoDetected()
     {
@@ -445,7 +444,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers ::dispatch
-     * @covers ::setErrorHandler
+     * @covers ::setContainer
      */
     public function testExceptionsFromEndpointsOwnHandlerReachDefaultHandlerWhenSet()
     {
