@@ -493,7 +493,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @covers ::setContainer
+    */
     public function testAuthHappensWhenProvided()
     {
         $authContainer = $this->createMock(ContainerInterface::class);
@@ -529,7 +532,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($response, $res);
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @covers ::setContainer
+     */
     public function testExecuteIsNotCalledWhenAuthzFails()
     {
         $authContainer = $this->createMock(ContainerInterface::class);
@@ -562,7 +568,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @covers ::setContainer
+     */
     public function testExecuteIsNotCalledWhenAuthnFails()
     {
         $authnEx = new Authentication\Exception();
@@ -591,7 +600,10 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::addMiddleware
+     * @covers ::dispatch
+     */
     public function testDispatchRunsMiddlewareOnSubsequentRequests()
     {
         $called = 0;
