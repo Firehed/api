@@ -11,6 +11,7 @@ use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\API\Errors\HandlerInterface;
 use Firehed\Input\Exceptions\InputException;
+use OutOfBoundsException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -421,7 +422,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * @covers ::dispatch
      * @covers ::setContainer
      */
-    public function testErrorHandlerIsAutoDetected()
+    public function testErrorHandlerHandlesExceptionFromEndpointExecute()
     {
         $ex = new Exception('execute');
         $handler = $this->createMock(HandlerInterface::class);
@@ -440,6 +441,35 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             HandlerInterface::class => $handler,
         ];
         $this->executeMockRequestOnEndpoint($ep, $container);
+    }
+
+    /**
+     * @covers ::dispatch
+     * @covers ::setContainer
+     */
+    public function testErrorHandlerHandles404()
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $handler = $this->createMock(HandlerInterface::class);
+        $handler->expects($this->once())
+            ->method('handle')
+            ->will($this->returnCallback(function ($request, $exception) use ($response) {
+                $this->assertInstanceOf(OutOfBoundsException::class, $exception);
+                $this->assertSame(404, $exception->getCode());
+                return $response;
+            }));
+        $container = $this->getMockContainer([
+            HandlerInterface::class => $handler,
+        ]);
+
+        $request = $this->getMockRequestWithUriPath('/');
+        $finalResponse = (new Dispatcher())
+            ->setEndpointList([])
+            ->setParserList([])
+            ->setContainer($container)
+            ->setRequest($request)
+            ->dispatch();
+        $this->assertSame($response, $finalResponse);
     }
 
     /**
@@ -712,7 +742,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             $dispatcher = new Dispatcher();
         }
 
-        // Add endpoint definition to conatiner
+        // Add endpoint definition to container
         $containerValues['ClassThatDoesNotExist'] = $endpoint;
 
         $response = $dispatcher
