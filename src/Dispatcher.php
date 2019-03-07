@@ -24,11 +24,10 @@ class Dispatcher implements RequestHandlerInterface
     const ENDPOINT_LIST = '__endpoint_list__.php';
     const PARSER_LIST = '__parser_list__.php';
 
-    private $authenticationProvider;
-    private $authorizationProvider;
     private $container;
+    private $containerHasAuthProviders = false;
+    private $containerHasErrorHandler = false;
     private $endpointList = self::ENDPOINT_LIST;
-    private $error_handler;
     private $parserList = self::PARSER_LIST;
     private $psrMiddleware = [];
     private $request;
@@ -48,21 +47,6 @@ class Dispatcher implements RequestHandlerInterface
     }
 
     /**
-     * Provide the authentication and authorization providers. These will be
-     * run after routing but before the endpoint is executed.
-     *
-     * @return $this
-     */
-    public function setAuthProviders(
-        Authentication\ProviderInterface $authn,
-        Authorization\ProviderInterface $authz
-    ): self {
-        $this->authenticationProvider = $authn;
-        $this->authorizationProvider = $authz;
-        return $this;
-    }
-
-    /**
      * Provide a DI Container/Service Locator class or array. During
      * dispatching, this structure will be queried for the routed endpoint by
      * the fully-qualified class name. If the container has a class at that
@@ -72,43 +56,22 @@ class Dispatcher implements RequestHandlerInterface
      * @param ContainerInterface $container Container
      * @return self
      */
-    public function setContainer(ContainerInterface $container = null): self
+    public function setContainer(ContainerInterface $container): self
     {
         $this->container = $container;
 
-        if (!$container) {
-            return $this;
-        }
         // Auto-detect auth components
-        if (!$this->authenticationProvider && !$this->authorizationProvider) {
-            if ($container->has(Authentication\ProviderInterface::class)
-                && $container->has(Authorization\ProviderInterface::class)
-            ) {
-                $this->setAuthProviders(
-                    $container->get(Authentication\ProviderInterface::class),
-                    $container->get(Authorization\ProviderInterface::class)
-                );
-            }
+        if ($container->has(Authentication\ProviderInterface::class)
+            && $container->has(Authorization\ProviderInterface::class)
+        ) {
+            $this->containerHasAuthProviders = true;
         }
 
         // Auto-detect error handler
-        if (!$this->error_handler && $container->has(HandlerInterface::class)) {
-            $this->setErrorHandler($container->get(HandlerInterface::class));
+        if ($container->has(HandlerInterface::class)) {
+            $this->containerHasErrorHandler = true;
         }
 
-        return $this;
-    }
-
-    /**
-     * Provide a default error handler. This will be used in the event that an
-     * endpoint does not define its own handler.
-     *
-     * @param HandlerInterface $handler
-     * @return self
-     */
-    public function setErrorHandler(HandlerInterface $handler): self
-    {
-        $this->error_handler = $handler;
         return $this;
     }
 
@@ -201,12 +164,16 @@ class Dispatcher implements RequestHandlerInterface
         $endpoint = null;
         try {
             $endpoint = $this->getEndpoint($request);
-            if ($this->authenticationProvider
+            if ($this->containerHasAuthProviders
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
             ) {
-                $auth = $this->authenticationProvider->authenticate($request);
+                $auth = $this->container
+                    ->get(Authentication\ProviderInterface::class)
+                    ->authenticate($request);
                 $endpoint->setAuthentication($auth);
-                $this->authorizationProvider->authorize($endpoint, $auth);
+                $this->container
+                    ->get(Authorization\ProviderInterface::class)
+                    ->authorize($endpoint, $auth);
             }
             $safe_input = $this->parseInput($request)
                 ->addData($this->getUriData())
@@ -225,8 +192,10 @@ class Dispatcher implements RequestHandlerInterface
                 // If an application-wide handler has been defined, use the
                 // response that it generates. If not, just rethrow the
                 // exception for the system default (if defined) to handle.
-                if ($this->error_handler) {
-                    $response = $this->error_handler->handle($request, $e);
+                if ($this->containerHasErrorHandler) {
+                    $response = $this->container
+                        ->get(HandlerInterface::class)
+                        ->handle($request, $e);
                 } else {
                     throw $e;
                 }

@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Traits deprecated in 3.0.0 have been removed (renamed equivalents were added in the same release)
 - `renderResponse` has been removed (replaced by `ResponseRenderer`)
 - Legacy "response" middleware support has been removed. Only PSR-15 middleware is supported.
+- `Dispatcher::setAuthProviders()` and `::setErrorHandler` have been removed. You must provide them with a container now, and they will be fetched lazily.
 
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`
@@ -25,9 +26,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Removed
 - Disallowed using `RequestInterface` in `Dispatcher`.
-  `ServerRequestInterface` is now required.
+  `ServerRequestInterface` is now required - the base `RequestInterface` is no longer supported.
 - `renderResponse()` function
-- `Dispatcher::addResponseMiddleware()`
+- `Dispatcher::addResponseMiddleware()` (use addMiddleware with PSR-15 MW)
+- `Dispatcher::setAuthProviders()` (use setContainer)
+- `Dispatcher::setErrorHandler()` (use setContainer)
 - `Interfaces\EndpointInterface::authenticate()` - this drops legacy authentication support entirely, and will no longer be used even if still defined in implementing classes
 - `Traits\Authentication\BearerToken`
 - `Traits\DeleteRequest`

@@ -159,8 +159,8 @@ However, this means your application will crash at runtime if it does - so any e
 ## Authentication and Authorization
 
 There are two interfaces defined for the processes of authentication (who is performing the request) and authorization (whether they are allowed to perform the request), respectively named `Authentication\ProviderInterface` and `Authorization\ProviderInterface`.
-Both interfaces will be autodetected in a container or can be explicitly provided via `Dispatcher::setAuthProviders()`.
-If these are not provided, **no authentication or authorization will ever be performed using the application-wide handlers**.
+Both interfaces will be autodetected in a container, and both must be provided.
+If both of these are not provided, **no authentication or authorization will ever be performed using the application-wide handlers**.
 
 Any endpoint that implements `Interfaces\AuthenticatedEndpointInterface` will have these processes performed prior to execution, and the container returned by the Authentication provider will be made available to it.
 If an endpoint does not implement `Interfaces\AuthenticatedEndpointInterface` (i.e. it only implements `Interfaces\EndpointInterface`), **application-wide auth will be skipped**.
@@ -227,11 +227,12 @@ This is not an absolute rule, but helps avoid deeply-nested `try`/`catch` blocks
 
 The API framework is responsible for catching all exceptions thrown during an Endpoint's `execute()` method, and will provide them to dedicated exception handlers.
 
-All endpoints that implement `Firehed\API\Interfaces\HandlesOwnErrorsInterface` (which is a part of `EndpointInterface` prior to v4.0.0) will have their `handleException()` method called with the thrown exception.
-This method _may_ choose to ignore certain exception classes (by rethrowing them), but must return a PSR `ResponseInterface` when opting to handle an exception.
+It is highly recommended to create and provide a default error handler, `Firehed\API\Errors\HandlerInterface`, via the container (see table above).
+All unhandled exceptions will be sent to that handler, along with the request (so that responses can be formatted according to `Accept` headers, etc).
 
-Starting in v3.1.0, error handling can be implemented globally by providing a `Firehed\API\Errors\HandlerInterface` to the Dispatcher via `setErrorHandler()`.
-This is functionally identical to `HandlesOwnErrorInterface` described above, with the addition that the PSR `ServerRequestInterface` will also be available (primarily so that the response can be formatted appropriately for the request, e.g. based on the `Accept` header).
+All endpoints that implement `Firehed\API\Interfaces\HandlesOwnErrorsInterface` (which is a part of `EndpointInterface` prior to v4.0.0) will have their `handleException()` method called with the thrown exception.
+This handler will be called _before_ the default error handler.
+This method _may_ choose to ignore certain exception classes (by rethrowing them), but must return a PSR `ResponseInterface` when opting to handle an exception.
 
 Finally, a global fallback handler is configured by default, which will log the exception and return a generic 500 error.
 
