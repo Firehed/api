@@ -30,7 +30,6 @@ class Dispatcher implements RequestHandlerInterface
     private $endpointList = self::ENDPOINT_LIST;
     private $parserList = self::PARSER_LIST;
     private $psrMiddleware = [];
-    private $request;
 
     /**
      * Provide PSR-15 middleware to run. This is treated as a queue (FIFO), and
@@ -71,18 +70,6 @@ class Dispatcher implements RequestHandlerInterface
             $this->containerHasErrorHandler = true;
         }
 
-        return $this;
-    }
-
-    /**
-     * Inject the request
-     *
-     * @param ServerRequestInterface $request The request
-     * @return self
-     */
-    public function setRequest(ServerRequestInterface $request): self
-    {
-        $this->request = $request;
         return $this;
     }
 
@@ -134,30 +121,21 @@ class Dispatcher implements RequestHandlerInterface
     /**
      * Execute the request
      *
+     * @param ServerRequestInterface $request The request to process
      * @throws TypeError if both execute and handleException have bad return
      * types
      * @throws LogicException if the dispatcher is misconfigured
      * @throws RuntimeException on 404-type errors
      * @return ResponseInterface the completed HTTP response
      */
-    public function dispatch(): ResponseInterface
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        if (null === $this->request) {
-            throw new BadMethodCallException(
-                'Set the request, parser list, and endpoint list before '.
-                'calling dispatch()',
-                500
-            );
-        }
-
-        $request = $this->request;
-
         // Delegate to PSR-15 middleware when possible
         $mwDispatcher = new MiddlewareDispatcher($this, $this->psrMiddleware);
         return $mwDispatcher->handle($request);
     }
 
-    private function doDispatch(ServerRequestInterface $request)
+    private function doDispatch(ServerRequestInterface $request): ResponseInterface
     {
         /** @var ?EndpointInterface */
         $endpoint = null;
