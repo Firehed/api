@@ -31,7 +31,6 @@ class Dispatcher implements RequestHandlerInterface
     private $parserList = self::PARSER_LIST;
     private $psrMiddleware = [];
     private $request;
-    private $uri_data;
 
     /**
      * Provide PSR-15 middleware to run. This is treated as a queue (FIFO), and
@@ -163,7 +162,17 @@ class Dispatcher implements RequestHandlerInterface
         /** @var ?EndpointInterface */
         $endpoint = null;
         try {
-            $endpoint = $this->getEndpoint($request);
+            [$fqcn, $uriData] = (new ClassMapper($this->endpointList))
+                ->filter(strtoupper($request->getMethod()))
+                ->search($request->getUri()->getPath());
+            if (!$fqcn) {
+                throw new OutOfBoundsException('Endpoint not found', 404);
+            }
+            if ($this->container && $this->container->has($fqcn)) {
+                $endpoint = $this->container->get($fqcn);
+            } else {
+                $endpoint = new $fqcn;
+            }
             if ($this->containerHasAuthProviders
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
             ) {
@@ -176,7 +185,7 @@ class Dispatcher implements RequestHandlerInterface
                     ->authorize($endpoint, $auth);
             }
             $safe_input = $this->parseInput($request)
-                ->addData($this->getUriData())
+                ->addData(new ParsedInput($uriData))
                 ->addData($this->getQueryStringData($request))
                 ->validate($endpoint);
 
@@ -235,40 +244,6 @@ class Dispatcher implements RequestHandlerInterface
             $data = $parser->parse((string)$request->getBody());
         }
         return new ParsedInput($data);
-    }
-
-    /**
-     * Find and instanciate the endpoint based on the request.
-     *
-     * @return Interfaces\EndpointInterface the routed endpoint
-     */
-    private function getEndpoint(ServerRequestInterface $request): Interfaces\EndpointInterface
-    {
-        list($class, $uri_data) = (new ClassMapper($this->endpointList))
-            ->filter(strtoupper($request->getMethod()))
-            ->search($request->getUri()->getPath());
-        if (!$class) {
-            throw new OutOfBoundsException('Endpoint not found', 404);
-        }
-        // Conceivably, we could use reflection to ensure the found class
-        // adheres to the interface; in practice, the built route is already
-        // doing the filtering so this should be redundant.
-        $this->setUriData(new ParsedInput($uri_data));
-        if ($this->container && $this->container->has($class)) {
-            return $this->container->get($class);
-        }
-        return new $class;
-    }
-
-    private function setUriData(ParsedInput $uri_data): self
-    {
-        $this->uri_data = $uri_data;
-        return $this;
-    }
-
-    private function getUriData(): ParsedInput
-    {
-        return $this->uri_data;
     }
 
     private function getQueryStringData(ServerRequestInterface $request): ParsedInput
