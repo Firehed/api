@@ -188,7 +188,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(
                 $this->createMock(ResponseInterface::class)
             ));
-        $this->executeMockRequestOnEndpoint($endpoint);
+        $this->executeMockRequestOnEndpoint($endpoint, []);
+        $this->markTestIncomplete('This needs reworking');
     }
 
     /**
@@ -250,7 +251,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      *
      * @covers ::dispatch
      */
-    public function testErrorInResponseHandler()
+    public function testWhenEndpointsOwnErrorHandlerThrows()
     {
         $execute = new Exception('Execute error');
         $error = new Exception('Exception handler error');
@@ -388,7 +389,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $endpoint->expects($this->once())
             ->method('handleException')
             ->with($e);
-        $this->executeMockRequestOnEndpoint($endpoint);
+        $this->executeMockRequestOnEndpoint($endpoint, []);
     }
 
 
@@ -401,7 +402,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(false)); // Trigger a bad return value
         $endpoint->expects($this->once())
             ->method('handleException');
-        $this->executeMockRequestOnEndpoint($endpoint);
+        $this->executeMockRequestOnEndpoint($endpoint, []);
     }
 
     /** @covers ::dispatch */
@@ -413,14 +414,39 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(new \DateTime())); // Trigger a bad return value
         $endpoint->expects($this->once())
             ->method('handleException');
-        $this->executeMockRequestOnEndpoint($endpoint);
+        $this->executeMockRequestOnEndpoint($endpoint, []);
     }
 
     /**
      * @covers ::dispatch
-     * @covers ::setErrorHandler
+     * @covers ::setContainer
      */
-    public function testExceptionsReachDefaultErrorHandlerWhenSet()
+    public function testErrorHandlerIsAutoDetected()
+    {
+        $ex = new Exception('execute');
+        $handler = $this->createMock(HandlerInterface::class);
+        $handler->expects($this->once())
+            ->method('handle')
+            ->will($this->returnCallback(function ($sri, $caught) use ($ex) {
+                $this->assertSame($ex, $caught);
+                return $this->createMock(ResponseInterface::class);
+            }));
+
+        $ep = $this->createMock(EndpointInterface::class);
+        $ep->method('execute')
+            ->will($this->throwException($ex));
+
+        $container = [
+            HandlerInterface::class => $handler,
+        ];
+        $this->executeMockRequestOnEndpoint($ep, $container);
+    }
+
+    /**
+     * @covers ::dispatch
+     * @covers ::setContainer
+     */
+    public function testExceptionsFromEndpointsOwnHandlerReachDefaultHandlerWhenSet()
     {
         $first = new Exception('This is the initially thrown exception');
         $second = new Exception('This should reach the main error handler');
@@ -436,12 +462,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('handle')
             ->will($this->returnCallback($cb));
 
-        $dispatcher = new Dispatcher();
-        $this->assertSame(
-            $dispatcher,
-            $dispatcher->setErrorHandler($handler),
-            'setErrorHandler should return $this'
-        );
+        $container = [
+            HandlerInterface::class => $handler,
+        ];
 
         $endpoint = $this->getMockEndpoint(HandlesOwnErrorsInterface::class);
         $endpoint->method('execute')
@@ -450,7 +473,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('handleException')
             ->with($first)
             ->will($this->throwException($second));
-        $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+        $this->executeMockRequestOnEndpoint($endpoint, $container);
     }
 
     /** @covers ::dispatch */
@@ -463,139 +486,17 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->will($this->throwException($e));
 
         try {
-            $this->executeMockRequestOnEndpoint($endpoint);
+            $this->executeMockRequestOnEndpoint($endpoint, []);
             $this->fail('An exception should have been thrown');
         } catch (Throwable $t) {
             $this->assertSame($e, $t, 'A different exception was thrown');
         }
     }
 
-    /** @covers ::setAuthProviders */
-    public function testSetAuthProviders()
-    {
-        $dispatcher = new Dispatcher();
-        $this->assertSame(
-            $dispatcher,
-            $dispatcher->setAuthProviders(
-                $this->createMock(Authentication\ProviderInterface::class),
-                $this->createMock(Authorization\ProviderInterface::class)
-            ),
-            'Dispacher did not return $this'
-        );
-    }
-
     /**
-     * @covers ::setAuthProviders
-     * @covers ::setContainer
      * @covers ::dispatch
-     */
-    public function testAuthComponentsAreAutoDetected()
-    {
-        $authn = $this->createMock(Authentication\ProviderInterface::class);
-        $authn->expects($this->once())
-            ->method('authenticate')
-            ->willReturn($this->createMock(ContainerInterface::class));
-        $authz = $this->createMock(Authorization\ProviderInterface::class);
-        $authz->expects($this->once())
-            ->method('authorize')
-            ->willReturn(new Authorization\Ok());
-
-        $req = $this->getMockRequestWithUriPath('/c', 'GET', []);
-        $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
-        $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
-
-        $container = $this->getMockContainer([
-            Authentication\ProviderInterface::class => $authn,
-            Authorization\ProviderInterface::class => $authz,
-            'ClassThatDoesNotExist' => $endpoint,
-        ]);
-
-        $dispatcher = new Dispatcher();
-        $dispatcher->setContainer($container)
-            ->setEndpointList($routes)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req);
-        $dispatcher->dispatch();
-    }
-
-    /**
      * @covers ::setContainer
-     * @covers ::setErrorHandler
-     * @covers ::dispatch
-     */
-    public function testErrorHandlerIsAutoDetected()
-    {
-        $ex = new Exception('execute');
-        $eh = $this->createMock(HandlerInterface::class);
-        $eh->expects($this->once())
-            ->method('handle')
-            ->will($this->returnCallback(function ($sri, $caught) use ($ex) {
-                $this->assertSame($ex, $caught);
-                return $this->createMock(ResponseInterface::class);
-            }));
-        $ep = $this->createMock(EndpointInterface::class);
-        $ep->method('execute')
-            ->will($this->throwException($ex));
-
-        $container = $this->getMockContainer([
-            HandlerInterface::class => $eh,
-            'ClassThatDoesNotExist' => $ep,
-        ]);
-        $req = $this->getMockRequestWithUriPath('/c', 'GET', []);
-        $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
-        $dispatcher = new Dispatcher();
-        $dispatcher->setContainer($container)
-            ->setEndpointList($routes)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req);
-        $dispatcher->dispatch();
-    }
-
-    /**
-     * @covers ::setAuthProviders
-     * @covers ::setContainer
-     * @covers ::dispatch
-     */
-    public function testAutoDetectedAuthComponentsDoNotOverrideExplicit()
-    {
-        // explicitly provided should run
-        $authn1 = $this->createMock(Authentication\ProviderInterface::class);
-        $authn1->expects($this->once())
-            ->method('authenticate')
-            ->willReturn($this->createMock(ContainerInterface::class));
-        $authz1 = $this->createMock(Authorization\ProviderInterface::class);
-        $authz1->expects($this->once())
-            ->method('authorize')
-            ->willReturn(new Authorization\Ok());
-
-        // implicit from container should not
-        $authn2 = $this->createMock(Authentication\ProviderInterface::class);
-        $authn2->expects($this->never())
-            ->method('authenticate');
-        $authz2 = $this->createMock(Authorization\ProviderInterface::class);
-        $authz2->expects($this->never())
-            ->method('authorize');
-
-        $req = $this->getMockRequestWithUriPath('/c', 'GET', []);
-        $routes = ['GET' => ['/c' => 'ClassThatDoesNotExist']];
-        $endpoint = $this->createMock(Interfaces\AuthenticatedEndpointInterface::class);
-
-        $container = $this->getMockContainer([
-            Authentication\ProviderInterface::class => $authn2,
-            Authorization\ProviderInterface::class => $authz2,
-            'ClassThatDoesNotExist' => $endpoint,
-        ]);
-
-        $dispatcher = new Dispatcher();
-        $dispatcher->setContainer($container)
-            ->setAuthProviders($authn1, $authz1)
-            ->setEndpointList($routes)
-            ->setParserList($this->getDefaultParserList())
-            ->setRequest($req);
-        $dispatcher->dispatch();
-    }
-
-    /** @covers ::dispatch */
+    */
     public function testAuthHappensWhenProvided()
     {
         $authContainer = $this->createMock(ContainerInterface::class);
@@ -621,14 +522,20 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->with($endpoint, $authContainer)
             ->willReturn(new Authorization\Ok());
 
+        $container = [
+            Authentication\ProviderInterface::class => $authn,
+            Authorization\ProviderInterface::class => $authz,
+        ];
 
-        $dispatcher = new Dispatcher();
-        $dispatcher->setAuthProviders($authn, $authz);
-        $res = $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+        $res = $this->executeMockRequestOnEndpoint($endpoint, $container);
+
         $this->assertSame($response, $res);
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @covers ::setContainer
+     */
     public function testExecuteIsNotCalledWhenAuthzFails()
     {
         $authContainer = $this->createMock(ContainerInterface::class);
@@ -649,17 +556,22 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->with($endpoint, $authContainer)
             ->will($this->throwException($authzEx));
 
-        $dispatcher = new Dispatcher();
-        $dispatcher->setAuthProviders($authn, $authz);
+        $container = [
+            Authentication\ProviderInterface::class => $authn,
+            Authorization\ProviderInterface::class => $authz,
+        ];
         try {
-            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+            $this->executeMockRequestOnEndpoint($endpoint, $container);
             $this->fail('An authorization exception should have been thrown');
         } catch (Authorization\Exception $e) {
             $this->assertSame($authzEx, $e);
         }
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::dispatch
+     * @covers ::setContainer
+     */
     public function testExecuteIsNotCalledWhenAuthnFails()
     {
         $authnEx = new Authentication\Exception();
@@ -676,17 +588,22 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $authz->expects($this->never())
             ->method('authorize');
 
-        $dispatcher = new Dispatcher();
-        $dispatcher->setAuthProviders($authn, $authz);
+        $container = [
+            Authentication\ProviderInterface::class => $authn,
+            Authorization\ProviderInterface::class => $authz,
+        ];
         try {
-            $this->executeMockRequestOnEndpoint($endpoint, $dispatcher);
+            $this->executeMockRequestOnEndpoint($endpoint, $container);
             $this->fail('An exception should have been thrown');
         } catch (Authentication\Exception $e) {
             $this->assertSame($authnEx, $e);
         }
     }
 
-    /** @covers ::dispatch */
+    /**
+     * @covers ::addMiddleware
+     * @covers ::dispatch
+     */
     public function testDispatchRunsMiddlewareOnSubsequentRequests()
     {
         $called = 0;
@@ -704,9 +621,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $dispatcher->addMiddleware($mw);
 
         $this->assertSame(0, $called, 'MW should not be called yet');
-        $this->executeMockRequestOnEndpoint($ep, $dispatcher);
+        $this->executeMockRequestOnEndpoint($ep, [], $dispatcher);
         $this->assertSame(1, $called, 'MW should be called once');
-        $this->executeMockRequestOnEndpoint($ep, $dispatcher);
+        $this->executeMockRequestOnEndpoint($ep, [], $dispatcher);
         $this->assertSame(2, $called, 'MW should be called twice');
     }
 
@@ -773,14 +690,16 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Run the endpointwith an empty request
+     * Run the endpoint with an empty request
      *
      * @param EndpointInterface $endpoint the endpoint to test
+     * @param array $containerValues Additional container values
      * @param ?Dispatcher $dispatcher a configured dispatcher
      * @return ResponseInterface the endpoint response
      */
     private function executeMockRequestOnEndpoint(
         EndpointInterface $endpoint,
+        array $containerValues,
         Dispatcher $dispatcher = null
     ): ResponseInterface {
         $req = $this->getMockRequestWithUriPath('/container', 'GET', []);
@@ -792,8 +711,12 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         if (!$dispatcher) {
             $dispatcher = new Dispatcher();
         }
+
+        // Add endpoint definition to conatiner
+        $containerValues['ClassThatDoesNotExist'] = $endpoint;
+
         $response = $dispatcher
-            ->setContainer($this->getMockContainer(['ClassThatDoesNotExist' => $endpoint]))
+            ->setContainer($this->getMockContainer($containerValues))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
             ->setRequest($req)
