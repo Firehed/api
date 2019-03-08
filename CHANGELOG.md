@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `renderResponse` has been removed (replaced by `ResponseRenderer`)
 - Legacy "response" middleware support has been removed. Only PSR-15 middleware is supported.
 - `Dispatcher::setAuthProviders()` and `::setErrorHandler` have been removed. You must provide them with a container now, and they will be fetched lazily.
+- `Dispatcher::setRequest(ServerRequestInterface)` has been removed, and the request is now provided directly to `::dispatch(ServerRequestInterface)`
 
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`
@@ -18,11 +19,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Console command: `vendor/bin/api generate:config`
 - Console command: `vendor/bin/api generate:endpoint`
 - Console command: `vendor/bin/api generate:frontController`
+- Greatly improved support for use in long-running processes, like ReactPHP
 
 ### Changed
 - Files generated during compilation are now expected to be excluded from version control and generated during automated build processes (#84)
 - Framework-generated files are now auto-detected thanks to the above compile requirement (#84)
 - `Dispatcher::setEndpointList()` and `Dispatcher::setParserList()` are now internal use only, and are no longer called in the generated front controller (#84)
+- `Dispatcher::dispatch()` now requires `ServerRequestInterface` as a parameter. This replaces `setRequest` (#101)
 
 ### Removed
 - Disallowed using `RequestInterface` in `Dispatcher`.
@@ -31,6 +34,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `Dispatcher::addResponseMiddleware()` (use addMiddleware with PSR-15 MW)
 - `Dispatcher::setAuthProviders()` (use setContainer)
 - `Dispatcher::setErrorHandler()` (use setContainer)
+- `Dispatcher::setRequest()` (provide the request directly to `::dispatch()`)
 - `Interfaces\EndpointInterface::authenticate()` - this drops legacy authentication support entirely, and will no longer be used even if still defined in implementing classes
 - `Traits\Authentication\BearerToken`
 - `Traits\DeleteRequest`

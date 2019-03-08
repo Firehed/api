@@ -11,6 +11,7 @@ use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\API\Errors\HandlerInterface;
 use Firehed\Input\Exceptions\InputException;
+use InvalidArgumentException;
 use OutOfBoundsException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -49,7 +50,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $this->assertInstanceOf(
-            'Firehed\API\Dispatcher',
+            Dispatcher::class,
             new Dispatcher()
         );
     }
@@ -90,21 +91,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /** @covers ::setRequest */
-    public function testSetRequestReturnsSelf()
-    {
-        $d = new Dispatcher();
-        $req = $this->createMock(ServerRequestInterface::class);
-        $req->method('getHeaders')->willReturn([]);
-        $req->method('getBody')->willReturn($this->createMock(StreamInterface::class));
-        $req->method('getUri')->willReturn($this->createMock(UriInterface::class));
-        $this->assertSame(
-            $d,
-            $d->setRequest($req),
-            'setRequest did not return $this'
-        );
-    }
-
     // ----(Success case)-------------------------------------------------------
 
     /**
@@ -126,8 +112,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
             ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
+            ->dispatch($req);
         $this->checkResponse($response, 200);
         $data = json_decode($response->getBody(), true);
         $this->assertSame(
@@ -158,8 +143,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
             ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
+            ->dispatch($req);
         $this->checkResponse($response, 200);
         $data = json_decode($response->getBody(), true);
         $this->assertSame(
@@ -237,8 +221,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setContainer($this->getMockContainer(['EP' => $endpoint]))
             ->setEndpointList($routes)
             ->setParserList($this->getDefaultParserList())
-            ->setRequest($request)
-            ->dispatch();
+            ->dispatch($request);
 
         $this->assertSame($modifiedResponse, $res, 'Dispatcher returned different response');
     }
@@ -276,8 +259,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
                 ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
                 ->setEndpointList($list)
                 ->setParserList($this->getDefaultParserList())
-                ->setRequest($req)
-                ->dispatch();
+                ->dispatch($req);
             $this->fail(
                 "The exception thrown from the error handler's failure should ".
                 "have made it through"
@@ -296,13 +278,12 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers ::dispatch
-     * @expectedException BadMethodCallException
-     * @expectedExceptionCode 500
      */
     public function testDispatchThrowsWhenMissingData()
     {
         $d = new Dispatcher();
-        $ret = $d->dispatch();
+        $this->expectException(InvalidArgumentException::class);
+        $d->dispatch($this->getMockRequestWithUriPath('/'));
     }
 
     /**
@@ -315,10 +296,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $req = $this->getMockRequestWithUriPath('/');
 
         $ret = (new Dispatcher())
-            ->setRequest($req)
             ->setEndpointList([]) // No routes
             ->setParserList([])
-            ->dispatch();
+            ->dispatch($req);
     }
 
     /** @covers ::dispatch */
@@ -336,8 +316,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             $response = (new Dispatcher())
                 ->setEndpointList($this->getEndpointListForFixture())
                 ->setParserList($this->getDefaultParserList())
-                ->setRequest($req)
-                ->dispatch();
+                ->dispatch($req);
             $this->fail('An exception should have been thrown');
         } catch (Throwable $e) {
             $this->assertInstanceOf(InputException::class, $e);
@@ -354,8 +333,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             $response = (new Dispatcher())
                 ->setEndpointList($this->getEndpointListForFixture())
                 ->setParserList($this->getDefaultParserList())
-                ->setRequest($req)
-                ->dispatch();
+                ->dispatch($req);
             $this->fail('An exception should have been thrown');
         } catch (Throwable $e) {
             $this->assertInstanceOf(RuntimeException::class, $e);
@@ -375,8 +353,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
             ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
+            ->dispatch($req);
         $this->checkResponse($response, 200);
     }
 
@@ -467,8 +444,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setEndpointList([])
             ->setParserList([])
             ->setContainer($container)
-            ->setRequest($request)
-            ->dispatch();
+            ->dispatch($request);
         $this->assertSame($response, $finalResponse);
     }
 
@@ -749,8 +725,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setContainer($this->getMockContainer($containerValues))
             ->setEndpointList($list)
             ->setParserList($this->getDefaultParserList())
-            ->setRequest($req)
-            ->dispatch();
+            ->dispatch($req);
         return $response;
     }
 
