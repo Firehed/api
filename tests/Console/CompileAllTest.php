@@ -55,7 +55,7 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
 
     private function validateEndpointList($data)
     {
-        $this->assertInternalType('array', $data);
+        $this->assertIsArray($data);
         $this->assertArrayHasKey('@gener'.'ated', $data);
         $this->assertArrayHasKey('GET', $data);
         $this->assertContains(EndpointFixture::class, $data['GET']);
@@ -63,7 +63,7 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
 
     private function validateParserList($data)
     {
-        $this->assertInternalType('array', $data);
+        $this->assertIsArray($data);
         $this->assertArrayHasKey('@gener'.'ated', $data);
         $this->assertArrayHasKey('application/json', $data);
         $this->assertArrayHasKey('application/x-www-form-urlencoded', $data);
