@@ -7,40 +7,32 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResponseRenderer
 {
-    /** @var ResponseInterface */
-    private $response;
-
-    public function __construct(ResponseInterface $response)
+    public static function render(ResponseInterface $response): void
     {
-        $this->response = $response;
+        $renderer = new ResponseRenderer();
+        $renderer->sendHeaders($response);
+        $renderer->sendBody($response);
     }
 
-    public static function render(ResponseInterface $response)
-    {
-        $renderer = new ResponseRenderer($response);
-        $renderer->sendHeaders();
-        $renderer->sendBody();
-    }
-
-    public function sendHeaders()
+    public function sendHeaders(ResponseInterface $response): void
     {
         // Send HTTP code
         header(sprintf(
             "HTTP/%s %s %s",
-            $this->response->getProtocolVersion(),
-            $this->response->getStatusCode(),
-            $this->response->getReasonPhrase()
+            $response->getProtocolVersion(),
+            $response->getStatusCode(),
+            $response->getReasonPhrase()
         ));
         // Additional headers
-        foreach ($this->response->getHeaders() as $key => $values) {
+        foreach ($response->getHeaders() as $key => $values) {
             foreach ($values as $value) {
                 header(sprintf("%s: %s", $key, $value), false);
             }
         }
     }
 
-    public function sendBody()
+    public function sendBody(ResponseInterface $response): void
     {
-        echo $this->response->getBody();
+        echo $response->getBody();
     }
 }
