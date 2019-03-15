@@ -7,14 +7,14 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResponseRenderer
 {
-    public static function render(ResponseInterface $response)
+    public static function render(ResponseInterface $response): void
     {
         $renderer = new ResponseRenderer();
         $renderer->sendHeaders($response);
         $renderer->sendBody($response);
     }
 
-    public function sendHeaders(ResponseInterface $response)
+    public function sendHeaders(ResponseInterface $response): void
     {
         // Send HTTP code
         header(sprintf(
@@ -31,7 +31,7 @@ class ResponseRenderer
         }
     }
 
-    public function sendBody(ResponseInterface $response)
+    public function sendBody(ResponseInterface $response): void
     {
         echo $response->getBody();
     }
