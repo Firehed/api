@@ -28,6 +28,7 @@ class Dispatcher implements RequestHandlerInterface
     private $containerHasAuthProviders = false;
     private $containerHasErrorHandler = false;
     private $endpointList = self::ENDPOINT_LIST;
+    private $endpointMap;
     private $parserList = self::PARSER_LIST;
     private $psrMiddleware = [];
 
@@ -102,6 +103,7 @@ class Dispatcher implements RequestHandlerInterface
      */
     public function setEndpointList($endpointList): self
     {
+        $this->endpointMap = null;
         $this->endpointList = $endpointList;
         return $this;
     }
@@ -140,9 +142,10 @@ class Dispatcher implements RequestHandlerInterface
         /** @var ?EndpointInterface */
         $endpoint = null;
         try {
-            [$fqcn, $uriData] = (new ClassMapper($this->endpointList))
-                ->filter(strtoupper($request->getMethod()))
-                ->search($request->getUri()->getPath());
+            // [$fqcn, $uriData] = (new ClassMapper($this->endpointList))
+            //     ->filter(strtoupper($request->getMethod()))
+            //     ->search($request->getUri()->getPath());
+            [$fqcn, $uriData] = $this->findEndpoint($request);
             if (!$fqcn) {
                 throw new OutOfBoundsException('Endpoint not found', 404);
             }
@@ -189,6 +192,41 @@ class Dispatcher implements RequestHandlerInterface
             }
         }
         return $response;
+    }
+
+    private function findEndpoint(ServerRequestInterface $request): array
+    {
+        if ($this->endpointMap === null) {
+            if (is_string($this->endpointList)) {
+                if (!file_exists($this->endpointList)) {
+                    throw new \InvalidArgumentException('Endpoint list not found');
+                }
+                $this->endpointMap = require $this->endpointList;
+            } elseif (is_array($this->endpointList)) {
+                $this->endpointMap = $this->endpointList;
+            } else {
+                // error
+            }
+        }
+        $method = strtoupper($request->getMethod());
+        if (!isset($this->endpointMap[$method])) {
+            throw new OutOfBoundsException('Endpoint not found', 404);
+        }
+        $endpoints = $this->endpointMap[$method];
+        $requestPath = $request->getUri()->getPath();
+        foreach ($endpoints as $path => $fqcn) {
+            $pattern = sprintf('#^%s$#', $path);
+            if (preg_match($pattern, $requestPath, $matches)) {
+                $urlParams = [];
+                foreach ($matches as $i => $match) {
+                    if (is_string($i)) {
+                        $urlParams[$i] = $match;
+                    }
+                }
+                return [$fqcn, $urlParams];
+            }
+        }
+        return [null, null];
     }
 
     /**
