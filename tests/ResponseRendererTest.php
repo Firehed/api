@@ -16,7 +16,6 @@ class ResponseRendererTest extends \PHPUnit\Framework\TestCase
      * The function should just blindly render the data, assuming everything is
      * reasonably well-formed and spec-compliant.
      *
-     * @covers ::__construct
      * @covers ::render
      * @covers ::sendHeaders
      * @covers ::sendBody
