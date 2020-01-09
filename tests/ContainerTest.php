@@ -21,26 +21,26 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::__construct */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $this->assertInstanceOf(Psr\ContainerInterface::class, $this->c);
     }
 
     /** @covers ::has */
-    public function testHas()
+    public function testHas(): void
     {
         $this->assertTrue($this->c->has('key'));
         $this->assertFalse($this->c->has('nokey'));
     }
 
     /** @covers ::get */
-    public function testGet()
+    public function testGet(): void
     {
         $this->assertSame('value', $this->c->get('key'));
     }
 
     /** @covers ::get */
-    public function testGetDoesNotEvaluateCallables()
+    public function testGetDoesNotEvaluateCallables(): void
     {
         $loader = function () {
             return new Container([]);
@@ -51,7 +51,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::get */
-    public function testGetThrowsOnMissingKey()
+    public function testGetThrowsOnMissingKey(): void
     {
         $this->expectException(Psr\NotFoundExceptionInterface::class);
         $this->c->get('nokey');

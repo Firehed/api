@@ -15,6 +15,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class GenerateConfigTest extends \PHPUnit\Framework\TestCase
 {
+    /** @var string */
     private $existingConfig;
 
     public function setUp(): void
@@ -34,7 +35,7 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::execute */
-    public function testExecute()
+    public function testExecute(): void
     {
         // Sanity check that setUp moved any existing local file
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
@@ -59,7 +60,7 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::execute */
-    public function testOverwriteProtection()
+    public function testOverwriteProtection(): void
     {
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
         touch(Config::FILENAME);
@@ -71,7 +72,7 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::execute */
-    public function testOverwriteHappens()
+    public function testOverwriteHappens(): void
     {
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
         touch(Config::FILENAME);

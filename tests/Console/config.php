@@ -11,5 +11,6 @@ return new class implements ContainerInterface
 
     public function has($id)
     {
+        return false;
     }
 };

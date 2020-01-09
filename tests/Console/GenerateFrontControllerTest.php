@@ -14,6 +14,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
 {
+    /** @var string */
     private $oldFrontController;
 
     public function setUp(): void
@@ -35,14 +36,14 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::__construct */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         /** @var Config */
         $config = $this->createMock(Config::class);
         $this->assertInstanceOf(Command::class, new GenerateFrontController($config));
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $config = new Config([
             Config::KEY_NAMESPACE => 'Firehed\API',
@@ -57,7 +58,7 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('<?php', $lines[0], 'Output didn\'t start with a PHP tag');
     }
 
-    public function testExecuteWithContainer()
+    public function testExecuteWithContainer(): void
     {
         $config = new Config([
             Config::KEY_CONTAINER => __DIR__ . '/config.php',
