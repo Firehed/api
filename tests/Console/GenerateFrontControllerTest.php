@@ -16,7 +16,7 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
 {
     private $oldFrontController;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (file_exists('public/index.php')) {
             $this->oldFrontController = tempnam(sys_get_temp_dir(), 'phpunit_fc_');
@@ -24,7 +24,7 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         if (file_exists('public/index.php')) {
             unlink('public/index.php');

@@ -17,7 +17,7 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
 {
     private $config;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new Config([
             Config::KEY_NAMESPACE => 'Firehed\API\TestGen',
@@ -26,7 +26,7 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         if (file_exists('src/TestGen')) {
             $this->rm('src/TestGen');

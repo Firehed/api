@@ -17,7 +17,7 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
 {
     private $existingConfig;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (file_exists(Config::FILENAME)) {
             $this->existingConfig = tempnam(sys_get_temp_dir(), 'phpunit_apiconfig_');
@@ -25,7 +25,7 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         unlink(Config::FILENAME);
         if ($this->existingConfig !== null) {

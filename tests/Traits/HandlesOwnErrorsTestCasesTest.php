@@ -18,7 +18,7 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
 
     private $endpointShouldThrow = true;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->setAllowHandleExceptionToRethrow(true);
         $this->endpointShouldThrow = true;
