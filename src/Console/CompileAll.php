@@ -25,13 +25,13 @@ class CompileAll extends Command
         $this->config = $config;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('compile:all')
             ->setDescription('Build required static resources');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $logger = new ConsoleLogger($output);
 
@@ -65,5 +65,6 @@ class CompileAll extends Command
             'Wrote parser map to %s',
             Dispatcher::PARSER_LIST
         ));
+        return 0;
     }
 }
