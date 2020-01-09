@@ -3,3 +3,6 @@ includes:
 parameters:
     ignoreErrors:
         - '#Call to method setInterface\(\) on an unknown class Firehed\\Common\\this#'
+    excludes_analyse:
+        - vendor
+    level: 8
