@@ -21,7 +21,7 @@ class ResponseRendererTest extends \PHPUnit\Framework\TestCase
      * @covers ::sendBody
      * @runInSeparateProcess
      */
-    public function testResponseRendering()
+    public function testResponseRendering(): void
     {
         $code = 999;
         $version = 1.2;

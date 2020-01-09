@@ -27,6 +27,7 @@ class EndpointFixture implements Interfaces\EndpointInterface
     {
         return [
             'id' => new class extends InputObject {
+                /** @param mixed $value */
                 public function validate($value): bool
                 {
                     return ((int)$value) == $value;
@@ -44,6 +45,7 @@ class EndpointFixture implements Interfaces\EndpointInterface
     {
         return [
             'shortstring' => new class extends InputObject {
+                /** @param mixed $value */
                 public function validate($value): bool
                 {
                     return strlen($value) <= 5;

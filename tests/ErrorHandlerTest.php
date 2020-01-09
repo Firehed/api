@@ -17,7 +17,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $this->assertInstanceOf(
             ErrorHandler::class,
@@ -29,7 +29,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
      * @covers ::handleThrowable
      * @runInSeparateProcess
      */
-    public function testHandleThrowable()
+    public function testHandleThrowable(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->atLeastOnce())
@@ -42,7 +42,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::handleError
      */
-    public function testHandleError()
+    public function testHandleError(): void
     {
         $handler = new ErrorHandler($this->createMock(LoggerInterface::class));
         $this->expectException(ErrorException::class);
@@ -53,7 +53,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
      * @covers ::handleError
      * @doesNotPerformAssertions
      */
-    public function testHandleErrorDoesNotThrowWithErrorReportingDisabled()
+    public function testHandleErrorDoesNotThrowWithErrorReportingDisabled(): void
     {
         $handler = new ErrorHandler($this->createMock(LoggerInterface::class));
         // @ turns error_reporting() to 0 for the next line. The error handler
