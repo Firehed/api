@@ -288,13 +288,13 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @covers ::dispatch
-     * @expectedException OutOfBoundsException
-     * @expectedExceptionCode 404
      */
     public function testNoRouteMatchReturns404()
     {
         $req = $this->getMockRequestWithUriPath('/');
 
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionCode(404);
         $ret = (new Dispatcher())
             ->setEndpointList([]) // No routes
             ->setParserList([])
