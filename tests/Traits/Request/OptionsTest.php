@@ -14,7 +14,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::getMethod
      */
-    public function testGetMethod()
+    public function testGetMethod(): void
     {
         $obj = new class {
             use Options;

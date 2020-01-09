@@ -14,7 +14,7 @@ class NoOptionalTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::getOptionalInputs
      */
-    public function testGetOptionalInputs()
+    public function testGetOptionalInputs(): void
     {
         $obj = new class {
             use NoOptional;
