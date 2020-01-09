@@ -118,7 +118,9 @@ class GenerateConfig extends Command
             return '';
         }
 
-        $data = json_decode(file_get_contents('composer.json'), true);
+        $composer = file_get_contents('composer.json');
+        assert($composer !== false);
+        $data = json_decode($composer, true);
         if (!$data) {
             return '';
         }

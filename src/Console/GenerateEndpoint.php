@@ -48,6 +48,7 @@ class GenerateEndpoint extends Command
         $logger = new ConsoleLogger($output, $verbosityLevelMap);
 
         $relativePath = $input->getArgument(self::ARGUMENT_PATH);
+        assert(is_string($relativePath));
         $normalizedPath = str_replace('\\', '/', $relativePath);
         $logger->debug('Building endpoint for {path}', [
             'path' => $normalizedPath,
@@ -67,6 +68,7 @@ class GenerateEndpoint extends Command
 
         $template = file_get_contents(__DIR__.'/'.self::TEMPLATE_FILE);
 
+        assert($template !== false);
         $rendered = sprintf(
             $template,
             $namespace,
@@ -125,6 +127,7 @@ class GenerateEndpoint extends Command
                     $relative = substr($fqcn, strlen($prefix));
                     $dest = sprintf('%s/%s.php', $path, $relative);
                     // This is a bit of path munging
+                    /** @var string */
                     return preg_replace(
                         '#/{2,}#',
                         DIRECTORY_SEPARATOR,

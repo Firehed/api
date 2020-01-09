@@ -9,11 +9,12 @@ use Throwable;
 
 trait HandlesOwnErrorsTestCases
 {
+    /** @var bool */
     private $handleExceptionMayRethrow = false;
 
     abstract protected function getEndpoint(): HandlesOwnErrorsInterface;
 
-    public function setAllowHandleExceptionToRethrow(bool $allowed)
+    public function setAllowHandleExceptionToRethrow(bool $allowed): void
     {
         $this->handleExceptionMayRethrow = $allowed;
     }
@@ -22,7 +23,7 @@ trait HandlesOwnErrorsTestCases
      * @covers ::handleException
      * @dataProvider exceptionsToHandle
      */
-    public function testHandleException(Throwable $e)
+    public function testHandleException(Throwable $e): void
     {
         try {
             $response = $this->getEndpoint()->handleException($e);
@@ -57,7 +58,7 @@ trait HandlesOwnErrorsTestCases
      *  }
      *  ```
      *
-     *  @return array<array<Exception>>
+     *  @return Throwable[][]
      */
     public function exceptionsToHandle(): array
     {
