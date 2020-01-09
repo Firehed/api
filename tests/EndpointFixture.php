@@ -8,7 +8,7 @@ use Throwable;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\Input\Objects\InputObject;
 use PHPUnit\Framework\MockObject\Generator;
-use PHPUnit\Framework\MockObject\Matcher\InvokedAtLeastOnce;
+use PHPUnit\Framework\MockObject\Rule\InvokedAtLeastOnce;
 use PHPUnit\Framework\MockObject\Stub\ReturnStub;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
