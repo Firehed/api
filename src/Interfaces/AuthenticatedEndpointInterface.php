@@ -7,5 +7,5 @@ use Psr\Container\ContainerInterface;
 
 interface AuthenticatedEndpointInterface extends EndpointInterface
 {
-    public function setAuthentication(ContainerInterface $auth);
+    public function setAuthentication(ContainerInterface $auth): void;
 }
