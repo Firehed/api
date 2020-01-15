@@ -108,7 +108,7 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @internal Overrides the standard endpoint list. Used primarily for unit
      * testing.
-     * @param string | string[] $endpointList The endpoint list or its path
+     * @param string | string[][] $endpointList The endpoint list or its path
      * @return self
      */
     public function setEndpointList($endpointList): self
