@@ -33,7 +33,7 @@ class Dispatcher implements RequestHandlerInterface
     /** @var bool */
     private $containerHasErrorHandler = false;
 
-    /** @var string | string[] */
+    /** @var string | string[][] */
     private $endpointList = self::ENDPOINT_LIST;
 
     /** @var string | string[] */
