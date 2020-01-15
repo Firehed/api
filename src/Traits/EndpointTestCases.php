@@ -103,11 +103,17 @@ TEXT;
         );
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     protected function goodUris(): array
     {
         return [];
     }
 
+    /**
+     * @return string[]
+     */
     protected function badUris(): array
     {
         return [];
