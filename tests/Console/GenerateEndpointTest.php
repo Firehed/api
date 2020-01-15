@@ -51,6 +51,7 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         ]);
         $this->assertTrue(file_exists('src/TestGen/Foo/Bar.php'));
         $output = file_get_contents('src/TestGen/Foo/Bar.php');
+        assert($output !== false);
 
         $lines = explode("\n", $output);
 
@@ -105,7 +106,9 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         if (!is_dir($dir)) {
             return unlink($dir);
         }
-        foreach (scandir($dir) as $content) {
+        $contents = scandir($dir);
+        assert($contents !== false);
+        foreach ($contents as $content) {
             if ($content === '.' || $content === '..') {
                 continue;
             }
