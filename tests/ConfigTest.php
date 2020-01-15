@@ -24,6 +24,8 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::__construct
      * @dataProvider constructProvider
+     * @param string[] $params
+     * @param class-string<\Throwable> $exceptionClass
      */
     public function testConstruct(array $params, string $exceptionClass = null): void
     {
@@ -67,6 +69,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::load
      * @dataProvider loadProvider
+     * @param class-string<\Throwable> $exceptionClass
      */
     public function testLoad(string $file, string $exceptionClass = null): void
     {
@@ -78,6 +81,9 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ContainerInterface::class, $config);
     }
 
+    /**
+     * @return array<array<string|class-string<Throwable>>>
+     */
     public function constructProvider(): array
     {
         return [

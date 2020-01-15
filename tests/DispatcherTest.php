@@ -613,25 +613,17 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      */
     public function testDispatchRunsMiddlewareOnSubsequentRequests(): void
     {
-        $called = 0;
-        $mw = $this->createMock(MiddlewareInterface::class);
-        $mw->expects($this->exactly(2))
-            ->method('process')
-            ->willReturnCallback(function ($req, $handler) use (&$called) {
-                $called++;
-                return $handler->handle($req);
-            });
-
+        $mw = new fixtures\Middleware();
         $ep = $this->getMockEndpoint();
 
         $dispatcher = new Dispatcher();
         $dispatcher->addMiddleware($mw);
 
-        $this->assertSame(0, $called, 'MW should not be called yet');
+        $this->assertSame(0, $mw->getProcessedCount(), 'MW should not be called yet');
         $this->executeMockRequestOnEndpoint($ep, [], $dispatcher);
-        $this->assertSame(1, $called, 'MW should be called once');
+        $this->assertSame(1, $mw->getProcessedCount(), 'MW should be called once');
         $this->executeMockRequestOnEndpoint($ep, [], $dispatcher);
-        $this->assertSame(2, $called, 'MW should be called twice');
+        $this->assertSame(2, $mw->getProcessedCount(), 'MW should be called twice');
     }
 
     // ----(Helper methods)----------------------------------------------------
@@ -640,7 +632,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * @param ResponseInterface $response response to test
      * @param int $expected_code HTTP status code to check for
      */
-    private function checkResponse(ResponseInterface $response, int $expected_code)
+    private function checkResponse(ResponseInterface $response, int $expected_code): void
     {
         $this->assertSame(
             $expected_code,
@@ -656,7 +648,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $uri path component of URI
      * @param string $method optional HTTP method
-     * @param array $query_data optional raw, unescaped query string data
+     * @param mixed[] $query_data optional raw, unescaped query string data
      * @return ServerRequestInterface
      */
     private function getMockRequestWithUriPath(
@@ -700,7 +692,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Run the endpoint with an empty request
      *
      * @param EndpointInterface $endpoint the endpoint to test
-     * @param array $containerValues Additional container values
+     * @param mixed[] $containerValues Additional container values
      * @param ?Dispatcher $dispatcher a configured dispatcher
      * @return ResponseInterface the endpoint response
      */
