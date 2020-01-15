@@ -20,7 +20,9 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         if (file_exists('public/index.php')) {
-            $this->oldFrontController = tempnam(sys_get_temp_dir(), 'phpunit_fc_');
+            $old = tempnam(sys_get_temp_dir(), 'phpunit_fc_');
+            assert($old !== false);
+            $this->oldFrontController = $old;
             rename('public/index.php', $this->oldFrontController);
         }
     }
@@ -54,6 +56,7 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         $tester = new CommandTester($command);
         $tester->execute([]);
         $file = file_get_contents('public/index.php');
+        assert($file !== false);
         $lines = explode("\n", $file);
         $this->assertSame('<?php', $lines[0], 'Output didn\'t start with a PHP tag');
     }
@@ -70,6 +73,7 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         $tester = new CommandTester($command);
         $tester->execute([]);
         $file = file_get_contents('public/index.php');
+        assert($file !== false);
         $lines = explode("\n", $file);
         $this->assertSame('<?php', $lines[0], 'Output didn\'t start with a PHP tag');
 

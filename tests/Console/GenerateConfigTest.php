@@ -21,7 +21,9 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         if (file_exists(Config::FILENAME)) {
-            $this->existingConfig = tempnam(sys_get_temp_dir(), 'phpunit_apiconfig_');
+            $old = tempnam(sys_get_temp_dir(), 'phpunit_apiconfig_');
+            assert($old !== false);
+            $this->existingConfig = $old;
             rename(Config::FILENAME, $this->existingConfig);
         }
     }
@@ -50,6 +52,7 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
         $tester->execute([]);
         $this->assertTrue(file_exists(Config::FILENAME), 'Config not written');
         $json = file_get_contents(Config::FILENAME);
+        assert($json !== false);
         $data = json_decode($json, true);
         // These are the defaults inferred from Composer and the directory
         // structure
@@ -81,6 +84,7 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
         $tester->setInputs(['y', 'publicdir', 'sourcedir', 'Some\\Namespace', "config.php"]);
         $tester->execute([]);
         $json = file_get_contents(Config::FILENAME);
+        assert($json !== false);
         $data = json_decode($json, true);
         $this->assertSame($data[Config::KEY_NAMESPACE], 'Some\\Namespace', 'Namespace wrong');
         $this->assertSame($data[Config::KEY_SOURCE], 'sourcedir', 'Source wrong');
