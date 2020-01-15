@@ -14,17 +14,20 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
 {
+    /** @var string */
     private $oldFrontController;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (file_exists('public/index.php')) {
-            $this->oldFrontController = tempnam(sys_get_temp_dir(), 'phpunit_fc_');
+            $old = tempnam(sys_get_temp_dir(), 'phpunit_fc_');
+            assert($old !== false);
+            $this->oldFrontController = $old;
             rename('public/index.php', $this->oldFrontController);
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         if (file_exists('public/index.php')) {
             unlink('public/index.php');
@@ -35,14 +38,14 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::__construct */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         /** @var Config */
         $config = $this->createMock(Config::class);
         $this->assertInstanceOf(Command::class, new GenerateFrontController($config));
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $config = new Config([
             Config::KEY_NAMESPACE => 'Firehed\API',
@@ -53,11 +56,12 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         $tester = new CommandTester($command);
         $tester->execute([]);
         $file = file_get_contents('public/index.php');
+        assert($file !== false);
         $lines = explode("\n", $file);
         $this->assertSame('<?php', $lines[0], 'Output didn\'t start with a PHP tag');
     }
 
-    public function testExecuteWithContainer()
+    public function testExecuteWithContainer(): void
     {
         $config = new Config([
             Config::KEY_CONTAINER => __DIR__ . '/config.php',
@@ -69,6 +73,7 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         $tester = new CommandTester($command);
         $tester->execute([]);
         $file = file_get_contents('public/index.php');
+        assert($file !== false);
         $lines = explode("\n", $file);
         $this->assertSame('<?php', $lines[0], 'Output didn\'t start with a PHP tag');
 

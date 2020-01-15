@@ -16,9 +16,10 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class CompileAllTest extends \PHPUnit\Framework\TestCase
 {
+    /** @var Config */
     private $config;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new Config([
             'namespace' => 'Firehed\API',
@@ -28,14 +29,14 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::__construct */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $config = $this->createMock(Config::class);
         $this->assertInstanceOf(Command::class, new CompileAll($this->config));
     }
 
     /** @covers ::execute */
-    public function testExecute()
+    public function testExecute(): void
     {
         try {
             $command = new CompileAll($this->config);
@@ -53,17 +54,21 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    private function validateEndpointList($data)
+    /**
+     * @param string[] $data
+     */
+    private function validateEndpointList(array $data): void
     {
-        $this->assertIsArray($data);
         $this->assertArrayHasKey('@gener'.'ated', $data);
         $this->assertArrayHasKey('GET', $data);
         $this->assertContains(EndpointFixture::class, $data['GET']);
     }
 
-    private function validateParserList($data)
+    /**
+     * @param string[] $data
+     */
+    private function validateParserList(array $data): void
     {
-        $this->assertIsArray($data);
         $this->assertArrayHasKey('@gener'.'ated', $data);
         $this->assertArrayHasKey('application/json', $data);
         $this->assertArrayHasKey('application/x-www-form-urlencoded', $data);

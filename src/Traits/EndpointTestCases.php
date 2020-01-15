@@ -23,7 +23,6 @@ trait EndpointTestCases
 
     /**
      * Get the endpoint under test
-     * @return Interfaces\EndpointInterface
      */
     abstract protected function getEndpoint(): EndpointInterface;
 
@@ -46,24 +45,24 @@ trait EndpointTestCases
      * and can additionally help when writing tests to assert that input
      * validation is defined correctly.
      *
-     * @param array $parsedInput The parsed request input (e.g. $_POST + $_GET,
-     *                           or json_decode(php://input)
-     * @return Containers\SafeInput
+     * @param array<string, mixed> $parsedInput The parsed request input (e.g.
+     *                                          $_POST + $_GET, or json_decode(php://input)
      */
-    protected function getSafeInput(array $parsedRequest): Containers\SafeInput
+    protected function getSafeInput(array $parsedInput): Containers\SafeInput
     {
-        return (new Containers\ParsedInput($parsedRequest))
+        return (new Containers\ParsedInput($parsedInput))
             ->validate($this->getEndpoint());
     }
+
     /**
      * @covers ::getUri
      * @dataProvider uris
      *
      * @param string $uri The URI to match against
      * @param bool $match Whether or not the provied URI should match
-     * @param array $expectedMatches Named captures in a positive match
+     * @param array<string, string> $expectedMatches Named captures in a positive match
      */
-    public function testGetUri(string $uri, bool $match, array $expectedMatches)
+    public function testGetUri(string $uri, bool $match, array $expectedMatches): void
     {
         $endpoint = $this->getEndpoint();
         $this->assertIsString(
@@ -80,6 +79,7 @@ trait EndpointTestCases
         }
     }
 
+    /** @return mixed[] */
     public function uris(): array
     {
         $good = $this->goodUris();
@@ -103,18 +103,24 @@ TEXT;
         );
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     protected function goodUris(): array
     {
         return [];
     }
 
+    /**
+     * @return string[]
+     */
     protected function badUris(): array
     {
         return [];
     }
 
     /** @covers ::getMethod */
-    public function testGetMethod()
+    public function testGetMethod(): void
     {
         $method = $this->getEndpoint()->getMethod();
         $this->assertInstanceOf(

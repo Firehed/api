@@ -15,9 +15,10 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
 {
+    /** @var Config */
     private $config;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new Config([
             Config::KEY_NAMESPACE => 'Firehed\API\TestGen',
@@ -26,7 +27,7 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         if (file_exists('src/TestGen')) {
             $this->rm('src/TestGen');
@@ -34,13 +35,13 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::__construct */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $config = $this->createMock(Config::class);
         $this->assertInstanceOf(Command::class, new GenerateEndpoint($this->config));
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $command = new GenerateEndpoint($this->config);
         $tester = new CommandTester($command);
@@ -50,6 +51,7 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         ]);
         $this->assertTrue(file_exists('src/TestGen/Foo/Bar.php'));
         $output = file_get_contents('src/TestGen/Foo/Bar.php');
+        assert($output !== false);
 
         $lines = explode("\n", $output);
 
@@ -64,7 +66,7 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testExecuteWithExistingFile()
+    public function testExecuteWithExistingFile(): void
     {
         $command = new GenerateEndpoint($this->config);
         $tester = new CommandTester($command);
@@ -80,7 +82,7 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    public function testExecuteWithoutCreatingDirectory()
+    public function testExecuteWithoutCreatingDirectory(): void
     {
         $command = new GenerateEndpoint($this->config);
         $tester = new CommandTester($command);
@@ -104,7 +106,9 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         if (!is_dir($dir)) {
             return unlink($dir);
         }
-        foreach (scandir($dir) as $content) {
+        $contents = scandir($dir);
+        assert($contents !== false);
+        foreach ($contents as $content) {
             if ($content === '.' || $content === '..') {
                 continue;
             }

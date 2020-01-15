@@ -30,8 +30,12 @@ class Config implements ContainerInterface
         self::KEY_SOURCE,
     ];
 
+    /** @var array<string, string> */
     private $data = [];
 
+    /**
+     * @param array<string, string> $params
+     */
     public function __construct(array $params)
     {
         foreach (self::REQUIRED_PARAMS as $param) {
@@ -75,6 +79,7 @@ class Config implements ContainerInterface
             throw new RuntimeException('Config file not readable');
         }
         $json = file_get_contents($file);
+        assert($json !== false);
         $data = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException('Config file contained invalid JSON');
@@ -83,7 +88,7 @@ class Config implements ContainerInterface
         return new Config($data);
     }
 
-    private function validateContainer()
+    private function validateContainer(): void
     {
         if (!$this->has(self::KEY_CONTAINER)) {
             return;

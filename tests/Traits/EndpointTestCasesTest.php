@@ -33,7 +33,7 @@ class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers Firehed\API\Traits\EndpointTestCases::getSafeInput
      */
-    public function testGetSafeInput()
+    public function testGetSafeInput(): void
     {
         $data = $this->getSafeInput([
             'id' => '123',
@@ -47,7 +47,7 @@ class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers Firehed\API\Traits\EndpointTestCases::uris
      */
-    public function testUris()
+    public function testUris(): void
     {
         $data = $this->uris();
         foreach ($data as $testCase) {
@@ -58,6 +58,7 @@ class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /** @return array<string, string[]> */
     public function goodUris(): array
     {
         return $this->baseGoodUris() + [
@@ -68,6 +69,7 @@ class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /** @return string[] */
     public function badUris(): array
     {
         return $this->baseBadUris() + [

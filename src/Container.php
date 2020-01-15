@@ -11,9 +11,10 @@ use Psr\Container as Psr;
  */
 class Container implements Psr\ContainerInterface
 {
-    /** @var array */
+    /** @var array<string, mixed> */
     private $data;
 
+    /** @param array<string, mixed> $data */
     public function __construct(array $data)
     {
         $this->data = $data;

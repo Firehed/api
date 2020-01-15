@@ -16,7 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
 {
     /** @covers ::__construct */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $fallback = $this->createMock(RequestHandlerInterface::class);
         $mw = $this->createMock(MiddlewareInterface::class);
@@ -26,7 +26,7 @@ class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::handle */
-    public function testMiddlewareIsExecutedInOrder()
+    public function testMiddlewareIsExecutedInOrder(): void
     {
         // This is an object cast to ensure proper by-reference handling in all
         // of the mock callbacks
@@ -82,7 +82,7 @@ class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::handle */
-    public function testMiddlewareCanShortCircuit()
+    public function testMiddlewareCanShortCircuit(): void
     {
         $fallback = $this->createMock(RequestHandlerInterface::class);
         $fallback->expects($this->never())
@@ -103,7 +103,7 @@ class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::handle */
-    public function testWithNoMiddleware()
+    public function testWithNoMiddleware(): void
     {
         $fallback = $this->createMock(RequestHandlerInterface::class);
         $fallback->expects($this->once())

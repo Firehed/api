@@ -15,15 +15,16 @@ use Symfony\Component\Console\Question\Question;
 
 class GenerateConfig extends Command
 {
+    /** @var QuestionHelper */
     private $questionHelper;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('generate:config')
             ->setDescription('Generate an api config file');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->questionHelper = new QuestionHelper();
 
@@ -37,7 +38,7 @@ class GenerateConfig extends Command
             );
             if (!$this->questionHelper->ask($input, $output, $overwriteQ)) {
                 $output->writeln('Exiting.');
-                return;
+                return 1;
             }
         }
 
@@ -81,6 +82,7 @@ class GenerateConfig extends Command
         $json = json_encode($config, JSON_PRETTY_PRINT);
         file_put_contents(Config::FILENAME, $json);
         $output->writeln('Wrote config file');
+        return 0;
     }
 
     private function askWithDefault(
@@ -116,7 +118,9 @@ class GenerateConfig extends Command
             return '';
         }
 
-        $data = json_decode(file_get_contents('composer.json'), true);
+        $composer = file_get_contents('composer.json');
+        assert($composer !== false);
+        $data = json_decode($composer, true);
         if (!$data) {
             return '';
         }
@@ -127,6 +131,7 @@ class GenerateConfig extends Command
 
         $autoload = $data['autoload']['psr-4'];
         $namespace = array_keys($autoload)[0];
+        assert(is_string($namespace));
 
         $autoloadBase = $autoload[$namespace];
         // Autoloading can split a NS into multiple directories, grab the first

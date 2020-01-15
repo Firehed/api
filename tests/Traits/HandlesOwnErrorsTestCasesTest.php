@@ -16,9 +16,10 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
 {
     use HandlesOwnErrorsTestCases;
 
+    /** @var bool */
     private $endpointShouldThrow = true;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->setAllowHandleExceptionToRethrow(true);
         $this->endpointShouldThrow = true;
@@ -41,7 +42,7 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::exceptionsToHandle
      */
-    public function testExceptionsToHandle()
+    public function testExceptionsToHandle(): void
     {
         $data = $this->exceptionsToHandle();
         foreach ($data as $testCase) {
@@ -55,7 +56,7 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
      * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
      * @dataProvider exceptionsToHandle
      */
-    public function testDefaultHandling(Throwable $e)
+    public function testDefaultHandling(Throwable $e): void
     {
         $this->setAllowHandleExceptionToRethrow(false);
         $this->expectException(get_class($e));
@@ -65,7 +66,7 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
      */
-    public function testSuccessfullyHandlingException()
+    public function testSuccessfullyHandlingException(): void
     {
         $this->endpointShouldThrow = false;
         $ex = new \Exception();
@@ -75,7 +76,7 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
      */
-    public function testHandlingRethrownException()
+    public function testHandlingRethrownException(): void
     {
         $this->endpointShouldThrow = true;
         $this->setAllowHandleExceptionToRethrow(true);

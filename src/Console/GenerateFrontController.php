@@ -25,14 +25,14 @@ class GenerateFrontController extends Command
         $this->config = $config;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('generate:frontController')
             ->setDescription('Generate the default front-contoller')
             ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $verbosityLevelMap = [
             LogLevel::INFO => OutputInterface::VERBOSITY_NORMAL,
@@ -51,6 +51,7 @@ class GenerateFrontController extends Command
         $webroot = $this->config->get(Config::KEY_WEBROOT);
 
         $template = file_get_contents(__DIR__.'/'.self::TEMPLATE_FILE);
+        assert($template !== false);
         $frontController = sprintf(
             $template,
             $this->resolveRelativeProjectRoot($webroot),
@@ -66,9 +67,10 @@ class GenerateFrontController extends Command
         $logger->info('Wrote front controller to {path}', [
             'path' => $path,
         ]);
+        return 0;
     }
 
-    private function resolveRelativeProjectRoot(string $webroot)
+    private function resolveRelativeProjectRoot(string $webroot): string
     {
         $dirs = explode('/', $webroot);
         return str_repeat('/..', count($dirs));

@@ -24,11 +24,22 @@ class Dispatcher implements RequestHandlerInterface
     const ENDPOINT_LIST = '__endpoint_list__.php';
     const PARSER_LIST = '__parser_list__.php';
 
+    /** @var ?ContainerInterface */
     private $container;
+
+    /** @var bool */
     private $containerHasAuthProviders = false;
+
+    /** @var bool */
     private $containerHasErrorHandler = false;
+
+    /** @var string | string[][] */
     private $endpointList = self::ENDPOINT_LIST;
+
+    /** @var string | string[] */
     private $parserList = self::PARSER_LIST;
+
+    /** @var MiddlewareInterface[] */
     private $psrMiddleware = [];
 
     /**
@@ -80,7 +91,7 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @internal Overrides the standard parser list. Used primarily for unit
      * testing.
-     * @param array|string $parserList The parser list or its path
+     * @param string | string[] $parserList The parser list or its path
      * @return self
      */
     public function setParserList($parserList): self
@@ -97,7 +108,7 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @internal Overrides the standard endpoint list. Used primarily for unit
      * testing.
-     * @param array|string $endpointList The endpoint list or its path
+     * @param string | string[][] $endpointList The endpoint list or its path
      * @return self
      */
     public function setEndpointList($endpointList): self
@@ -122,10 +133,10 @@ class Dispatcher implements RequestHandlerInterface
      * Execute the request
      *
      * @param ServerRequestInterface $request The request to process
-     * @throws TypeError if both execute and handleException have bad return
+     * @throws \TypeError if both execute and handleException have bad return
      * types
-     * @throws LogicException if the dispatcher is misconfigured
-     * @throws RuntimeException on 404-type errors
+     * @throws \LogicException if the dispatcher is misconfigured
+     * @throws \RuntimeException on 404-type errors
      * @return ResponseInterface the completed HTTP response
      */
     public function dispatch(ServerRequestInterface $request): ResponseInterface
@@ -137,7 +148,7 @@ class Dispatcher implements RequestHandlerInterface
 
     private function doDispatch(ServerRequestInterface $request): ResponseInterface
     {
-        /** @var ?EndpointInterface */
+        /** @var ?Interfaces\EndpointInterface */
         $endpoint = null;
         try {
             [$fqcn, $uriData] = (new ClassMapper($this->endpointList))
@@ -154,6 +165,7 @@ class Dispatcher implements RequestHandlerInterface
             if ($this->containerHasAuthProviders
                 && $endpoint instanceof Interfaces\AuthenticatedEndpointInterface
             ) {
+                assert($this->container !== null); // hasAuthProviders guarantees this
                 $auth = $this->container
                     ->get(Authentication\ProviderInterface::class)
                     ->authenticate($request);
@@ -180,6 +192,7 @@ class Dispatcher implements RequestHandlerInterface
                 // response that it generates. If not, just rethrow the
                 // exception for the system default (if defined) to handle.
                 if ($this->containerHasErrorHandler) {
+                    assert($this->container !== null); // hasAuthProviders guarantees this
                     $response = $this->container
                         ->get(HandlerInterface::class)
                         ->handle($request, $e);

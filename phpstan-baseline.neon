@@ -1,0 +1,32 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:constructProvider\\(\\) should return array\\<array\\<string\\>\\> but returns array\\<int, array\\<int, array\\<string, string\\>\\|class\\-string\\>\\>\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
+			count: 1
+			path: tests/ContainerTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$originalClassName of method PHPUnit\\\\Framework\\\\TestCase\\:\\:createMock\\(\\) expects class\\-string\\<mixed\\>, array\\<int, string\\> given\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to method PHPUnit\\\\Framework\\\\TestCase\\:\\:createMock\\(\\)$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Function xdebug_get_headers\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/xdebug_get_headers.php
+

@@ -23,9 +23,9 @@ class MiddlewareDispatcher implements RequestHandlerInterface
     private $fallback;
 
     /**
-     * @var RequestHandlerInterface $fallback The default handler to call once
+     * @param RequestHandlerInterface $fallback The default handler to call once
      * all middleware is exhausted
-     * @var MiddlewareInterface[] $middleware The list of middlewares to
+     * @param MiddlewareInterface[] $middleware The list of middlewares to
      * execute
      */
     public function __construct(RequestHandlerInterface $fallback, array $middleware)
@@ -40,6 +40,7 @@ class MiddlewareDispatcher implements RequestHandlerInterface
             return $this->fallback->handle($request);
         }
         $middleware = array_shift($this->middleware);
+        assert($middleware !== null);
         return $middleware->process($request, $this);
     }
 }

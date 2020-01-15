@@ -14,7 +14,7 @@ class NoRequiredTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::getRequiredInputs
      */
-    public function testGetRequiredInputs()
+    public function testGetRequiredInputs(): void
     {
         $obj = new class {
             use NoRequired;

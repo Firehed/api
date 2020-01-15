@@ -31,7 +31,7 @@ class GenerateEndpoint extends Command
         $this->config = $config;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('generate:endpoint')
             ->setDescription('Generate skeleton code for a new endpoint')
@@ -39,7 +39,7 @@ class GenerateEndpoint extends Command
             ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $verbosityLevelMap = [
             LogLevel::INFO => OutputInterface::VERBOSITY_NORMAL,
@@ -48,6 +48,7 @@ class GenerateEndpoint extends Command
         $logger = new ConsoleLogger($output, $verbosityLevelMap);
 
         $relativePath = $input->getArgument(self::ARGUMENT_PATH);
+        assert(is_string($relativePath));
         $normalizedPath = str_replace('\\', '/', $relativePath);
         $logger->debug('Building endpoint for {path}', [
             'path' => $normalizedPath,
@@ -67,6 +68,7 @@ class GenerateEndpoint extends Command
 
         $template = file_get_contents(__DIR__.'/'.self::TEMPLATE_FILE);
 
+        assert($template !== false);
         $rendered = sprintf(
             $template,
             $namespace,
@@ -84,6 +86,7 @@ class GenerateEndpoint extends Command
         ]);
 
         $this->writeFile($destination, $rendered, $input, $output);
+        return 0;
     }
 
     private function getPathForFQCN(string $fqcn, string $sourceDir): string
@@ -97,6 +100,7 @@ class GenerateEndpoint extends Command
             throw new RuntimeException('composer.json not found or not readable');
         }
         $composerJson = file_get_contents('composer.json');
+        assert($composerJson !== false);
         $composerConfig = json_decode($composerJson, true);
         if (!isset($composerConfig['autoload']['psr-4'])) {
             throw new RuntimeException('Only PSR-4 autoload definitions can be '
@@ -123,6 +127,7 @@ class GenerateEndpoint extends Command
                     $relative = substr($fqcn, strlen($prefix));
                     $dest = sprintf('%s/%s.php', $path, $relative);
                     // This is a bit of path munging
+                    /** @var string */
                     return preg_replace(
                         '#/{2,}#',
                         DIRECTORY_SEPARATOR,
@@ -140,11 +145,12 @@ class GenerateEndpoint extends Command
      * components.
      *
      * @param string $fqcn
-     * @return array [namespace, class]
+     * @return array<string> [namespace, class]
      */
     private function parseFQCN(string $fqcn): array
     {
         $last = strrpos($fqcn, '\\');
+        assert($last !== false);
         return [
             substr($fqcn, 0, $last),
             substr($fqcn, $last + 1),
@@ -156,7 +162,7 @@ class GenerateEndpoint extends Command
         string $contents,
         InputInterface $input,
         OutputInterface $output
-    ) {
+    ): void {
         if (file_exists($filename)) {
             throw new RuntimeException('File already exists');
         }

@@ -22,6 +22,7 @@ class Endpoint implements EndpointInterface
 
     public function handleException(Throwable $e): ResponseInterface
     {
+        throw $e;
     }
 
     public function getUri(): string

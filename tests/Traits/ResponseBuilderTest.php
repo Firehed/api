@@ -16,7 +16,7 @@ class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::emptyResponse
      */
-    public function testEmptyResponse()
+    public function testEmptyResponse(): void
     {
         $impl = new class { use ResponseBuilder;
 
@@ -44,7 +44,7 @@ class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::htmlResponse
      */
-    public function testHtmlResponse()
+    public function testHtmlResponse(): void
     {
         $impl = new class { use ResponseBuilder;
 
@@ -75,8 +75,9 @@ class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::jsonResponse
      * @dataProvider jsonData
+     * @param mixed $data
      */
-    public function testJsonResponse($data)
+    public function testJsonResponse($data): void
     {
         $impl = new class { use ResponseBuilder;
 
@@ -106,7 +107,7 @@ class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::textResponse
      */
-    public function testtextResponse()
+    public function testTextResponse(): void
     {
         $impl = new class { use ResponseBuilder;
 
@@ -134,7 +135,7 @@ class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-
+    /** @return mixed[][] */
     public function jsonData(): array
     {
         return [

@@ -24,8 +24,10 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::__construct
      * @dataProvider constructProvider
+     * @param string[] $params
+     * @param class-string<\Throwable> $exceptionClass
      */
-    public function testConstruct(array $params, string $exceptionClass = null)
+    public function testConstruct(array $params, string $exceptionClass = null): void
     {
         if ($exceptionClass !== null) {
             $this->expectException($exceptionClass);
@@ -36,7 +38,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::get */
-    public function testGetInvalidKeyImplementsPsr11Behavior()
+    public function testGetInvalidKeyImplementsPsr11Behavior(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
         $this->expectException(NotFoundExceptionInterface::class);
@@ -44,21 +46,21 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     }
 
     /** @covers ::get */
-    public function testGetReturnsValidData()
+    public function testGetReturnsValidData(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
         $this->assertSame('src', $config->get(Config::KEY_SOURCE));
     }
 
     /** @covers ::has */
-    public function testHasWorksForSetKey()
+    public function testHasWorksForSetKey(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
         $this->assertTrue($config->has(Config::KEY_SOURCE));
     }
 
     /** @covers ::has */
-    public function testHasWorksForUnsetKey()
+    public function testHasWorksForUnsetKey(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
         $this->assertFalse($config->has('this_key_is_not_set'));
@@ -67,8 +69,9 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers ::load
      * @dataProvider loadProvider
+     * @param class-string<\Throwable> $exceptionClass
      */
-    public function testLoad(string $file, string $exceptionClass = null)
+    public function testLoad(string $file, string $exceptionClass = null): void
     {
         if ($exceptionClass !== null) {
             $this->expectException($exceptionClass);
@@ -78,6 +81,9 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ContainerInterface::class, $config);
     }
 
+    /**
+     * @return array<array<string|class-string<Throwable>>>
+     */
     public function constructProvider(): array
     {
         return [
@@ -120,6 +126,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /** @return string[][] */
     public function loadProvider(): array
     {
         return [
