@@ -29,15 +29,14 @@ class ErrorHandler
     }
 
     /**
-     * @param int $severity
-     * @param string $message
      * @param string $file
      * @param int $line
      */
-    public function handleError($severity, $message, $file, $line): void
+    public function handleError(int $severity, string $message, $file, $line): bool
     {
         if (error_reporting() & $severity) {
             throw new ErrorException($message, 0, $severity, $file, $line);
         }
+        return false;
     }
 }
