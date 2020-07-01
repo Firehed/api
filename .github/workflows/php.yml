@@ -46,6 +46,9 @@ jobs:
       - name: PHPUnit
         run: vendor/bin/phpunit
 
+      - name: Submit code coverage
+        run: bash < (curl -s https://codecov.io/bash)
+
   phpstan:
     runs-on: ubuntu-latest
     strategy:
