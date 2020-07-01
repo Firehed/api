@@ -1,4 +1,4 @@
-name: Build and Test
+name: Test
 
 on:
   push:
@@ -54,7 +54,7 @@ jobs:
     needs:
       - dependencies
     strategy:
-      matrix: ${{fromJson(needs.job1.outputs.matrix)}}
+      matrix: ${{fromJson(needs.dependencies.outputs.matrix)}}
 
     steps:
       - name: PHPUnit
@@ -65,7 +65,7 @@ jobs:
     needs:
       - dependencies
     strategy:
-      matrix: ${{fromJson(needs.job1.outputs.matrix)}}
+      matrix: ${{fromJson(needs.dependencies.outputs.matrix)}}
 
     steps:
       - name: PHPUnit
