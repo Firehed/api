@@ -25,8 +25,3 @@ parameters:
 			count: 1
 			path: tests/DispatcherTest.php
 
-		-
-			message: "#^Function xdebug_get_headers\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: tests/xdebug_get_headers.php
-
