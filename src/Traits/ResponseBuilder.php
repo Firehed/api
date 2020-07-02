@@ -4,7 +4,11 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\Response;
+use RingCentral\Psr7\Response;
+
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Provides simple response-building methods for HTML, JSON, and plain text
@@ -22,7 +26,7 @@ trait ResponseBuilder
      */
     public function emptyResponse(int $code = 204): ResponseInterface
     {
-        return new Response\EmptyResponse($code);
+        return new Response($code);
     }
 
     /**
@@ -36,7 +40,7 @@ trait ResponseBuilder
      */
     public function htmlResponse(string $body, int $code = 200): ResponseInterface
     {
-        return new Response\HtmlResponse($body, $code);
+        return new Response($code, ['Content-type' => 'text/html; charset=utf-8'], $body);
     }
 
     /**
@@ -50,7 +54,8 @@ trait ResponseBuilder
      */
     public function jsonResponse($data, int $code = 200): ResponseInterface
     {
-        return new Response\JsonResponse($data, $code);
+        $body = json_encode($data, JSON_THROW_ON_ERROR);
+        return new Response($code, ['Content-type' => 'application/json'], $body);
     }
 
     /**
@@ -63,6 +68,6 @@ trait ResponseBuilder
      */
     public function textResponse(string $body, int $code = 200): ResponseInterface
     {
-        return new Response\TextResponse($body, $code);
+        return new Response($code, ['Content-type' => 'text/plain; charset=utf-8'], $body);
     }
 }
