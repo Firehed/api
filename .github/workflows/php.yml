@@ -35,6 +35,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: xdebug
+          ini-values: zend.assertions=1
           php-version: ${{ matrix.php }}
 
       # TODO: build cache
