@@ -12,7 +12,7 @@ trait HandlesOwnErrorsTestCases
     /** @var bool */
     private $handleExceptionMayRethrow = false;
 
-    abstract protected function getErrorHandlngEndpoint(): HandlesOwnErrorsInterface;
+    abstract protected function getErrorHandlingEndpoint(): HandlesOwnErrorsInterface;
 
     public function setAllowHandleExceptionToRethrow(bool $allowed): void
     {

@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Legacy "response" middleware support has been removed. Only PSR-15 middleware is supported.
 - `Dispatcher::setAuthProviders()` and `::setErrorHandler` have been removed. You must provide them with a container now, and they will be fetched lazily.
 - `Dispatcher::setRequest(ServerRequestInterface)` has been removed, and the request is now provided directly to `::dispatch(ServerRequestInterface)`
+- `HandlesOwnErrorsTestCases::getEndpoint()` has been renamed to `HandlesOwnErrorsTestCases::getErrorHandlingEndpoint()`.
+  This prevents an incompatibility in PHP8 from abstract trait method validation colliding with LSP enforcement.
 
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`
