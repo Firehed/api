@@ -20,11 +20,9 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RingCentral\Psr7\ServerRequest;
 use RuntimeException;
 use Throwable;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\ServerRequest;
-use Zend\Diactoros\Stream;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
@@ -658,11 +656,8 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     ): ServerRequestInterface {
         $uri .= '?' . http_build_query($query_data);
         $request = new ServerRequest(
-            [],
-            [],
-            $uri,
             $method,
-            'php://memory'
+            $uri,
         );
         return $request;
     }
