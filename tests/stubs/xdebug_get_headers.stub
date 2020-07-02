@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * @return string[]
+ */
+function xdebug_get_headers()
+{
+}

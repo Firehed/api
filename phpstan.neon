@@ -7,3 +7,5 @@ parameters:
     excludes_analyse:
         - vendor
     level: 8
+    stubFiles:
+        - tests/stubs/xdebug_get_headers.stub
