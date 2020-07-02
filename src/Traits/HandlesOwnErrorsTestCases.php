@@ -12,7 +12,7 @@ trait HandlesOwnErrorsTestCases
     /** @var bool */
     private $handleExceptionMayRethrow = false;
 
-    abstract protected function getEndpoint(): HandlesOwnErrorsInterface;
+    abstract protected function getErrorHandlngEndpoint(): HandlesOwnErrorsInterface;
 
     public function setAllowHandleExceptionToRethrow(bool $allowed): void
     {
@@ -26,7 +26,7 @@ trait HandlesOwnErrorsTestCases
     public function testHandleException(Throwable $e): void
     {
         try {
-            $response = $this->getEndpoint()->handleException($e);
+            $response = $this->getErrorHandlingEndpoint()->handleException($e);
             $this->assertInstanceOf(
                 ResponseInterface::class,
                 $response,
