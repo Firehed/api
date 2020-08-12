@@ -1,6 +1,6 @@
 # API Framework
 
-[![Build Status](https://travis-ci.org/Firehed/api.svg?branch=master)](https://travis-ci.org/Firehed/api)
+[![Build Status](https://github.com/Firehed/api/workflows/Test/badge.svg?branch=master)](https://github.com/Firehed/api/actions?query=workflow%3ATest+branch%3Amaster)
 [![codecov](https://codecov.io/gh/Firehed/api/branch/master/graph/badge.svg)](https://codecov.io/gh/Firehed/api)
 
 
