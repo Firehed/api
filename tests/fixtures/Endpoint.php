@@ -9,8 +9,8 @@ use Firehed\API\Traits\Input;
 use Firehed\API\Traits\Request;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects;
+use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
-use RingCentral\Psr7\Response;
 use Throwable;
 
 class Endpoint implements EndpointInterface

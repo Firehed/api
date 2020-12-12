@@ -220,9 +220,6 @@ class Dispatcher implements RequestHandlerInterface
         $header = $request->getHeader('Content-type');
         if ($header) {
             $directives = explode(';', $header[0]);
-            if (!count($directives)) {
-                throw new OutOfBoundsException('Invalid Content-type header', 415);
-            }
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
             // ['charset' => 'utf-8']

@@ -25,7 +25,7 @@ class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
         $this->endpointShouldThrow = true;
     }
 
-    protected function getEndpoint(): HandlesOwnErrorsInterface
+    protected function getErrorHandlingEndpoint(): HandlesOwnErrorsInterface
     {
         $mock = $this->createMock(HandlesOwnErrorsInterface::class);
         $mock->method('handleException')

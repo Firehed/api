@@ -12,6 +12,7 @@ use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\API\Errors\HandlerInterface;
 use Firehed\Input\Exceptions\InputException;
 use InvalidArgumentException;
+use Nyholm\Psr7\ServerRequest;
 use OutOfBoundsException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,7 +21,6 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RingCentral\Psr7\ServerRequest;
 use RuntimeException;
 use Throwable;
 
@@ -657,7 +657,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $uri .= '?' . http_build_query($query_data);
         $request = new ServerRequest(
             $method,
-            $uri,
+            $uri
         );
         return $request;
     }
