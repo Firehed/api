@@ -10,8 +10,7 @@
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "psr/log": "^1.0",
-        "symfony/console": "^3 || ^4 || ^5",
-        "zendframework/zend-diactoros": "^1.3.4 || ^2.0"
+        "symfony/console": "^3 || ^4 || ^5"
     },
     "suggest": {
         "firehed/inputobjects": "Pre-made Input components for validation"
@@ -30,6 +29,7 @@
       }
     },
     "require-dev": {
+        "nyholm/psr7": "^1.3",
         "phpstan/phpstan": "^0.12",
         "phpstan/phpstan-phpunit": "^0.12",
         "phpunit/phpunit": "^8.0",
