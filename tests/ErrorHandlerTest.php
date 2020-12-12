@@ -46,7 +46,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
     {
         $handler = new ErrorHandler($this->createMock(LoggerInterface::class));
         $this->expectException(ErrorException::class);
-        $handler->handleError(\E_ERROR, 'Some error', __FILE__, __LINE__);
+        $handler->handleError(\E_USER_DEPRECATED, 'Some error', __FILE__, __LINE__);
     }
 
     /**
@@ -58,6 +58,6 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $handler = new ErrorHandler($this->createMock(LoggerInterface::class));
         // @ turns error_reporting() to 0 for the next line. The error handler
         // should respect this.
-        @$handler->handleError(\E_ERROR, 'Some error', __FILE__, __LINE__);
+        @$handler->handleError(\E_USER_DEPRECATED, 'Some error', __FILE__, __LINE__);
     }
 }

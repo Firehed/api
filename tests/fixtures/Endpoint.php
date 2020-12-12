@@ -33,7 +33,7 @@ class Endpoint implements EndpointInterface
     public function execute(SafeInput $input): ResponseInterface
     {
         /** @var ResponseInterface */
-        $response = (new Response())
+        $response = (new Response(204))
             ->withHeader(
                 'Access-Control-Allow-Headers',
                 'Authorization, Content-type'
