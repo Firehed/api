@@ -9,9 +9,9 @@ use Firehed\API\Traits\Input;
 use Firehed\API\Traits\Request;
 use Firehed\Input\Containers\SafeInput;
 use Firehed\InputObjects;
+use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
-use Zend\Diactoros\Response\EmptyResponse;
 
 class Endpoint implements EndpointInterface
 {
@@ -33,7 +33,7 @@ class Endpoint implements EndpointInterface
     public function execute(SafeInput $input): ResponseInterface
     {
         /** @var ResponseInterface */
-        $response = (new EmptyResponse())
+        $response = (new Response())
             ->withHeader(
                 'Access-Control-Allow-Headers',
                 'Authorization, Content-type'
