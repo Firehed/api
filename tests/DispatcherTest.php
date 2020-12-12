@@ -657,7 +657,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $uri .= '?' . http_build_query($query_data);
         $request = new ServerRequest(
             $method,
-            $uri,
+            $uri
         );
         return $request;
     }
