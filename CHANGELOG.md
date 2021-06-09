@@ -30,6 +30,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `Dispatcher::setEndpointList()` and `Dispatcher::setParserList()` are now internal use only, and are no longer called in the generated front controller (#84)
 - `Dispatcher::dispatch()` now requires `ServerRequestInterface` as a parameter. This replaces `setRequest` (#101)
 
+### Deprecated
+- Direct use of the HTTPMethod class is considered deprecated.
+  Endpoints are _highly_ encouraged to use the corresponding traits (`Traits\Request\...`) instead.
+  This will greatly ease the transition to native `Enum`s in PHP 8.1.
+
 ### Removed
 - Disallowed using `RequestInterface` in `Dispatcher`.
   `ServerRequestInterface` is now required - the base `RequestInterface` is no longer supported.
