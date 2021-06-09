@@ -20,7 +20,7 @@ class Container implements Psr\ContainerInterface
         $this->data = $data;
     }
 
-    public function has($id)
+    public function has($id): bool
     {
         return array_key_exists($id, $this->data);
     }
