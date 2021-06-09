@@ -5,6 +5,8 @@ namespace Firehed\API;
 
 use Psr\Http\Message\ResponseInterface;
 
+use function xdebug_get_headers;
+
 /**
  * @coversDefaultClass Firehed\API\ResponseRenderer
  * @covers ::<protected>
@@ -70,7 +72,7 @@ class ResponseRendererTest extends \PHPUnit\Framework\TestCase
         //
         // https://bugs.php.net/bug.php?id=39872
         $udf = get_defined_functions()['user'];
-        if (in_array('xdebug_get_headers', $udf)) {
+        if (in_array('xdebug_get_headers', $udf, true)) {
             $this->markTestIncomplete(
                 'headers_list does not work in CLI mode to test response '.
                 'rendering. Install xdebug to complete the test which uses '.
