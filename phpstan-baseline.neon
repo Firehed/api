@@ -15,13 +15,3 @@ parameters:
 			count: 1
 			path: tests/ContainerTest.php
 
-		-
-			message: "#^Parameter \\#1 \\$originalClassName of method PHPUnit\\\\Framework\\\\TestCase\\:\\:createMock\\(\\) expects class\\-string\\<mixed\\>, array\\<int, string\\> given\\.$#"
-			count: 1
-			path: tests/DispatcherTest.php
-
-		-
-			message: "#^Unable to resolve the template type T in call to method PHPUnit\\\\Framework\\\\TestCase\\:\\:createMock\\(\\)$#"
-			count: 1
-			path: tests/DispatcherTest.php
-
