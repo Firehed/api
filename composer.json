@@ -10,7 +10,7 @@
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "psr/log": "^1.0",
-        "symfony/console": "^3 || ^4 || ^5"
+        "symfony/console": "^4.1 || ^5"
     },
     "suggest": {
         "firehed/inputobjects": "Pre-made Input components for validation"
