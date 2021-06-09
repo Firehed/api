@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 2 # Needed for codecov to find "real" commit
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
