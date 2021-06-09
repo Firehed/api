@@ -2,15 +2,15 @@
     "name": "firehed/api",
     "description": "An API framework",
     "require": {
-        "php": "^7.2 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "firehed/common": "^1.0.5",
-        "firehed/input": "^2.0",
+        "firehed/input": "^2.1.5",
         "psr/container": "^1.0",
         "psr/http-message": "^1.0",
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "psr/log": "^1.0",
-        "symfony/console": "^3 || ^4 || ^5"
+        "symfony/console": "^3.2 || ^4 || ^5"
     },
     "suggest": {
         "firehed/inputobjects": "Pre-made Input components for validation"
@@ -32,7 +32,7 @@
         "nyholm/psr7": "^1.3",
         "phpstan/phpstan": "^0.12",
         "phpstan/phpstan-phpunit": "^0.12",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "^9.0",
         "squizlabs/php_codesniffer": "^3.3.1"
     },
     "autoload": {

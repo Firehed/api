@@ -55,7 +55,7 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param string[] $data
+     * @param string[][] $data
      */
     private function validateEndpointList(array $data): void
     {
