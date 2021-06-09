@@ -242,7 +242,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $endpoint = new fixtures\ErrorHandlingEndpoint(
             fn () => throw $execute,
             function ($caught) use ($execute, $error) {
-                $this->assertSame($execute, $caight);
+                $this->assertSame($execute, $caught);
                 throw $error;
             },
         );
