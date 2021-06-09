@@ -2,7 +2,7 @@
     "name": "firehed/api",
     "description": "An API framework",
     "require": {
-        "php": "^7.2 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "firehed/common": "^1.0.5",
         "firehed/input": "^2.0",
         "psr/container": "^1.0",
