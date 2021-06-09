@@ -7,6 +7,11 @@ namespace Firehed\API\Enums;
 use Firehed\Common\Enum;
 
 /**
+ * Direct use of this class (via these static methods) is deprecated. Instead,
+ * implementations should rely on the Request traits.
+ *
+ * This will be converted to a native Enum in PHP 8.1.
+ *
  * @method static HTTPMethod DELETE()
  * @method static HTTPMethod GET()
  * @method static HTTPMethod OPTIONS()
