@@ -240,7 +240,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $execute = new Exception('Execute error');
         $error = new Exception('Exception handler error');
         $endpoint = new fixtures\ErrorHandlingEndpoint(
-            fn () => throw $execute,
+            function () use ($execute) {
+                throw $execute;
+            },
             function ($caught) use ($execute, $error) {
                 $this->assertSame($execute, $caught);
                 throw $error;
@@ -361,7 +363,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     {
         $e = new Exception('This should reach the error handler');
         $endpoint = new fixtures\ErrorHandlingEndpoint(
-            fn () => throw $e,
+            function () use ($e) {
+                throw $e;
+            },
             function ($caught) use ($e) {
                 $this->assertSame($e, $caught);
                 return $this->createMock(ResponseInterface::class);
@@ -475,7 +479,9 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         ];
 
         $endpoint = new fixtures\ErrorHandlingEndpoint(
-            fn () => throw $first,
+            function () use ($first) {
+                throw $first;
+            },
             function ($caught) use ($first, $second) {
                 $this->assertSame($first, $caught);
                 throw $second;
