@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Console command: `vendor/bin/api generate:endpoint`
 - Console command: `vendor/bin/api generate:frontController`
 - Greatly improved support for use in long-running processes, like ReactPHP
+- Expanded support for psr/container to allow both 1.x and 2.x
 
 ### Changed
 - Files generated during compilation are now expected to be excluded from version control and generated during automated build processes (#84)
