@@ -22,6 +22,7 @@ jobs:
         php:
           - '7.4'
           - '8.0'
+          - '8.1'
 
     steps:
       - name: Check out code
@@ -56,6 +57,7 @@ jobs:
           --no-progress
           --no-suggest
           --prefer-dist
+          ${{ matrix.php == '8.1' && '--ignore-platform-reqs' || '' }}
 
       - name: Install lowest dependencies
         if: ${{ matrix.dependencies == 'low' }}
@@ -66,6 +68,7 @@ jobs:
           --no-suggest
           --prefer-dist
           --prefer-lowest
+          ${{ matrix.php == '8.1' && '--ignore-platform-reqs' || '' }}
 
       - name: PHPUnit
         run: vendor/bin/phpunit
