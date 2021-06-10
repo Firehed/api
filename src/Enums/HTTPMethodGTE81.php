@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Firehed\API\Enums;
 
-enum HTTPMethodGTE81
+enum HTTPMethodGTE81: string
 {
     case GET = 'GET';
     case PATCH = 'PATCH';
