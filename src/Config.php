@@ -65,7 +65,7 @@ class Config implements ContainerInterface
         return $this->data[$id];
     }
 
-    public function has($id)
+    public function has($id): bool
     {
         return array_key_exists($id, $this->data);
     }

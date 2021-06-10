@@ -9,7 +9,7 @@ return new class implements ContainerInterface
     {
     }
 
-    public function has($id)
+    public function has($id): bool
     {
         return false;
     }
