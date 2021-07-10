@@ -10,6 +10,7 @@ use Firehed\API\Errors\HandlerInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,6 +19,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
+
+use function strtoupper;
+use function preg_match;
+use function array_key_exists;
 
 class Dispatcher implements RequestHandlerInterface
 {
@@ -146,17 +151,44 @@ class Dispatcher implements RequestHandlerInterface
         return $mwDispatcher->handle($request);
     }
 
+    /**
+     * @return array{
+     *   ?class-string<Interfaces\EndpointInterface>,
+     *   ?array<string, string>,
+     * }
+     */
+    private function routeRequest(ServerRequestInterface $request): array
+    {
+        $endpoints = self::loadConfigFile($this->endpointList);
+        $method = strtoupper($request->getMethod());
+        if (!array_key_exists($method, $endpoints)) {
+            return [null, null];
+        }
+        $endpointsForMethod = $endpoints[$method];
+        $requestPath = $request->getUri()->getPath();
+        foreach ($endpointsForMethod as $uri => $fqcn) {
+            $pattern = '#^' . $uri . '#';
+            if (preg_match($pattern, $requestPath, $match)) {
+                // TODO: filter numeric keys
+                return [$fqcn, $match];
+            }
+        }
+        // nope
+        // print_r($endpointsForMethod);
+        return [null, null];
+    }
+
     private function doDispatch(ServerRequestInterface $request): ResponseInterface
     {
         /** @var ?Interfaces\EndpointInterface */
         $endpoint = null;
         try {
-            [$fqcn, $uriData] = (new ClassMapper($this->endpointList))
-                ->filter(strtoupper($request->getMethod()))
-                ->search($request->getUri()->getPath());
+            // var_dump($this->endpointList);
+            [$fqcn, $uriData] = $this->routeRequest($request);
             if (!$fqcn) {
                 throw new OutOfBoundsException('Endpoint not found', 404);
             }
+            assert($uriData !== null);
             if ($this->container && $this->container->has($fqcn)) {
                 $endpoint = $this->container->get($fqcn);
             } else {
@@ -223,12 +255,15 @@ class Dispatcher implements RequestHandlerInterface
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
             // ['charset' => 'utf-8']
-            list($parser_class) = (new ClassMapper($this->parserList))
-                ->search($mediaType);
-            if (!$parser_class) {
+            // list($parser_class) = (new ClassMapper($this->parserList))
+            //     ->search($mediaType);
+            // FIXME: string or array
+            $parsers = self::loadConfigFile($this->parserList);
+            if (!array_key_exists($mediaType, $parsers)) {
                 throw new OutOfBoundsException('Unsupported Content-type', 415);
             }
-            $parser = new $parser_class;
+            $parserClass = $parsers[$mediaType];
+            $parser = new $parserClass;
             $data = $parser->parse((string)$request->getBody());
         }
         return new ParsedInput($data);
@@ -241,5 +276,27 @@ class Dispatcher implements RequestHandlerInterface
         $data = [];
         parse_str($query, $data);
         return new ParsedInput($data);
+    }
+
+    /**
+     * @param string|string[] $file
+     * @return string[]
+     */
+    private static function loadConfigFile($file): array
+    {
+        if (is_array($file)) {
+            return $file;
+        } elseif (is_string($file)) {
+            if (!file_exists($file)) {
+                throw new InvalidArgumentException('Invalid file');
+                // throw
+            }
+            // if php include
+            // elseif json
+            // Avoid weird scope issues
+            return (fn () => include $file)();
+        } else {
+            throw new InvalidArgumentException('Invalid format');
+        }
     }
 }
