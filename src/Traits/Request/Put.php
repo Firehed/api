@@ -7,8 +7,8 @@ use Firehed\API\Enums\HTTPMethod;
 
 trait Put
 {
-    public function getMethod(): HTTPMethod
+    public function getMethod(): string
     {
-        return HTTPMethod::PUT();
+        return HTTPMethod::PUT;
     }
 }

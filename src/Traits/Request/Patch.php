@@ -7,8 +7,8 @@ use Firehed\API\Enums\HTTPMethod;
 
 trait Patch
 {
-    public function getMethod(): HTTPMethod
+    public function getMethod(): string
     {
-        return HTTPMethod::PATCH();
+        return HTTPMethod::PATCH;
     }
 }

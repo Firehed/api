@@ -7,9 +7,8 @@ use Firehed\API\Enums\HTTPMethod;
 
 trait Options
 {
-
-    public function getMethod(): HTTPMethod
+    public function getMethod(): string
     {
-        return HTTPMethod::OPTIONS();
+        return HTTPMethod::OPTIONS;
     }
 }

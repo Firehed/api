@@ -7,9 +7,8 @@ use Firehed\API\Enums\HTTPMethod;
 
 trait Post
 {
-
-    public function getMethod(): HTTPMethod
+    public function getMethod()
     {
-        return HTTPMethod::POST();
+        return HTTPMethod::POST;
     }
 }
