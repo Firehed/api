@@ -14,7 +14,7 @@ class PostTest extends \PHPUnit\Framework\TestCase
             use Post;
         };
         $this->assertEquals(
-            \Firehed\API\Enums\HTTPMethod::POST(),
+            \Firehed\API\Enums\HTTPMethod::POST,
             $obj->getMethod(),
             'getMethod did not return HTTP POST'
         );
