@@ -169,12 +169,17 @@ class Dispatcher implements RequestHandlerInterface
         foreach ($endpointsForMethod as $uri => $fqcn) {
             $pattern = '#^' . $uri . '#';
             if (preg_match($pattern, $requestPath, $match)) {
-                // TODO: filter numeric keys
+                // Filter out numeric keys from match output - we only want to
+                // retain named captures
+                foreach ($match as $key => $_) {
+                    if (is_int($key)) {
+                        unset($match[$key]);
+                    }
+                }
                 return [$fqcn, $match];
             }
         }
-        // nope
-        // print_r($endpointsForMethod);
+        // No match
         return [null, null];
     }
 
@@ -279,8 +284,8 @@ class Dispatcher implements RequestHandlerInterface
     }
 
     /**
-     * @param string|string[] $file
-     * @return string[]
+     * @param string|string[]|string[][] $file
+     * @return string[]|string[][]
      */
     private static function loadConfigFile($file): array
     {
@@ -289,11 +294,7 @@ class Dispatcher implements RequestHandlerInterface
         } elseif (is_string($file)) {
             if (!file_exists($file)) {
                 throw new InvalidArgumentException('Invalid file');
-                // throw
             }
-            // if php include
-            // elseif json
-            // Avoid weird scope issues
             return (fn () => include $file)();
         } else {
             throw new InvalidArgumentException('Invalid format');

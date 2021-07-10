@@ -11,6 +11,7 @@ use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\API\Errors\HandlerInterface;
 use Firehed\Input\Exceptions\InputException;
+use Firehed\Input\Parsers;
 use InvalidArgumentException;
 use Nyholm\Psr7\ServerRequest;
 use OutOfBoundsException;
@@ -735,10 +736,12 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    private function getDefaultParserList(): string
+    private function getDefaultParserList(): array
     {
-        // This could also be dynamically built
-        return dirname(__DIR__).'/vendor/firehed/input/src/Parsers/__parser_list__.json';
+        return [
+            'application/json' => Parsers\JSON::class,
+            'application/x-www-form-urlencoded' => Parsers\URLEncoded::class,
+        ];
     }
 
     /**
