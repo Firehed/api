@@ -9,6 +9,7 @@ use Firehed\Input\Containers;
 use Firehed\Input\Interfaces\ValidationInterface;
 use Firehed\Input\SafeInputTestTrait;
 use Firehed\Input\ValidationTestTrait;
+use ReflectionClass;
 
 /**
  * Default test cases to be run against any object implementing
@@ -123,10 +124,10 @@ TEXT;
     public function testGetMethod(): void
     {
         $method = $this->getEndpoint()->getMethod();
-        $this->assertInstanceOf(
-            'Firehed\API\Enums\HTTPMethod',
-            $method,
-            'getMethod did not return an HTTPMethod enum'
-        );
+        // 8.1: Enum logic
+
+        $rc = new ReflectionClass(HTTPMethod::class);
+        $constants = $rc->getConstants();
+        $this->assertContains($constants, $method, 'Invalid HTTP method');
     }
 }
