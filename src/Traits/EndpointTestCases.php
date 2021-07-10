@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\API\Enums\HTTPMethod;
 use Firehed\Input\Containers;
 use Firehed\Input\Interfaces\ValidationInterface;
 use Firehed\Input\SafeInputTestTrait;
@@ -128,6 +129,6 @@ TEXT;
 
         $rc = new ReflectionClass(HTTPMethod::class);
         $constants = $rc->getConstants();
-        $this->assertContains($constants, $method, 'Invalid HTTP method');
+        $this->assertContains($method, $constants, 'Invalid HTTP method');
     }
 }
