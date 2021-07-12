@@ -26,6 +26,9 @@ use function strtoupper;
 use function preg_match;
 use function array_key_exists;
 
+/**
+ * @phpstan-type EndpointMap array<string, array<string, class-string<Interfaces\EndpointInterface>>>
+ */
 class Dispatcher implements RequestHandlerInterface
 {
     const ENDPOINT_LIST = '__endpoint_list__.php';
@@ -39,7 +42,7 @@ class Dispatcher implements RequestHandlerInterface
     /** @var bool */
     private $containerHasErrorHandler = false;
 
-    /** @var string | string[][] */
+    /** @var string | EndpointMap */
     private $endpointList = self::ENDPOINT_LIST;
 
     /** @var array<string, class-string<ParserInterface>> */
@@ -101,7 +104,7 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @internal Overrides the standard endpoint list. Used primarily for unit
      * testing.
-     * @param string | string[][] $endpointList The endpoint list or its path
+     * @param string|EndpointMap $endpointList The endpoint list or its path
      * @return self
      */
     public function setEndpointList($endpointList): self
@@ -156,15 +159,16 @@ class Dispatcher implements RequestHandlerInterface
         $requestPath = $request->getUri()->getPath();
         foreach ($endpointsForMethod as $uri => $fqcn) {
             $pattern = '#^' . $uri . '#';
-            if (preg_match($pattern, $requestPath, $match)) {
+            if (preg_match($pattern, $requestPath, $matches)) {
                 // Filter out numeric keys from match output - we only want to
                 // retain named captures
-                foreach ($match as $key => $_) {
+                foreach ($matches as $key => $value) {
                     if (is_int($key)) {
-                        unset($match[$key]);
+                        unset($matches[$key]);
                     }
                 }
-                return [$fqcn, $match];
+                /** @var array<string, string> $matches */
+                return [$fqcn, $matches];
             }
         }
         // No match
@@ -176,7 +180,6 @@ class Dispatcher implements RequestHandlerInterface
         /** @var ?Interfaces\EndpointInterface */
         $endpoint = null;
         try {
-            // var_dump($this->endpointList);
             [$fqcn, $uriData] = $this->routeRequest($request);
             if (!$fqcn) {
                 throw new OutOfBoundsException('Endpoint not found', 404);
@@ -268,8 +271,8 @@ class Dispatcher implements RequestHandlerInterface
     }
 
     /**
-     * @param string|string[][] $data
-     * @return string[][]
+     * @param string|EndpointMap $data
+     * @return EndpointMap
      */
     private static function loadEndpoints($data): array
     {
