@@ -10,6 +10,8 @@ use Firehed\API\Errors\HandlerInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
+use Firehed\Input\Interfaces\ParserInterface;
+use Firehed\Input\Parsers;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -27,7 +29,6 @@ use function array_key_exists;
 class Dispatcher implements RequestHandlerInterface
 {
     const ENDPOINT_LIST = '__endpoint_list__.php';
-    const PARSER_LIST = '__parser_list__.php';
 
     /** @var ?ContainerInterface */
     private $container;
@@ -41,8 +42,11 @@ class Dispatcher implements RequestHandlerInterface
     /** @var string | string[][] */
     private $endpointList = self::ENDPOINT_LIST;
 
-    /** @var string | string[] */
-    private $parserList = self::PARSER_LIST;
+    /** @var array<string, class-string<ParserInterface>> */
+    private $parsers = [
+        'application/json' => Parsers\JSON::class,
+        'application/x-www-form-urlencoded' => Parsers\URLEncoded::class,
+    ];
 
     /** @var MiddlewareInterface[] */
     private $psrMiddleware = [];
@@ -86,22 +90,6 @@ class Dispatcher implements RequestHandlerInterface
             $this->containerHasErrorHandler = true;
         }
 
-        return $this;
-    }
-
-    /**
-     * Set the parser list. Can be an array consumable by ClassMapper or
-     * a string representing a file parsable by same. The list must map
-     * MIME-types to Firehed\Input\ParserInterface class names.
-     *
-     * @internal Overrides the standard parser list. Used primarily for unit
-     * testing.
-     * @param string | string[] $parserList The parser list or its path
-     * @return self
-     */
-    public function setParserList($parserList): self
-    {
-        $this->parserList = $parserList;
         return $this;
     }
 
@@ -159,7 +147,7 @@ class Dispatcher implements RequestHandlerInterface
      */
     private function routeRequest(ServerRequestInterface $request): array
     {
-        $endpoints = self::loadConfigFile($this->endpointList);
+        $endpoints = self::loadEndpoints($this->endpointList);
         $method = strtoupper($request->getMethod());
         if (!array_key_exists($method, $endpoints)) {
             return [null, null];
@@ -260,14 +248,10 @@ class Dispatcher implements RequestHandlerInterface
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
             // ['charset' => 'utf-8']
-            // list($parser_class) = (new ClassMapper($this->parserList))
-            //     ->search($mediaType);
-            // FIXME: string or array
-            $parsers = self::loadConfigFile($this->parserList);
-            if (!array_key_exists($mediaType, $parsers)) {
+            if (!array_key_exists($mediaType, $this->parsers)) {
                 throw new OutOfBoundsException('Unsupported Content-type', 415);
             }
-            $parserClass = $parsers[$mediaType];
+            $parserClass = $this->parsers[$mediaType];
             $parser = new $parserClass;
             $data = $parser->parse((string)$request->getBody());
         }
@@ -284,18 +268,18 @@ class Dispatcher implements RequestHandlerInterface
     }
 
     /**
-     * @param string|string[]|string[][] $file
-     * @return string[]|string[][]
+     * @param string|string[][] $data
+     * @return string[][]
      */
-    private static function loadConfigFile($file): array
+    private static function loadEndpoints($data): array
     {
-        if (is_array($file)) {
-            return $file;
-        } elseif (is_string($file)) {
-            if (!file_exists($file)) {
+        if (is_array($data)) {
+            return $data;
+        } elseif (is_string($data)) {
+            if (!file_exists($data)) {
                 throw new InvalidArgumentException('Invalid file');
             }
-            return (fn () => include $file)();
+            return (fn () => include $data)();
         } else {
             throw new InvalidArgumentException('Invalid format');
         }
