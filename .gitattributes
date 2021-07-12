@@ -1,5 +1,11 @@
-/tests export-ignore
-/github export-ignore
+*.php diff=php
+
+# Do not include these files when installed with composer's `--prefer-dist` flag
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.github export-ignore
+/codecov.yml export-ingoare
 /phpcs.xml export-ignore
 /phpstan*.neon export-ignore
 /phpunit.xml.dist export-ignore
+/tests export-ignore
