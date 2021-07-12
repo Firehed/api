@@ -11,11 +11,11 @@
         <directory suffix="Test.php">tests</directory>
     </testsuite>
 
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
+    <coverage>
+        <exclude>
+            <file>src/Enums/HTTPMethodGTE81.php</file>
+        </exclude>
+    </coverage>
     <logging>
         <log type="coverage-clover" target="build/logs/clover.xml" />
     </logging>
