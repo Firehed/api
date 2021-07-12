@@ -14,7 +14,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             use Options;
         };
         $this->assertEquals(
-            \Firehed\API\Enums\HTTPMethod::OPTIONS(),
+            \Firehed\API\Enums\HTTPMethod::OPTIONS,
             $obj->getMethod(),
             'getMethod did not return HTTP OPTIONS'
         );

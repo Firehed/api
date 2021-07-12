@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 use Firehed\API\Interfaces\EndpointInterface;
+use Firehed\API\Enums\HTTPMethod;
 use Firehed\Input\Containers;
 use Firehed\Input\Interfaces\ValidationInterface;
 use Firehed\Input\SafeInputTestTrait;
 use Firehed\Input\ValidationTestTrait;
+use ReflectionClass;
 
 /**
  * Default test cases to be run against any object implementing
@@ -123,10 +125,10 @@ TEXT;
     public function testGetMethod(): void
     {
         $method = $this->getEndpoint()->getMethod();
-        $this->assertInstanceOf(
-            'Firehed\API\Enums\HTTPMethod',
-            $method,
-            'getMethod did not return an HTTPMethod enum'
-        );
+        // 8.1: Enum logic
+
+        $rc = new ReflectionClass(HTTPMethod::class);
+        $constants = $rc->getConstants();
+        $this->assertContains($method, $constants, 'Invalid HTTP method');
     }
 }

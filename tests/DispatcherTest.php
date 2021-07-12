@@ -7,6 +7,7 @@ namespace Firehed\API;
 use Exception;
 use Firehed\API\Authentication;
 use Firehed\API\Authorization;
+use Firehed\API\Enums\HTTPMethod;
 use Firehed\API\Interfaces\EndpointInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\API\Errors\HandlerInterface;
@@ -80,17 +81,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /** @covers ::setParserList */
-    public function testSetParserListReturnsSelf(): void
-    {
-        $d = new Dispatcher();
-        $this->assertSame(
-            $d,
-            $d->setParserList('list'),
-            'setParserList did not return $this'
-        );
-    }
-
     // ----(Success case)-------------------------------------------------------
 
     /**
@@ -111,7 +101,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
-            ->setParserList($this->getDefaultParserList())
             ->dispatch($req);
         $this->checkResponse($response, 200);
         $data = json_decode((string)$response->getBody(), true);
@@ -142,7 +131,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
-            ->setParserList($this->getDefaultParserList())
             ->dispatch($req);
         $this->checkResponse($response, 200);
         $data = json_decode((string)$response->getBody(), true);
@@ -214,13 +202,12 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->method('execute')
             ->willReturn($response);
 
-        $routes = ['GET' => ['/c' => 'EP']];
+        $routes = [HTTPMethod::GET => ['/c' => 'EP']];
         $res = $dispatcher
             ->addMiddleware($mw1)
             ->addMiddleware($mw2)
             ->setContainer($this->getMockContainer(['EP' => $endpoint]))
             ->setEndpointList($routes)
-            ->setParserList($this->getDefaultParserList())
             ->dispatch($request);
 
         $this->assertSame($modifiedResponse, $res, 'Dispatcher returned different response');
@@ -251,7 +238,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
         $req = $this->getMockRequestWithUriPath('/cb', 'GET');
         $list = [
-            'GET' => [
+            HTTPMethod::GET => [
                 '/cb' => 'CBClass',
             ],
         ];
@@ -259,7 +246,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             $ret = (new Dispatcher())
                 ->setContainer($this->getMockContainer(['CBClass' => $endpoint]))
                 ->setEndpointList($list)
-                ->setParserList($this->getDefaultParserList())
                 ->dispatch($req);
             $this->fail(
                 "The exception thrown from the error handler's failure should ".
@@ -298,7 +284,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionCode(404);
         $ret = (new Dispatcher())
             ->setEndpointList([]) // No routes
-            ->setParserList([])
             ->dispatch($req);
     }
 
@@ -316,7 +301,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         try {
             $response = (new Dispatcher())
                 ->setEndpointList($this->getEndpointListForFixture())
-                ->setParserList($this->getDefaultParserList())
                 ->dispatch($req);
             $this->fail('An exception should have been thrown');
         } catch (Throwable $e) {
@@ -333,7 +317,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         try {
             $response = (new Dispatcher())
                 ->setEndpointList($this->getEndpointListForFixture())
-                ->setParserList($this->getDefaultParserList())
                 ->dispatch($req);
             $this->fail('An exception should have been thrown');
         } catch (Throwable $e) {
@@ -353,7 +336,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $req = $req->withHeader('Content-type', $contentType);
         $response = (new Dispatcher())
             ->setEndpointList($this->getEndpointListForFixture())
-            ->setParserList($this->getDefaultParserList())
             ->dispatch($req);
         $this->checkResponse($response, 200);
     }
@@ -448,7 +430,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequestWithUriPath('/');
         $finalResponse = (new Dispatcher())
             ->setEndpointList([])
-            ->setParserList([])
             ->setContainer($container)
             ->dispatch($request);
         $this->assertSame($response, $finalResponse);
@@ -703,7 +684,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     ): ResponseInterface {
         $req = $this->getMockRequestWithUriPath('/container', 'GET', []);
         $list = [
-            'GET' => [
+            HTTPMethod::GET => [
                 '/container' => 'ClassThatDoesNotExist',
             ],
         ];
@@ -717,28 +698,23 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $response = $dispatcher
             ->setContainer($this->getMockContainer($containerValues))
             ->setEndpointList($list)
-            ->setParserList($this->getDefaultParserList())
             ->dispatch($req);
         return $response;
     }
 
-    /** @return string[][] */
+    /**
+     * @return array<HTTPMethod::*, array<string, class-string<EndpointInterface>>>
+     */
     private function getEndpointListForFixture(): array
     {
         return [
-            'GET' => [
+            HTTPMethod::GET => [
                 '/user/(?P<id>[1-9]\d*)' => __NAMESPACE__.'\EndpointFixture'
             ],
-            'POST' => [
+            HTTPMethod::POST => [
                 '/user/(?P<id>[1-9]\d*)' => __NAMESPACE__.'\EndpointFixture'
             ],
         ];
-    }
-
-    private function getDefaultParserList(): string
-    {
-        // This could also be dynamically built
-        return dirname(__DIR__).'/vendor/firehed/input/src/Parsers/__parser_list__.json';
     }
 
     /**

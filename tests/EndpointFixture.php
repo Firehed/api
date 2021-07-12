@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 class EndpointFixture implements Interfaces\EndpointInterface
 {
+    use Traits\Request\Get;
 
     const STATUS_ERROR = 999;
 
@@ -52,11 +53,6 @@ class EndpointFixture implements Interfaces\EndpointInterface
                 }
             }
         ];
-    }
-
-    public function getMethod(): Enums\HTTPMethod
-    {
-        return Enums\HTTPMethod::GET();
     }
 
     public function execute(SafeInput $input): Response

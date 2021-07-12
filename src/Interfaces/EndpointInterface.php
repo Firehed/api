@@ -64,7 +64,7 @@ interface EndpointInterface extends ValidationInterface
      * Indiate the HTTP request method that must be used for inbound requests
      * to be routed to this endpoint.
      *
-     * @return HTTPMethod
+     * @return HTTPMethod::*
      */
-    public function getMethod(): HTTPMethod;
+    public function getMethod(): string;
 }

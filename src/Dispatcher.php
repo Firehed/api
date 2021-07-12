@@ -10,6 +10,9 @@ use Firehed\API\Errors\HandlerInterface;
 use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Firehed\Common\ClassMapper;
 use Firehed\Input\Containers\ParsedInput;
+use Firehed\Input\Interfaces\ParserInterface;
+use Firehed\Input\Parsers;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,10 +22,25 @@ use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
 
+use function array_key_exists;
+use function array_shift;
+use function assert;
+use function explode;
+use function file_exists;
+use function is_array;
+use function is_int;
+use function is_string;
+use function parse_str;
+use function preg_match;
+use function strtoupper;
+
+/**
+ * @phpstan-type EndpointMap array<Enums\HTTPMethod::*, array<string, class-string<Interfaces\EndpointInterface>>>
+ */
 class Dispatcher implements RequestHandlerInterface
 {
+    /** @internal */
     const ENDPOINT_LIST = '__endpoint_list__.php';
-    const PARSER_LIST = '__parser_list__.php';
 
     /** @var ?ContainerInterface */
     private $container;
@@ -33,11 +51,14 @@ class Dispatcher implements RequestHandlerInterface
     /** @var bool */
     private $containerHasErrorHandler = false;
 
-    /** @var string | string[][] */
+    /** @var string | EndpointMap */
     private $endpointList = self::ENDPOINT_LIST;
 
-    /** @var string | string[] */
-    private $parserList = self::PARSER_LIST;
+    /** @var array<string, class-string<ParserInterface>> */
+    private $parsers = [
+        'application/json' => Parsers\JSON::class,
+        'application/x-www-form-urlencoded' => Parsers\URLEncoded::class,
+    ];
 
     /** @var MiddlewareInterface[] */
     private $psrMiddleware = [];
@@ -85,22 +106,6 @@ class Dispatcher implements RequestHandlerInterface
     }
 
     /**
-     * Set the parser list. Can be an array consumable by ClassMapper or
-     * a string representing a file parsable by same. The list must map
-     * MIME-types to Firehed\Input\ParserInterface class names.
-     *
-     * @internal Overrides the standard parser list. Used primarily for unit
-     * testing.
-     * @param string | string[] $parserList The parser list or its path
-     * @return self
-     */
-    public function setParserList($parserList): self
-    {
-        $this->parserList = $parserList;
-        return $this;
-    }
-
-    /**
      * Set the endpoint list. Can be an array consumable by ClassMapper or
      * a string representing a file parsable by same. The list must be
      * filterable by HTTP method and map absolute URI path components to
@@ -108,7 +113,7 @@ class Dispatcher implements RequestHandlerInterface
      *
      * @internal Overrides the standard endpoint list. Used primarily for unit
      * testing.
-     * @param string | string[][] $endpointList The endpoint list or its path
+     * @param string|EndpointMap $endpointList The endpoint list or its path
      * @return self
      */
     public function setEndpointList($endpointList): self
@@ -146,17 +151,49 @@ class Dispatcher implements RequestHandlerInterface
         return $mwDispatcher->handle($request);
     }
 
+    /**
+     * @return array{
+     *   ?class-string<Interfaces\EndpointInterface>,
+     *   ?array<string, string>,
+     * }
+     */
+    private function routeRequest(ServerRequestInterface $request): array
+    {
+        $endpoints = self::loadEndpoints($this->endpointList);
+        $method = strtoupper($request->getMethod());
+        if (!array_key_exists($method, $endpoints)) {
+            return [null, null];
+        }
+        $endpointsForMethod = $endpoints[$method];
+        $requestPath = $request->getUri()->getPath();
+        foreach ($endpointsForMethod as $uri => $fqcn) {
+            $pattern = '#^' . $uri . '#';
+            if (preg_match($pattern, $requestPath, $matches)) {
+                // Filter out numeric keys from match output - we only want to
+                // retain named captures
+                foreach ($matches as $key => $value) {
+                    if (is_int($key)) {
+                        unset($matches[$key]);
+                    }
+                }
+                /** @var array<string, string> $matches */
+                return [$fqcn, $matches];
+            }
+        }
+        // No match
+        return [null, null];
+    }
+
     private function doDispatch(ServerRequestInterface $request): ResponseInterface
     {
         /** @var ?Interfaces\EndpointInterface */
         $endpoint = null;
         try {
-            [$fqcn, $uriData] = (new ClassMapper($this->endpointList))
-                ->filter(strtoupper($request->getMethod()))
-                ->search($request->getUri()->getPath());
+            [$fqcn, $uriData] = $this->routeRequest($request);
             if (!$fqcn) {
                 throw new OutOfBoundsException('Endpoint not found', 404);
             }
+            assert($uriData !== null);
             if ($this->container && $this->container->has($fqcn)) {
                 $endpoint = $this->container->get($fqcn);
             } else {
@@ -223,12 +260,11 @@ class Dispatcher implements RequestHandlerInterface
             $mediaType = array_shift($directives);
             // Future: trim and format directives; e.g. ' charset=utf-8' =>
             // ['charset' => 'utf-8']
-            list($parser_class) = (new ClassMapper($this->parserList))
-                ->search($mediaType);
-            if (!$parser_class) {
+            if (!array_key_exists($mediaType, $this->parsers)) {
                 throw new OutOfBoundsException('Unsupported Content-type', 415);
             }
-            $parser = new $parser_class;
+            $parserClass = $this->parsers[$mediaType];
+            $parser = new $parserClass;
             $data = $parser->parse((string)$request->getBody());
         }
         return new ParsedInput($data);
@@ -241,5 +277,23 @@ class Dispatcher implements RequestHandlerInterface
         $data = [];
         parse_str($query, $data);
         return new ParsedInput($data);
+    }
+
+    /**
+     * @param string|EndpointMap $data
+     * @return EndpointMap
+     */
+    private static function loadEndpoints($data): array
+    {
+        if (is_array($data)) {
+            return $data;
+        } elseif (is_string($data)) {
+            if (!file_exists($data)) {
+                throw new InvalidArgumentException('Invalid file');
+            }
+            return (fn () => include $data)();
+        } else {
+            throw new InvalidArgumentException('Invalid format');
+        }
     }
 }

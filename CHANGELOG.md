@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Framework-generated files are now auto-detected thanks to the above compile requirement (#84)
 - `Dispatcher::setEndpointList()` and `Dispatcher::setParserList()` are now internal use only, and are no longer called in the generated front controller (#84)
 - `Dispatcher::dispatch()` now requires `ServerRequestInterface` as a parameter. This replaces `setRequest` (#101)
+- The body parser list (based on MIME-types) is now explicitly hardcoded.
+  Previously this was tied to a scanned vendor directory, so in practice nothing has changed.
+  This may become configurable in the future.
+- Dispatcher::ENDPOINT_LIST has been marked internal
 
 ### Deprecated
 - Direct use of the HTTPMethod class is considered deprecated.
@@ -44,6 +48,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `Dispatcher::setAuthProviders()` (use setContainer)
 - `Dispatcher::setErrorHandler()` (use setContainer)
 - `Dispatcher::setRequest()` (provide the request directly to `::dispatch()`)
+- `Dispatcher::PARSER_LIST` constant
 - `Interfaces\EndpointInterface::authenticate()` - this drops legacy authentication support entirely, and will no longer be used even if still defined in implementing classes
 - `Traits\Authentication\BearerToken`
 - `Traits\DeleteRequest`

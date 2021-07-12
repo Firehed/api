@@ -7,9 +7,8 @@ use Firehed\API\Enums\HTTPMethod;
 
 trait Delete
 {
-
-    public function getMethod(): HTTPMethod
+    public function getMethod(): string
     {
-        return HTTPMethod::DELETE();
+        return HTTPMethod::DELETE;
     }
 }

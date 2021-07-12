@@ -14,7 +14,7 @@ class PatchTest extends \PHPUnit\Framework\TestCase
             use Patch;
         };
         $this->assertEquals(
-            \Firehed\API\Enums\HTTPMethod::PATCH(),
+            \Firehed\API\Enums\HTTPMethod::PATCH,
             $obj->getMethod(),
             'getMethod did not return HTTP PATCH'
         );
