@@ -22,9 +22,17 @@ use Throwable;
 use OutOfBoundsException;
 use UnexpectedValueException;
 
-use function strtoupper;
-use function preg_match;
 use function array_key_exists;
+use function array_shift;
+use function assert;
+use function explode;
+use function file_exists;
+use function is_array;
+use function is_int;
+use function is_string;
+use function parse_str;
+use function preg_match;
+use function strtoupper;
 
 /**
  * @phpstan-type EndpointMap array<Enums\HTTPMethod::*, array<string, class-string<Interfaces\EndpointInterface>>>
