@@ -73,6 +73,7 @@ jobs:
       - name: PHPUnit
         run: vendor/bin/phpunit
           --coverage-clover coverage.xml
+          ${{ matrix.php == '8.1-nightly' && '--debug' }}
 
       - name: Submit code coverage
         if: ${{ always() }}
