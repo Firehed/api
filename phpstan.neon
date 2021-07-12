@@ -2,10 +2,10 @@ includes:
     - phpstan-baseline.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
 parameters:
-    ignoreErrors:
-        - '#Call to method setInterface\(\) on an unknown class Firehed\\Common\\this#'
     excludes_analyse:
         - vendor
-    level: 8
+    level: max
+    paths:
+        - .
     stubFiles:
         - tests/stubs/xdebug_get_headers.stub

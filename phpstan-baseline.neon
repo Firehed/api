@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
-			count: 1
-			path: tests/ConfigTest.php
-
-		-
 			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:constructProvider\\(\\) should return array\\<array\\<string\\>\\> but returns array\\<int, array\\<int, array\\<string, string\\>\\|class\\-string\\>\\>\\.$#"
 			count: 1
 			path: tests/ConfigTest.php
@@ -13,5 +8,25 @@ parameters:
 		-
 			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
 			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
+			count: 1
 			path: tests/ContainerTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$endpointList of method Firehed\\\\API\\\\Dispatcher\\:\\:setEndpointList\\(\\) expects array\\<'DELETE'\\|'GET'\\|'OPTIONS'\\|'PATCH'\\|'POST'\\|'PUT', array\\<string, class\\-string\\<Firehed\\\\API\\\\Interfaces\\\\EndpointInterface\\>\\>\\>\\|string, array\\('GET' \\=\\> array\\('/c' \\=\\> 'EP'\\)\\) given\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$endpointList of method Firehed\\\\API\\\\Dispatcher\\:\\:setEndpointList\\(\\) expects array\\<'DELETE'\\|'GET'\\|'OPTIONS'\\|'PATCH'\\|'POST'\\|'PUT', array\\<string, class\\-string\\<Firehed\\\\API\\\\Interfaces\\\\EndpointInterface\\>\\>\\>\\|string, array\\('GET' \\=\\> array\\('/cb' \\=\\> 'CBClass'\\)\\) given\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$endpointList of method Firehed\\\\API\\\\Dispatcher\\:\\:setEndpointList\\(\\) expects array\\<'DELETE'\\|'GET'\\|'OPTIONS'\\|'PATCH'\\|'POST'\\|'PUT', array\\<string, class\\-string\\<Firehed\\\\API\\\\Interfaces\\\\EndpointInterface\\>\\>\\>\\|string, array\\('GET' \\=\\> array\\('/container' \\=\\> 'ClassThatDoesNotExi…'\\)\\) given\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
 
