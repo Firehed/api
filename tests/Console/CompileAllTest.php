@@ -43,14 +43,10 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
             $tester = new CommandTester($command);
             $tester->execute([]);
             $this->assertFileExists(Dispatcher::ENDPOINT_LIST, 'Endpoint list not generated');
-            $this->assertFileExists(Dispatcher::PARSER_LIST, 'Parser list not generated');
             $endpoints = include Dispatcher::ENDPOINT_LIST;
-            $parsers = include Dispatcher::PARSER_LIST;
             $this->validateEndpointList($endpoints);
-            $this->validateParserList($parsers);
         } finally {
             @unlink(Dispatcher::ENDPOINT_LIST);
-            @unlink(Dispatcher::PARSER_LIST);
         }
     }
 
@@ -62,15 +58,5 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayHasKey('@gener'.'ated', $data);
         $this->assertArrayHasKey('GET', $data);
         $this->assertContains(EndpointFixture::class, $data['GET']);
-    }
-
-    /**
-     * @param string[] $data
-     */
-    private function validateParserList(array $data): void
-    {
-        $this->assertArrayHasKey('@gener'.'ated', $data);
-        $this->assertArrayHasKey('application/json', $data);
-        $this->assertArrayHasKey('application/x-www-form-urlencoded', $data);
     }
 }

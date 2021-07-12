@@ -31,6 +31,7 @@ use function array_key_exists;
  */
 class Dispatcher implements RequestHandlerInterface
 {
+    /** @internal */
     const ENDPOINT_LIST = '__endpoint_list__.php';
 
     /** @var ?ContainerInterface */

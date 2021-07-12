@@ -47,15 +47,18 @@ class CompileAll extends Command
         $logger->debug('Current directory: {cwd}', ['cwd' => getcwd()]);
         $logger->debug('Building classmap');
 
-        $endpoints = $this->getFilteredClasses($this->config->get(Config::KEY_SOURCE), function (ReflectionClass $rc): bool {
-            if (!$rc->isInstantiable()) {
-                return false;
+        $endpoints = $this->getFilteredClasses(
+            $this->config->get(Config::KEY_SOURCE),
+            function (ReflectionClass $rc): bool {
+                if (!$rc->isInstantiable()) {
+                    return false;
+                }
+                if (!$rc->implementsInterface(EndpointInterface::class)) {
+                    return false;
+                }
+                return true;
             }
-            if (!$rc->implementsInterface(EndpointInterface::class)) {
-                return false;
-            }
-            return true;
-        });
+        );
         $endpointMap = array_reduce($endpoints, function (array $carry, ReflectionClass $rc) {
             $instance = $rc->newInstanceWithoutConstructor();
             assert($instance instanceof EndpointInterface); // Filtered above
@@ -73,28 +76,6 @@ class CompileAll extends Command
             Dispatcher::ENDPOINT_LIST
         ));
 
-        $logger->debug('Building parser map');
-        // For now, simply hardcode the values.
-        $parsers = [
-            new Parsers\JSON(),
-            new Parsers\URLEncoded(),
-        ];
-        $parserMap = array_reduce($parsers, function (array $carry, ParserInterface $parser) {
-            foreach ($parser->getSupportedMimeTypes() as $mime) {
-                $carry[$mime] = get_class($parser);
-            }
-            return $carry;
-        }, []);
-        $parserMap['@gener'.'ated'] = gmdate('c');
-        file_put_contents(
-            Dispatcher::PARSER_LIST,
-            sprintf("<?php\n return %s;", var_export($parserMap, true)),
-        );
-
-        $output->writeln(sprintf(
-            'Wrote parser map to %s',
-            Dispatcher::PARSER_LIST
-        ));
         return 0;
     }
 
