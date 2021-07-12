@@ -27,7 +27,7 @@ use function preg_match;
 use function array_key_exists;
 
 /**
- * @phpstan-type EndpointMap array<string, array<string, class-string<Interfaces\EndpointInterface>>>
+ * @phpstan-type EndpointMap array<Enums\HTTPMethod::*, array<string, class-string<Interfaces\EndpointInterface>>>
  */
 class Dispatcher implements RequestHandlerInterface
 {
