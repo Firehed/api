@@ -73,4 +73,4 @@ jobs:
 
       - name: Submit code coverage
         if: ${{ always() }}
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
