@@ -8,15 +8,10 @@ use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
- * @coversDefaultClass Firehed\API\ErrorHandler
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\ErrorHandler
  */
 class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers ::__construct
-     */
     public function testConstruct(): void
     {
         $this->assertInstanceOf(
@@ -26,7 +21,6 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers ::handleThrowable
      * @runInSeparateProcess
      */
     public function testHandleThrowable(): void
@@ -39,9 +33,6 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $handler->handleThrowable(new Exception());
     }
 
-    /**
-     * @covers ::handleError
-     */
     public function testHandleError(): void
     {
         $handler = new ErrorHandler($this->createMock(LoggerInterface::class));
@@ -50,7 +41,6 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers ::handleError
      * @doesNotPerformAssertions
      */
     public function testHandleErrorDoesNotThrowWithErrorReportingDisabled(): void

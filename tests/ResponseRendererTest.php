@@ -8,9 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use function xdebug_get_headers;
 
 /**
- * @coversDefaultClass Firehed\API\ResponseRenderer
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\ResponseRenderer
  */
 class ResponseRendererTest extends \PHPUnit\Framework\TestCase
 {
@@ -18,9 +16,6 @@ class ResponseRendererTest extends \PHPUnit\Framework\TestCase
      * The function should just blindly render the data, assuming everything is
      * reasonably well-formed and spec-compliant.
      *
-     * @covers ::render
-     * @covers ::sendHeaders
-     * @covers ::sendBody
      * @runInSeparateProcess
      */
     public function testResponseRendering(): void

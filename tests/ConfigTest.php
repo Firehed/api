@@ -8,9 +8,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 
 /**
- * @coversDefaultClass Firehed\API\Config
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Config
  */
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {
@@ -22,7 +20,6 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * @covers ::__construct
      * @dataProvider constructProvider
      * @param string[] $params
      * @param class-string<\Throwable> $exceptionClass
@@ -37,7 +34,6 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ContainerInterface::class, $config);
     }
 
-    /** @covers ::get */
     public function testGetInvalidKeyImplementsPsr11Behavior(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
@@ -45,21 +41,18 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         $config->get('this_key_is_not_set');
     }
 
-    /** @covers ::get */
     public function testGetReturnsValidData(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
         $this->assertSame('src', $config->get(Config::KEY_SOURCE));
     }
 
-    /** @covers ::has */
     public function testHasWorksForSetKey(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
         $this->assertTrue($config->has(Config::KEY_SOURCE));
     }
 
-    /** @covers ::has */
     public function testHasWorksForUnsetKey(): void
     {
         $config = new Config(self::VALID_BASIC_CONFIG);
@@ -67,7 +60,6 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers ::load
      * @dataProvider loadProvider
      * @param class-string<\Throwable> $exceptionClass
      */

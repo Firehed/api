@@ -7,9 +7,7 @@ use Firehed\API\Config;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass Firehed\API\Console\GenerateConfig
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Console\GenerateConfig
  *
  * @see https://github.com/symfony/symfony/pull/29754 for trailing \n in args
  */
@@ -36,7 +34,6 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /** @covers ::execute */
     public function testExecute(): void
     {
         // Sanity check that setUp moved any existing local file
@@ -62,7 +59,6 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(array_key_exists(Config::KEY_CONTAINER, $data), 'Container should not be set');
     }
 
-    /** @covers ::execute */
     public function testOverwriteProtection(): void
     {
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
@@ -74,7 +70,6 @@ class GenerateConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', file_get_contents(Config::FILENAME));
     }
 
-    /** @covers ::execute */
     public function testOverwriteHappens(): void
     {
         $this->assertFalse(file_exists(Config::FILENAME), 'Config already exists');
