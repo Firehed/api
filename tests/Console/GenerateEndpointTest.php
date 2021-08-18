@@ -9,9 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass Firehed\API\Console\GenerateEndpoint
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Console\GenerateEndpoint
  */
 class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
 {
@@ -34,7 +32,6 @@ class GenerateEndpointTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /** @covers ::__construct */
     public function testConstruct(): void
     {
         $config = $this->createMock(Config::class);

@@ -33,11 +33,9 @@ See the section on best practices below.
 For convenience, a trait is included that includes tests for the description methods of your endpoints.
 In your test case class (which typically extends `PHPUnit\Framework\TestCase`, use the trait:
 
-`use Firehed\API\Traits\EndpointTestCases`
+`\Firehed\API\Traits\EndpointTestCases`
 
 And add a `getEndpoint` method that returns an instance of the endpoint under test.
-
-Be sure to add a `@coversDefaultClass` annotation to the test case - `@covers` annotations are present in all of the trait tests for code coverage reports.
 
 ### Example
 
@@ -49,9 +47,7 @@ namespace MyApp\API\Endpoints\User;
 use Firehed\API\Traits\EndpointTestCases;
 
 /**
- * @coversDefaultClass MyApp\API\Endpoints\User\Create
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers MyApp\API\Endpoints\User\Create
  */
 class CreateTest extends \PHPUnit\Framework\TestCase
 {

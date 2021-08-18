@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 /**
- * @coversDefaultClass Firehed\API\HandlesOwnErrorsFixture
+ * @covers Firehed\API\HandlesOwnErrorsFixture
  * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases
  */
 class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase

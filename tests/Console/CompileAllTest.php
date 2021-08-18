@@ -10,9 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass Firehed\API\Console\CompileAll
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Console\CompileAll
  */
 class CompileAllTest extends \PHPUnit\Framework\TestCase
 {
@@ -28,14 +26,12 @@ class CompileAllTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    /** @covers ::__construct */
     public function testConstruct(): void
     {
         $config = $this->createMock(Config::class);
         $this->assertInstanceOf(Command::class, new CompileAll($this->config));
     }
 
-    /** @covers ::execute */
     public function testExecute(): void
     {
         try {

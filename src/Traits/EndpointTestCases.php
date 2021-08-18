@@ -57,7 +57,6 @@ trait EndpointTestCases
     }
 
     /**
-     * @covers ::getUri
      * @dataProvider uris
      *
      * @param string $uri The URI to match against
@@ -121,7 +120,6 @@ TEXT;
         return [];
     }
 
-    /** @covers ::getMethod */
     public function testGetMethod(): void
     {
         $method = $this->getEndpoint()->getMethod();

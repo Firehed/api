@@ -9,13 +9,10 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * @coversDefaultClass Firehed\API\MiddlewareDispatcher
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\MiddlewareDispatcher
  */
 class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
 {
-    /** @covers ::__construct */
     public function testConstruct(): void
     {
         $fallback = $this->createMock(RequestHandlerInterface::class);
@@ -25,7 +22,6 @@ class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(RequestHandlerInterface::class, $dispatcher);
     }
 
-    /** @covers ::handle */
     public function testMiddlewareIsExecutedInOrder(): void
     {
         // This is an object cast to ensure proper by-reference handling in all
@@ -81,7 +77,6 @@ class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($state->fallbackRun, 'Fallback should have run');
     }
 
-    /** @covers ::handle */
     public function testMiddlewareCanShortCircuit(): void
     {
         $fallback = $this->createMock(RequestHandlerInterface::class);
@@ -102,7 +97,6 @@ class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($response, $dispatcher->handle($request));
     }
 
-    /** @covers ::handle */
     public function testWithNoMiddleware(): void
     {
         $fallback = $this->createMock(RequestHandlerInterface::class);

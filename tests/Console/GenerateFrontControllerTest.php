@@ -8,9 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * @coversDefaultClass Firehed\API\Console\GenerateFrontController
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Console\GenerateFrontController
  */
 class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
 {
@@ -37,7 +35,6 @@ class GenerateFrontControllerTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /** @covers ::__construct */
     public function testConstruct(): void
     {
         /** @var Config */

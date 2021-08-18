@@ -27,9 +27,7 @@ use Throwable;
 use TypeError;
 
 /**
- * @coversDefaultClass Firehed\API\Dispatcher
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Dispatcher
  */
 class DispatcherTest extends \PHPUnit\Framework\TestCase
 {
@@ -58,7 +56,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     // ----(Setters)-----------------------------------------------------------
 
-    /** @covers ::setContainer */
     public function testSetContainerReturnsSelf(): void
     {
         $d = new Dispatcher();
@@ -70,7 +67,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /** @covers ::setEndpointList */
     public function testSetEndpointListReturnsSelf(): void
     {
         $d = new Dispatcher();
@@ -87,7 +83,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Test successful all-the-way-through controller execution, including both
      * URL-provided data (regex captures) and POST body.
      *
-     * @covers ::dispatch
      */
     public function testDataReachesEndpoint(): void
     {
@@ -118,7 +113,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * Test successful all-the-way-through controller execution, focusing on
      * accessing $_GET/querystring data
      *
-     * @covers ::dispatch
      */
     public function testQueryStringDataReachesEndpoint(): void
     {
@@ -151,7 +145,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * allows configuring the class without having to do crazy magic in the
      * dispatcher.
      *
-     * @covers ::dispatch
      */
     public function testContainerClassIsPrioritized(): void
     {
@@ -165,11 +158,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->markTestIncomplete('This needs reworking');
     }
 
-    /**
-     * @covers ::addMiddleware
-     * @covers ::dispatch
-     * @covers ::handle
-     */
     public function testPsr15(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
@@ -220,7 +208,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
      * a) trying to supress it will probably result in undefined behavior, and
      * b) something is deeply broken in the application, which you should know
      *
-     * @covers ::dispatch
      */
     public function testWhenEndpointsOwnErrorHandlerThrows(): void
     {
@@ -263,9 +250,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
 
     // ----(Error cases)--------------------------------------------------------
 
-    /**
-     * @covers ::dispatch
-     */
     public function testDispatchThrowsWhenMissingData(): void
     {
         $d = new Dispatcher();
@@ -273,9 +257,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $d->dispatch($this->getMockRequestWithUriPath('/'));
     }
 
-    /**
-     * @covers ::dispatch
-     */
     public function testNoRouteMatchReturns404(): void
     {
         $req = $this->getMockRequestWithUriPath('/');
@@ -287,7 +268,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->dispatch($req);
     }
 
-    /** @covers ::dispatch */
     public function testFailedInputValidationCanReachErrorHandlers(): void
     {
         // See tests/EndpointFixture
@@ -308,7 +288,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /** @covers ::dispatch */
     public function testUnsupportedContentTypeCanReachErrorHandlers(): void
     {
         $req = $this->getMockRequestWithUriPath('/user/5', 'POST');
@@ -325,9 +304,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @covers ::dispatch
-     */
     public function testMatchingContentTypeWithDirectives(): void
     {
         $contentType = 'application/json; charset=utf-8';
@@ -340,7 +316,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->checkResponse($response, 200);
     }
 
-    /** @covers ::dispatch */
     public function testFailedEndpointExecutionReachesEndpointErrorHandler(): void
     {
         $e = new Exception('This should reach the error handler');
@@ -357,7 +332,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    /** @covers ::dispatch */
     public function testScalarResponseFromEndpointReachesErrorHandler(): void
     {
         $endpoint = new fixtures\ErrorHandlingEndpoint(
@@ -370,7 +344,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($endpoint, []);
     }
 
-    /** @covers ::dispatch */
     public function testInvalidTypeResponseFromEndpointReachesErrorHandler(): void
     {
         $endpoint = new fixtures\ErrorHandlingEndpoint(
@@ -383,10 +356,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($endpoint, []);
     }
 
-    /**
-     * @covers ::dispatch
-     * @covers ::setContainer
-     */
     public function testErrorHandlerHandlesExceptionFromEndpointExecute(): void
     {
         $ex = new Exception('execute');
@@ -408,10 +377,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($ep, $container);
     }
 
-    /**
-     * @covers ::dispatch
-     * @covers ::setContainer
-     */
     public function testErrorHandlerHandles404(): void
     {
         $response = $this->createMock(ResponseInterface::class);
@@ -435,10 +400,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($response, $finalResponse);
     }
 
-    /**
-     * @covers ::dispatch
-     * @covers ::setContainer
-     */
     public function testExceptionsFromEndpointsOwnHandlerReachDefaultHandlerWhenSet(): void
     {
         $first = new Exception('This is the initially thrown exception');
@@ -471,7 +432,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->executeMockRequestOnEndpoint($endpoint, $container);
     }
 
-    /** @covers ::dispatch */
     public function testExceptionsLeakWhenNoErrorHandler(): void
     {
         $e = new Exception('This should reach the top level');
@@ -488,10 +448,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @covers ::dispatch
-     * @covers ::setContainer
-    */
     public function testAuthHappensWhenProvided(): void
     {
         $authContainer = $this->createMock(ContainerInterface::class);
@@ -527,10 +483,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($response, $res);
     }
 
-    /**
-     * @covers ::dispatch
-     * @covers ::setContainer
-     */
     public function testExecuteIsNotCalledWhenAuthzFails(): void
     {
         $authContainer = $this->createMock(ContainerInterface::class);
@@ -563,10 +515,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @covers ::dispatch
-     * @covers ::setContainer
-     */
     public function testExecuteIsNotCalledWhenAuthnFails(): void
     {
         $authnEx = new Authentication\Exception();
@@ -595,10 +543,6 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @covers ::addMiddleware
-     * @covers ::dispatch
-     */
     public function testDispatchRunsMiddlewareOnSubsequentRequests(): void
     {
         $mw = new fixtures\Middleware();

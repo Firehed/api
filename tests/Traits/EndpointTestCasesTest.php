@@ -10,7 +10,7 @@ use Firehed\Input\Containers\SafeInput;
 use Throwable;
 
 /**
- * @coversDefaultClass Firehed\API\EndpointFixture
+ * @covers Firehed\API\EndpointFixture
  * @covers Firehed\API\Traits\EndpointTestCases
  */
 class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase
