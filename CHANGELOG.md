@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - `HandlesOwnErrorsTestCases::getEndpoint()` has been renamed to `HandlesOwnErrorsTestCases::getErrorHandlingEndpoint()`.
   This prevents an incompatibility in PHP8 from abstract trait method validation colliding with LSP enforcement.
 - `ResponseBuilder` trait has been removed. Instead, opt to use a PSR-7 implementation of your choosing.
+- Coverage annotations in exported tests traits have been adjusted.
+  Instead of using `@coversDefaultClass` on test cases using those traits, use `@covers`.
 
 ### Added
 - `Traits\EndpointTestCases::getSafeInput()`
