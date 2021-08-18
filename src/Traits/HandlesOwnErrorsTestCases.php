@@ -20,7 +20,6 @@ trait HandlesOwnErrorsTestCases
     }
 
     /**
-     * @covers ::handleException
      * @dataProvider exceptionsToHandle
      */
     public function testHandleException(Throwable $e): void
