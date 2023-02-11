@@ -15,7 +15,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     /** @var Container */
     private $c;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->c = new Container(['key' => 'value']);
     }

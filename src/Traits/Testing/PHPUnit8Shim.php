@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Firehed\API\Traits\Testing;
 
+use PHPUnit\Runner\Version;
+
 /**
  * phpcs:disable
  *
@@ -11,7 +13,12 @@ namespace Firehed\API\Traits\Testing;
  *
  * @internal
  */
-if (version_compare(PHP_VERSION, '7.1.0', '>=')) {
+if (class_exists(Version::class) && version_compare(Version::id(), '10.0.0', '>=')) {
+    trait PHPUnit8Shim
+    {
+        // Intentionally empty
+    }
+} elseif (version_compare(PHP_VERSION, '7.1.0', '>=')) {
     trait PHPUnit8Shim
     {
         use PHPUnit8ShimPHPGTE71;

@@ -59,7 +59,7 @@ trait HandlesOwnErrorsTestCases
      *
      *  @return array<array<Exception>>
      */
-    public function exceptionsToHandle(): array
+    public static function exceptionsToHandle(): array
     {
         return [
             [new \Exception()],

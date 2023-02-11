@@ -78,7 +78,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ContainerInterface::class, $config);
     }
 
-    public function constructProvider(): array
+    public static function constructProvider(): array
     {
         return [
             [
@@ -120,7 +120,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function loadProvider(): array
+    public static function loadProvider(): array
     {
         return [
             [__DIR__.'/fixtures/valid_apiconfig.json'],

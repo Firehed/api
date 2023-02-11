@@ -23,13 +23,13 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
 
     private $reporting;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->reporting = error_reporting();
         error_reporting($this->reporting & ~E_USER_DEPRECATED);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         error_reporting($this->reporting);
     }
@@ -143,7 +143,7 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
     }
 
     // Data provider for testAuthenticate
-    public function bearerTokens(): array
+    public static function bearerTokens(): array
     {
         return [
             ['sometoken'],
