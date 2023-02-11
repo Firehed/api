@@ -135,7 +135,7 @@ class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public function jsonData(): array
+    public static function jsonData(): array
     {
         return [
             [1],

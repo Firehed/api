@@ -143,7 +143,7 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
     }
 
     // Data provider for testAuthenticate
-    public function bearerTokens(): array
+    public static function bearerTokens(): array
     {
         return [
             ['sometoken'],
