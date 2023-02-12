@@ -5,8 +5,6 @@ namespace Firehed\API\Traits\Request;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\Request\Delete
- * @covers ::<protected>
- * @covers ::<private>
  */
 class DeleteTest extends \PHPUnit\Framework\TestCase
 {

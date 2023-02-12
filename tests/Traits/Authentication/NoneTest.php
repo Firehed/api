@@ -9,8 +9,6 @@ use Psr\Http\Message;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\Authentication\None
- * @covers ::<protected>
- * @covers ::<private>
  */
 class NoneTest extends \PHPUnit\Framework\TestCase
 {

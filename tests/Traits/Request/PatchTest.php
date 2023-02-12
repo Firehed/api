@@ -5,8 +5,6 @@ namespace Firehed\API\Traits\Request;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\Request\Patch
- * @covers ::<protected>
- * @covers ::<private>
  */
 class PatchTest extends \PHPUnit\Framework\TestCase
 {

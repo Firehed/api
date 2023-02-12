@@ -7,8 +7,6 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * @coversDefaultClass Firehed\API\ResponseRenderer
- * @covers ::<protected>
- * @covers ::<private>
  */
 class ResponseRendererTest extends \PHPUnit\Framework\TestCase
 {

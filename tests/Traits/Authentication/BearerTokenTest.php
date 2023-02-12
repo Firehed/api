@@ -12,8 +12,6 @@ use RuntimeException;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\Authentication\BearerToken
- * @covers ::<protected>
- * @covers ::<private>
  */
 class BearerTokenTest extends \PHPUnit\Framework\TestCase
 {
