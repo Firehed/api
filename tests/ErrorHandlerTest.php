@@ -56,6 +56,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $handler = new ErrorHandler($this->createMock(LoggerInterface::class));
         // @ turns error_reporting() to 0 for the next line. The error handler
         // should respect this.
-        @$handler->handleError(\E_ERROR, 'Some error', __FILE__, __LINE__);
+        // Except in PHP>=8 https://www.php.net/manual/en/language.operators.errorcontrol.php
+        @$handler->handleError(\E_WARNING, 'Some error', __FILE__, __LINE__);
     }
 }
