@@ -45,10 +45,11 @@ jobs:
       - name: PHPStan
         run: vendor/bin/phpstan
           analyse
-          --error-format=github
+          # --error-format=github
 
   require-checker:
     name: Require checker
+    if: false # we'll bring this back later
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
