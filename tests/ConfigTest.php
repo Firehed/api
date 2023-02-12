@@ -8,9 +8,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 
 /**
- * @coversDefaultClass Firehed\API\Config
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Config
  */
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {

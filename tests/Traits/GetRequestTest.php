@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 /**
- * @coversDefaultClass Firehed\API\Traits\GetRequest
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Traits\GetRequest
  */
 class GetRequestTest extends \PHPUnit\Framework\TestCase
 {

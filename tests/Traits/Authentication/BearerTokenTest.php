@@ -11,9 +11,7 @@ use Psr\Http\Message;
 use RuntimeException;
 
 /**
- * @coversDefaultClass Firehed\API\Traits\Authentication\BearerToken
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Traits\Authentication\BearerToken
  */
 class BearerTokenTest extends \PHPUnit\Framework\TestCase
 {

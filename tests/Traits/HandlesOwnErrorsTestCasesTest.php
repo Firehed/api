@@ -7,9 +7,7 @@ use Firehed\API\Interfaces\HandlesOwnErrorsInterface;
 use Throwable;
 
 /**
- * @coversDefaultClass Firehed\API\EndpointFixture
- * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::<protected>
- * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::<private>
+ * @covers Firehed\API\EndpointFixture
  */
 class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
 {

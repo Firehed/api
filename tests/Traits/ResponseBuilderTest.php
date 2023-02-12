@@ -6,9 +6,7 @@ namespace Firehed\API\Traits;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @coversDefaultClass Firehed\API\Traits\ResponseBuilder
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Traits\ResponseBuilder
  */
 class ResponseBuilderTest extends \PHPUnit\Framework\TestCase
 {

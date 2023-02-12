@@ -6,9 +6,7 @@ namespace Firehed\API;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @coversDefaultClass Firehed\API\ResponseRenderer
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\ResponseRenderer
  */
 class ResponseRendererTest extends \PHPUnit\Framework\TestCase
 {

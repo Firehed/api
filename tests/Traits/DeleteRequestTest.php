@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 /**
- * @coversDefaultClass Firehed\API\Traits\DeleteRequest
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Traits\DeleteRequest
  */
 class DeleteRequestTest extends \PHPUnit\Framework\TestCase
 {

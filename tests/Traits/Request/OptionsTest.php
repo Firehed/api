@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace Firehed\API\Traits\Request;
 
 /**
- * @coversDefaultClass Firehed\API\Traits\Request\Options
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\API\Traits\Request\Options
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
