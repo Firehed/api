@@ -13,7 +13,7 @@ use TypeError;
 /**
  * @internal
  */
-class Config // implements ContainerInterface
+class Config implements ContainerInterface
 {
     const KEY_CONTAINER = 'container';
     const KEY_NAMESPACE = 'namespace';
@@ -61,7 +61,7 @@ class Config // implements ContainerInterface
         return $this->data[$id];
     }
 
-    public function has($id)
+    public function has($id): bool
     {
         return array_key_exists($id, $this->data);
     }
