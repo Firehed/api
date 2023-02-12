@@ -5,3 +5,7 @@ parameters:
     ignoreErrors:
         - '#Call to an undefined static method PHPUnit\\Framework\\TestCase::assertIs(Array|Bool|String)\(\)#'
     reportUnmatchedIgnoredErrors: false
+    level: 7
+    paths:
+        - src
+        - tests
