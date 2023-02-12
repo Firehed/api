@@ -5,8 +5,6 @@ namespace Firehed\API\Traits;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\NoRequiredInputs
- * @covers ::<protected>
- * @covers ::<private>
  */
 class NoRequiredInputsTest extends \PHPUnit\Framework\TestCase
 {

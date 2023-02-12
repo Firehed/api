@@ -26,8 +26,6 @@ use Zend\Diactoros\Stream;
 
 /**
  * @coversDefaultClass Firehed\API\Dispatcher
- * @covers ::<protected>
- * @covers ::<private>
  */
 class DispatcherTest extends \PHPUnit\Framework\TestCase
 {

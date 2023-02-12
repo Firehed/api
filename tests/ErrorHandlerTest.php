@@ -9,8 +9,6 @@ use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass Firehed\API\ErrorHandler
- * @covers ::<protected>
- * @covers ::<private>
  */
 class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
 {

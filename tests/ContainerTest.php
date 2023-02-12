@@ -7,8 +7,6 @@ use Psr\Container as Psr;
 
 /**
  * @coversDefaultClass Firehed\API\Container
- * @covers ::<protected>
- * @covers ::<private>
  */
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
