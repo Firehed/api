@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Firehed\API;
 
-use Psr\Container\ContainerInterface;
+// This class will go away in future versions. For compatibility purposes, make
+// it only fake-compatible with the PSR container (old PHP w/ no return types)
+// use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 use TypeError;
@@ -11,7 +13,7 @@ use TypeError;
 /**
  * @internal
  */
-class Config implements ContainerInterface
+class Config // implements ContainerInterface
 {
     const KEY_CONTAINER = 'container';
     const KEY_NAMESPACE = 'namespace';
