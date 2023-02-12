@@ -23,7 +23,6 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     /** @covers ::__construct */
     public function testConstruct()
     {
-        $this->markTestSkipped('Disabling PSR compatibility to avoid version issues');
         $this->assertInstanceOf(Psr\ContainerInterface::class, $this->c);
     }
 
