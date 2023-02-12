@@ -43,9 +43,10 @@ jobs:
           --prefer-dist
 
       - name: PHPStan
-        run: vendor/bin/phpstan
-          analyse
-          # --error-format=github
+        run: composer phpstan
+        # run: vendor/bin/phpstan
+        #   analyse
+        #   --error-format=github
 
   require-checker:
     name: Require checker
