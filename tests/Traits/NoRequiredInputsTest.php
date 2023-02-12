@@ -17,7 +17,7 @@ class NoRequiredInputsTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use NoRequiredInputs;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getRequiredInputs();
     }
 }

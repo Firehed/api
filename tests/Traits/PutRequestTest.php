@@ -17,7 +17,7 @@ class PutRequestTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use PutRequest;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getMethod();
     }
 }

@@ -17,7 +17,7 @@ class DeleteRequestTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use DeleteRequest;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getMethod();
     }
 }

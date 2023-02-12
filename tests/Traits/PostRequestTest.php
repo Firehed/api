@@ -18,7 +18,7 @@ class PostRequestTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use PostRequest;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getMethod();
     }
 }

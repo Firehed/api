@@ -17,7 +17,7 @@ class NoOptionalInputsTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use NoOptionalInputs;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getOptionalInputs();
     }
 }
