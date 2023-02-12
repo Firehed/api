@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Firehed\API;
 
+// This class will go away in future versions. For compatibility purposes, make
+// it only fake-compatible with the PSR container (old PHP w/ no return types)
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
@@ -59,7 +61,7 @@ class Config implements ContainerInterface
         return $this->data[$id];
     }
 
-    public function has($id)
+    public function has($id): bool
     {
         return array_key_exists($id, $this->data);
     }
