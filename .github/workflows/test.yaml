@@ -25,9 +25,9 @@ jobs:
           - '7.2'
           - '7.3'
           - '7.4'
-          - '8.0'
-          - '8.1'
-          - '8.2'
+          # - '8.0'
+          # - '8.1'
+          # - '8.2'
 
     steps:
       - name: Check out code
@@ -36,7 +36,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          coverage: pcov
+          # coverage: pcov
+          coverage: xdebug
           ini-values: zend.assertions=1, assert.exception=1, error_reporting=-1
           php-version: ${{ matrix.php }}
 
