@@ -135,7 +135,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setRequest($req)
             ->dispatch();
         $this->checkResponse($response, 200);
-        $data = json_decode($response->getBody(), true);
+        $data = json_decode((string)$response->getBody(), true);
         $this->assertSame(
             [
                 'id' => 5,
@@ -167,7 +167,7 @@ class DispatcherTest extends \PHPUnit\Framework\TestCase
             ->setRequest($req)
             ->dispatch();
         $this->checkResponse($response, 200);
-        $data = json_decode($response->getBody(), true);
+        $data = json_decode((string)$response->getBody(), true);
         $this->assertSame(
             [
                 'id' => 5,
