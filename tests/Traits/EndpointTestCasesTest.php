@@ -9,8 +9,12 @@ use Firehed\API\Interfaces\EndpointInterface;
 use Throwable;
 
 /**
- * @covers Firehed\API\EndpointFixture
- * @covers Firehed\API\Traits\EndpointTestCases
+ * @coversDefaultClass Firehed\API\EndpointFixture
+ * @covers Firehed\API\Traits\EndpointTestCases::<protected>
+ * @covers Firehed\API\Traits\EndpointTestCases::<private>
+ * @covers Firehed\API\Traits\EndpointTestCases::getValidation
+ * @covers Firehed\API\Traits\EndpointTestCases::testGetUri
+ * @covers Firehed\API\Traits\EndpointTestCases::testGetMethod
  * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::testHandleException
  */
 class EndpointTestCasesTest extends \PHPUnit\Framework\TestCase

@@ -8,7 +8,9 @@ use Firehed\Input\Containers\SafeInput;
 use Psr\Http\Message;
 
 /**
- * @covers Firehed\API\Traits\Authentication\None
+ * @coversDefaultClass Firehed\API\Traits\Authentication\None
+ * @covers ::<protected>
+ * @covers ::<private>
  */
 class NoneTest extends \PHPUnit\Framework\TestCase
 {

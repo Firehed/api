@@ -6,7 +6,9 @@ namespace Firehed\API;
 use Psr\Container as Psr;
 
 /**
- * @covers Firehed\API\Container
+ * @coversDefaultClass Firehed\API\Container
+ * @covers ::<protected>
+ * @covers ::<private>
  */
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {

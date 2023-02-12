@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Firehed\API\Traits\Input;
 
 /**
- * @covers Firehed\API\Traits\Input\NoRequired
+ * @coversDefaultClass Firehed\API\Traits\Input\NoRequired
+ * @covers ::<protected>
+ * @covers ::<private>
  */
 class NoRequiredTest extends \PHPUnit\Framework\TestCase
 {

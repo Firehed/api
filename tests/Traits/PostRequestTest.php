@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Firehed\API\Traits;
 
 /**
- * @covers Firehed\API\Traits\PostRequest
+ * @coversDefaultClass Firehed\API\Traits\PostRequest
+ * @covers ::<protected>
+ * @covers ::<private>
  */
 class PostRequestTest extends \PHPUnit\Framework\TestCase
 {

@@ -8,7 +8,9 @@ use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
- * @covers Firehed\API\ErrorHandler
+ * @coversDefaultClass Firehed\API\ErrorHandler
+ * @covers ::<protected>
+ * @covers ::<private>
  */
 class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
 {
