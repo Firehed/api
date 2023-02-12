@@ -2,7 +2,7 @@
     "name": "firehed/api",
     "description": "A lightweight API framework built on PSR standards with a focus on input validation",
     "require": {
-        "php": "^7.0",
+        "php": "^7.0 || ^8.0",
         "firehed/common": "^1.0",
         "firehed/input": "^2.0",
         "psr/container": "^1.0 || ^2.0",
