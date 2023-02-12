@@ -1,6 +1,8 @@
 # API Framework
 
-[![Build Status](https://travis-ci.org/Firehed/api.svg?branch=master)](https://travis-ci.org/Firehed/api)
+[![Test](https://github.com/Firehed/api/actions/workflows/test.yml/badge.svg?branch=3_2_0)](https://github.com/Firehed/api/actions/workflows/test.yml)
+[![Lint](https://github.com/Firehed/api/actions/workflows/lint.yml/badge.svg?branch=3_2_0)](https://github.com/Firehed/api/actions/workflows/lint.yml)
+[![Static analysis](https://github.com/Firehed/api/actions/workflows/static-analysis.yml/badge.svg?branch=3_2_0)](https://github.com/Firehed/api/actions/workflows/static-analysis.yml)
 [![codecov](https://codecov.io/gh/Firehed/api/branch/master/graph/badge.svg)](https://codecov.io/gh/Firehed/api)
 
 
