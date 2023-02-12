@@ -2,7 +2,7 @@
     "name": "firehed/api",
     "description": "A lightweight API framework built on PSR standards with a focus on input validation",
     "require": {
-        "php": "^7.0 || ^8.0",
+        "php": "^7.1 || ^8.0",
         "firehed/common": "^1.0",
         "firehed/input": "^2.0",
         "psr/container": "^1.0 || ^2.0",
@@ -28,7 +28,7 @@
         "mheap/phpunit-github-actions-printer": "^1.5",
         "phpstan/phpstan": "^0.9.2 || ^1.0",
         "phpstan/phpstan-phpunit": "^0.9.4 || ^1.0",
-        "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0 || ^9.0",
+        "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
         "squizlabs/php_codesniffer": "^3.1"
     },
     "autoload": {
