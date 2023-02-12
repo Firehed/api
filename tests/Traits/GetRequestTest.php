@@ -19,7 +19,7 @@ class GetRequestTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use GetRequest;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getMethod();
     }
 }
