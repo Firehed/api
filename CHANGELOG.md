@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
+## [3.3.0] - Unreleased
+### Summary
+This is mostly internal changes for compatibility of newer PHP versions and third-party libraries.
+
+### Changed
+- CI converted to Github Actions
+- PHP 7.1 is now the minimum required version (note: 4.0 will likely be PHP 8.1 at minimum. Don't use PHP 7 anymore.)
+
+### Added
+- Added support for PSR/Container 2.0
+- Added support for PSR/Log 2.0 and 3.0
+
 ## [3.2.2] - 2019-02-12
 ### Summary
 - Change tests to resolve deprecation warnings that appear under PHPUnit 8 (#93)
