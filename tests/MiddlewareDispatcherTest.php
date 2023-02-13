@@ -10,8 +10,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * @coversDefaultClass Firehed\API\MiddlewareDispatcher
- * @covers ::<protected>
- * @covers ::<private>
  */
 class MiddlewareDispatcherTest extends \PHPUnit\Framework\TestCase
 {

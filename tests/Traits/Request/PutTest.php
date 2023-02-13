@@ -5,8 +5,6 @@ namespace Firehed\API\Traits\Request;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\Request\Put
- * @covers ::<protected>
- * @covers ::<private>
  */
 class PutTest extends \PHPUnit\Framework\TestCase
 {

@@ -8,14 +8,13 @@ use Throwable;
 
 /**
  * @coversDefaultClass Firehed\API\EndpointFixture
- * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::<protected>
- * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases::<private>
+ * @covers Firehed\API\Traits\HandlesOwnErrorsTestCases
  */
 class HandlesOwnErrorsTestCasesTest extends \PHPUnit\Framework\TestCase
 {
     use HandlesOwnErrorsTestCases;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->setAllowHandleExceptionToRethrow(true);
     }

@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace Firehed\API\Traits;
 
+use Firehed\API\PHPUnitPolyfillTrait;
+
 /**
  * @coversDefaultClass Firehed\API\Traits\PostRequest
- * @covers ::<protected>
- * @covers ::<private>
  */
 class PostRequestTest extends \PHPUnit\Framework\TestCase
 {
-
+    use PHPUnitPolyfillTrait;
 
     /**
      * @covers ::getMethod
@@ -20,7 +20,7 @@ class PostRequestTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use PostRequest;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getMethod();
     }
 }

@@ -9,8 +9,6 @@ use RuntimeException;
 
 /**
  * @coversDefaultClass Firehed\API\Config
- * @covers ::<protected>
- * @covers ::<private>
  */
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {

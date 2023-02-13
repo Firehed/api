@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Firehed\API\Traits;
 
+use Firehed\API\PHPUnitPolyfillTrait;
+
 /**
  * @coversDefaultClass Firehed\API\Traits\DeleteRequest
- * @covers ::<protected>
- * @covers ::<private>
  */
 class DeleteRequestTest extends \PHPUnit\Framework\TestCase
 {
+    use PHPUnitPolyfillTrait;
 
     /**
      * @covers ::getMethod
@@ -19,7 +20,7 @@ class DeleteRequestTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use DeleteRequest;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getMethod();
     }
 }

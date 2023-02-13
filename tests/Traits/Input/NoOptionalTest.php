@@ -5,8 +5,6 @@ namespace Firehed\API\Traits\Input;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\Input\NoOptional
- * @covers ::<protected>
- * @covers ::<private>
  */
 class NoOptionalTest extends \PHPUnit\Framework\TestCase
 {

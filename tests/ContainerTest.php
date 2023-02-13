@@ -7,15 +7,13 @@ use Psr\Container as Psr;
 
 /**
  * @coversDefaultClass Firehed\API\Container
- * @covers ::<protected>
- * @covers ::<private>
  */
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $c;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->c = new Container(['key' => 'value']);
     }

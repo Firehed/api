@@ -5,8 +5,6 @@ namespace Firehed\API\Traits\Request;
 
 /**
  * @coversDefaultClass Firehed\API\Traits\Request\Post
- * @covers ::<protected>
- * @covers ::<private>
  */
 class PostTest extends \PHPUnit\Framework\TestCase
 {

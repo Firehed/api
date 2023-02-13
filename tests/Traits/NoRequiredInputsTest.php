@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Firehed\API\Traits;
 
+use Firehed\API\PHPUnitPolyfillTrait;
+
 /**
  * @coversDefaultClass Firehed\API\Traits\NoRequiredInputs
- * @covers ::<protected>
- * @covers ::<private>
  */
 class NoRequiredInputsTest extends \PHPUnit\Framework\TestCase
 {
+    use PHPUnitPolyfillTrait;
 
     /**
      * @covers ::getRequiredInputs
@@ -19,7 +20,7 @@ class NoRequiredInputsTest extends \PHPUnit\Framework\TestCase
         $obj = new class {
             use NoRequiredInputs;
         };
-        $this->expectException(\PHPUnit\Framework\Error\Deprecated::class);
+        $this->expectDeprecation();
         $obj->getRequiredInputs();
     }
 }
