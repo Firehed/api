@@ -8,8 +8,8 @@ use PHPUnit\Framework\Error;
 
 trait PHPUnit8PolyfillTrait
 {
-    public static function expectDeprecation(): void
+    public function expectDeprecation(): void
     {
-        self::expectException(Error\Deprecated::class);
+        $this->expectException(Error\Deprecated::class);
     }
 }
