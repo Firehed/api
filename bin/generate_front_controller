@@ -61,7 +61,7 @@ php;
 if ($config->has(Config::KEY_CONTAINER)) {
     $container = sprintf(
         'require \'%s\'',
-        $config['container']
+        $config->get(Config::KEY_CONTAINER)
     );
 } else {
     $container = 'null';
