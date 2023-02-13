@@ -1,0 +1,856 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Firehed\\\\API\\\\Config\\:\\:__construct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Config.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Config\\:\\:validateContainer\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Config.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: src/Config.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Config\\:\\:\\$data has no type specified\\.$#"
+			count: 1
+			path: src/Config.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Container\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Container.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Container\\:\\:\\$data type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Container.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:parse\\(\\)\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Call to method handleException\\(\\) on an unknown class Firehed\\\\API\\\\EndpointInterface\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Dispatcher\\:\\:doDispatch\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Dispatcher\\:\\:getEndpoint\\(\\) should return Firehed\\\\API\\\\Interfaces\\\\EndpointInterface but returns object\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Dispatcher\\:\\:setEndpointList\\(\\) has parameter \\$endpoint_list with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Dispatcher\\:\\:setParserList\\(\\) has parameter \\$parser_list with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^PHPDoc tag @throws with type Firehed\\\\API\\\\LogicException\\|Firehed\\\\API\\\\RuntimeException\\|Firehed\\\\API\\\\TypeError is not subtype of Throwable$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^PHPDoc tag @var contains unknown class Firehed\\\\API\\\\EndpointInterface\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$authenticationProvider has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$authorizationProvider has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$container has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$endpoint_list has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$error_handler has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$parser_list has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$psrMiddleware has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$request has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$response_middleware has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Dispatcher\\:\\:\\$uri_data has no type specified\\.$#"
+			count: 1
+			path: src/Dispatcher.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandler\\:\\:handleError\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/ErrorHandler.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandler\\:\\:handleError\\(\\) has parameter \\$file with no type specified\\.$#"
+			count: 1
+			path: src/ErrorHandler.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandler\\:\\:handleError\\(\\) has parameter \\$line with no type specified\\.$#"
+			count: 1
+			path: src/ErrorHandler.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandler\\:\\:handleError\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: src/ErrorHandler.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandler\\:\\:handleError\\(\\) has parameter \\$severity with no type specified\\.$#"
+			count: 1
+			path: src/ErrorHandler.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandler\\:\\:handleThrowable\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/ErrorHandler.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Interfaces\\\\AuthenticatedEndpointInterface\\:\\:setAuthentication\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Interfaces/AuthenticatedEndpointInterface.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\MiddlewareDispatcher\\:\\:__construct\\(\\) has parameter \\$middleware with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/MiddlewareDispatcher.php
+
+		-
+			message: "#^PHPDoc tag @var above a method has no effect\\.$#"
+			count: 1
+			path: src/MiddlewareDispatcher.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ResponseRenderer\\:\\:render\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/ResponseRenderer.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ResponseRenderer\\:\\:sendBody\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/ResponseRenderer.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ResponseRenderer\\:\\:sendHeaders\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/ResponseRenderer.php
+
+		-
+			message: "#^Function Firehed\\\\API\\\\renderResponse\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/renderResponse.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:constructProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:loadProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:testConstruct\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:testConstruct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:testGetInvalidKeyImplementsPsr11Behavior\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:testGetReturnsValidData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:testHasWorksForSetKey\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:testHasWorksForUnsetKey\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ConfigTest\\:\\:testLoad\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
+			count: 2
+			path: tests/ConfigTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ContainerTest\\:\\:testConstruct\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ContainerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ContainerTest\\:\\:testGet\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ContainerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ContainerTest\\:\\:testGetDoesNotEvaluateCallables\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ContainerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ContainerTest\\:\\:testGetThrowsOnMissingKey\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ContainerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ContainerTest\\:\\:testHas\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ContainerTest.php
+
+		-
+			message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertSame\\(\\) with arguments 1, 0 and 'MW should be called…' will always evaluate to false\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:checkResponse\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:getEndpointListForFixture\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:getMockContainer\\(\\) has parameter \\$values with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:getMockRequestWithUriPath\\(\\) has parameter \\$query_data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testAddResponseMiddlewareReturnsSelf\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testAllResponseMiddlewaresAreFIFO\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testAllResponseMiddlewaresAreReachable\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testAuthComponentsAreAutoDetected\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testAuthHappensWhenProvided\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testAutoDetectedAuthComponentsDoNotOverrideExplicit\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testConstruct\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testContainerClassIsPrioritized\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testDataReachesEndpoint\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testDeprecationWarningIsIssuedWithBaseRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testDeprecationWarningIsNotIssuedWithServerRequest\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testDispatchRunsMiddlewareOnSubsequentRequests\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testDispatchThrowsWhenMissingData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testErrorHandlerIsAutoDetected\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testErrorInResponseHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testExceptionsLeakWhenNoErrorHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testExceptionsReachDefaultErrorHandlerWhenSet\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testExecuteIsNotCalledWhenAuthnFails\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testExecuteIsNotCalledWhenAuthzFails\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testFailedAuthenticationReachesErrorHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testFailedEndpointExecutionReachesEndpointErrorHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testFailedInputValidationReachesErrorHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testInvalidTypeResponseFromEndpointReachesErrorHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testMatchingContentTypeWithDirectives\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testNoRouteMatchReturns404\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testPsr15\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testQueryStringDataReachesEndpoint\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testResponseMiddlewaresAreRunOnError\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testResponseMiddlewaresAreShortCircuitable\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testScalarResponseFromEndpointReachesErrorHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testSetAuthProviders\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testSetContainerReturnsSelf\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testSetEndpointListReturnsSelf\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testSetParserListReturnsSelf\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testSetRequestReturnsSelf\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\DispatcherTest\\:\\:testUnsupportedContentTypeReachesErrorHandler\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\DispatcherTest\\:\\:\\$reporting has no type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\DispatcherTest\\:\\:\\$response_hits has no type specified\\.$#"
+			count: 1
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 2
+			path: tests/DispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandlerTest\\:\\:testConstruct\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ErrorHandlerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandlerTest\\:\\:testHandleError\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ErrorHandlerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandlerTest\\:\\:testHandleErrorDoesNotThrowWithErrorReportingDisabled\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ErrorHandlerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ErrorHandlerTest\\:\\:testHandleThrowable\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ErrorHandlerTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\MiddlewareDispatcherTest\\:\\:testConstruct\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/MiddlewareDispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\MiddlewareDispatcherTest\\:\\:testMiddlewareCanShortCircuit\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/MiddlewareDispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\MiddlewareDispatcherTest\\:\\:testMiddlewareIsExecutedInOrder\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/MiddlewareDispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\MiddlewareDispatcherTest\\:\\:testWithNoMiddleware\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/MiddlewareDispatcherTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\ResponseRendererTest\\:\\:testResponseRendering\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/ResponseRendererTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:bearerCallback\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:bearerTokens\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:getEndpoint\\(\\) has parameter \\$setCallback with no type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:testAuthenticate\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:testAuthenticate\\(\\) has parameter \\$token with no type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:testAuthenticateFailsWithNoCallbackProvided\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:testAuthenticateWithBadBearerHeader\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:testAuthenticateWithNoAuthorizationHeader\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:testAuthenticateWithNonBearerHeader\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Traits/Authentication/BearerTokenTest\\.php\\:112\\:\\:setHandleBearerTokenCallback\\(\\) has invalid return type Firehed\\\\API\\\\Traits\\\\Authentication\\\\this\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Traits/Authentication/BearerTokenTest\\.php\\:112\\:\\:setHandleBearerTokenCallback\\(\\) should return Firehed\\\\API\\\\Traits\\\\Authentication\\\\this but returns \\$this\\(class@anonymous/tests/Traits/Authentication/BearerTokenTest\\.php\\:112\\)\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:\\$calledWithEndpoint has no type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:\\$calledWithToken has no type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Traits\\\\Authentication\\\\BearerTokenTest\\:\\:\\$reporting has no type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Property class@anonymous/tests/Traits/Authentication/BearerTokenTest\\.php\\:112\\:\\:\\$handleBearerTokenCallback has no type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/BearerTokenTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Authentication\\\\NoneTest\\:\\:testAuthenticate\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Authentication/NoneTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\DeleteRequestTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/DeleteRequestTest.php
+
+		-
+			message: "#^Call to an undefined static method PHPUnit\\\\Framework\\\\TestCase\\:\\:assertInternalType\\(\\)\\.$#"
+			count: 3
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:assertIsArray\\(\\) has parameter \\$actual with no type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:assertIsBool\\(\\) has parameter \\$actual with no type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:assertIsString\\(\\) has parameter \\$actual with no type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:badUris\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:exceptionsToHandle\\(\\) has invalid return type Firehed\\\\API\\\\Traits\\\\Exception\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:exceptionsToHandle\\(\\) should return array\\<array\\<Firehed\\\\API\\\\Traits\\\\Exception\\>\\> but returns array\\<int, array\\<int, Error\\|Exception\\>\\>\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:goodUris\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:setAllowHandleExceptionToRethrow\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:testExceptionsToHandle\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:testGetUri\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:testGetUri\\(\\) has parameter \\$expectedMatches with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:testHandleException\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:testUris\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:uris\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Traits\\\\EndpointTestCasesTest\\:\\:\\$handleExceptionMayRethrow has no type specified\\.$#"
+			count: 1
+			path: tests/Traits/EndpointTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\GetRequestTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/GetRequestTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\HandlesOwnErrorsTestCasesTest\\:\\:exceptionsToHandle\\(\\) has invalid return type Firehed\\\\API\\\\Traits\\\\Exception\\.$#"
+			count: 1
+			path: tests/Traits/HandlesOwnErrorsTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\HandlesOwnErrorsTestCasesTest\\:\\:exceptionsToHandle\\(\\) should return array\\<array\\<Firehed\\\\API\\\\Traits\\\\Exception\\>\\> but returns array\\<int, array\\<int, Error\\|Exception\\>\\>\\.$#"
+			count: 1
+			path: tests/Traits/HandlesOwnErrorsTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\HandlesOwnErrorsTestCasesTest\\:\\:setAllowHandleExceptionToRethrow\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/HandlesOwnErrorsTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\HandlesOwnErrorsTestCasesTest\\:\\:testDefaultHandling\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/HandlesOwnErrorsTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\HandlesOwnErrorsTestCasesTest\\:\\:testHandleException\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/HandlesOwnErrorsTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\HandlesOwnErrorsTestCasesTest\\:\\:testRedundantlyBecauseTraitApplicationIsWierd\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/HandlesOwnErrorsTestCasesTest.php
+
+		-
+			message: "#^Property Firehed\\\\API\\\\Traits\\\\HandlesOwnErrorsTestCasesTest\\:\\:\\$handleExceptionMayRethrow has no type specified\\.$#"
+			count: 1
+			path: tests/Traits/HandlesOwnErrorsTestCasesTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Input\\\\NoOptionalTest\\:\\:testGetOptionalInputs\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Input/NoOptionalTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Traits/Input/NoOptionalTest\\.php\\:17\\:\\:getOptionalInputs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/Input/NoOptionalTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Input\\\\NoRequiredTest\\:\\:testGetRequiredInputs\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Input/NoRequiredTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Traits/Input/NoRequiredTest\\.php\\:17\\:\\:getRequiredInputs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/Input/NoRequiredTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\NoOptionalInputsTest\\:\\:testGetOptionalInputs\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/NoOptionalInputsTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Traits/NoOptionalInputsTest\\.php\\:20\\:\\:getOptionalInputs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/NoOptionalInputsTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\NoRequiredInputsTest\\:\\:testGetRequiredInputs\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/NoRequiredInputsTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Traits/NoRequiredInputsTest\\.php\\:20\\:\\:getRequiredInputs\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/NoRequiredInputsTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\PostRequestTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/PostRequestTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\PutRequestTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/PutRequestTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Request\\\\DeleteTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Request/DeleteTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Request\\\\GetTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Request/GetTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Request\\\\OptionsTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Request/OptionsTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Request\\\\PatchTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Request/PatchTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Request\\\\PostTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Request/PostTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\Request\\\\PutTest\\:\\:testGetMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/Request/PutTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\ResponseBuilderTest\\:\\:jsonData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Traits/ResponseBuilderTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\ResponseBuilderTest\\:\\:testEmptyResponse\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/ResponseBuilderTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\ResponseBuilderTest\\:\\:testHtmlResponse\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/ResponseBuilderTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\ResponseBuilderTest\\:\\:testJsonResponse\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/ResponseBuilderTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\ResponseBuilderTest\\:\\:testJsonResponse\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: tests/Traits/ResponseBuilderTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\Traits\\\\ResponseBuilderTest\\:\\:testtextResponse\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Traits/ResponseBuilderTest.php
+
+		-
+			message: "#^Method Firehed\\\\API\\\\renderResponseTest\\:\\:testResponseRendering\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/renderResponseTest.php
