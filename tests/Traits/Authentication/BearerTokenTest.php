@@ -116,12 +116,15 @@ class BearerTokenTest extends \PHPUnit\Framework\TestCase
             use Traits\Input\NoOptional;
             public function getUri(): string
             {
+                throw new \BadMethodCallException();
             }
             public function handleException(\Throwable $e): Message\ResponseInterface
             {
+                throw new \BadMethodCallException();
             }
             public function execute(SafeInput $input): Message\ResponseInterface
             {
+                throw new \BadMethodCallException();
             }
         };
         if ($setCallback) {
