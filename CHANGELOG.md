@@ -9,6 +9,7 @@ This is mostly internal changes for compatibility of newer PHP versions and thir
 ### Changed
 - CI converted to Github Actions
 - PHP 7.1 is now the minimum required version (note: 4.0 will likely be PHP 8.1 at minimum. Don't use PHP 7 anymore.)
+- Fixed bug in front-controller generation
 
 ### Added
 - Added support for PSR/Container 2.0
